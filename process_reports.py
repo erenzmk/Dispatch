@@ -68,11 +68,14 @@ def load_calls(path: Path) -> Dict[str, Dict[str, int]]:
     ws = wb.active
 
     header_row = None
-    for row in ws.iter_rows(min_row=1, max_row=20, values_only=True):
+    header_row_idx = None
+    for idx, row in enumerate(ws.iter_rows(min_row=1, max_row=20, values_only=True),
+                             start=1):
         if HEADER_MARKER in row:
             header_row = row
+            header_row_idx = idx
             break
-    if header_row is None:
+    if header_row is None or header_row_idx is None:
         raise ValueError("Header row not found in {}".format(path))
 
     col_map = {name: idx for idx, name in enumerate(header_row)}
@@ -86,9 +89,7 @@ def load_calls(path: Path) -> Dict[str, Dict[str, int]]:
     prev_day = prev_business_day(target_date)
 
     summary: Dict[str, Dict[str, int]] = {}
-    start = ws.iter_rows(min_row=ws.min_row + ws["A"].index("Employee ID") + 1,
-                         values_only=True)
-    for row in ws.iter_rows(min_row=ws.min_row, values_only=True):
+    for row in ws.iter_rows(min_row=header_row_idx + 1, values_only=True):
         if row and isinstance(row[0], str) and row[0] == HEADER_MARKER:
             continue
         if not row or row[name_idx] in (None, ""):
@@ -133,7 +134,8 @@ def main():
     parser.add_argument("liste", type=Path, help="Path to Liste.xlsx")
     args = parser.parse_args()
 
-    day = dt.datetime.strptime(args.day_dir.name, "%d.%m").date().replace(year=2025)
+    day_str = f"{args.day_dir.name}.2025"
+    day = dt.datetime.strptime(day_str, "%d.%m.%Y").date()
     month_sheet = day.strftime("%B_%y").capitalize()
 
     morning = next(args.day_dir.glob("*7*.xlsx"))
