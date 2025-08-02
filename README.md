@@ -1,4 +1,4 @@
- Dispatch
+# Dispatch
 
 This repository contains daily call reports for field technicians.  The
 `process_reports.py` script summarises the calls and updates `Liste.xlsx` with
