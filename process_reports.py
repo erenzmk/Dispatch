@@ -87,8 +87,6 @@ def load_calls(path: Path) -> Dict[str, Dict[str, int]]:
 
     header_row = None
     header_row_idx = None
-    for idx, row in enumerate(ws.iter_rows(min_row=1, max_row=20, values_only=True),
-@@ -94,69 +110,71 @@ def load_calls(path: Path) -> Dict[str, Dict[str, int]]:
     for idx, row in enumerate(
         ws.iter_rows(min_row=1, max_row=20, values_only=True), 1
     ):
