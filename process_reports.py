@@ -88,7 +88,40 @@ def load_calls(path: Path) -> Dict[str, Dict[str, int]]:
     header_row = None
     header_row_idx = None
     for idx, row in enumerate(ws.iter_rows(min_row=1, max_row=20, values_only=True),
-@@ -125,38 +141,38 @@ def update_liste(
+@@ -94,69 +110,71 @@ def load_calls(path: Path) -> Dict[str, Dict[str, int]]:
+    for row in ws.iter_rows(min_row=header_row_idx + 1, values_only=True):
+        if row and isinstance(row[0], str) and row[0] == HEADER_MARKER:
+            continue
+        if not row or row[name_idx] in (None, ""):
+            continue
+        tech = str(row[name_idx]).strip()
+        open_date = excel_to_date(row[open_idx])
+        data = summary.setdefault(tech, {"total": 0, "new": 0, "old": 0})
+        data["total"] += 1
+        if open_date == prev_day:
+            data["new"] += 1
+        else:
+            data["old"] += 1
+    return target_date, summary
+
+
+def update_liste(
+    liste: Path,
+    month_sheet: str,
+    day: dt.date,
+    morning: Dict[str, Dict[str, int]],
+    evening: Dict[str, Dict[str, int]],
+):
+    """Write aggregated values into the ``Liste.xlsx`` workbook."""
+    wb = load_workbook(liste)
+    if month_sheet not in wb.sheetnames:
+        raise KeyError(f"Worksheet {month_sheet} does not exist in {liste}")
+    ws = wb[month_sheet]
+
+    week_index = (day.day - 1) // 7
+    start_col = 1 + week_index * 14
+
+    for row in range(2, ws.max_row + 1):
         name_cell = ws.cell(row=row, column=1)
         tech = str(name_cell.value).strip() if name_cell.value else None
         if not tech or tech not in morning:
