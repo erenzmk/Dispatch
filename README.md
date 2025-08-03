@@ -54,3 +54,8 @@ LOGLEVEL=DEBUG python process_reports.py Juli_25/01.07 Liste.xlsx
 
 This configuration outputs additional details either to the console or to a
 file if logging is redirected.
+
+### Unknown technician names
+`process_reports.load_calls` compares reported names to those already listed in
+`Liste.xlsx`. When a technician cannot be matched, the function emits a warning
+so unassigned calls are easy to spot during processing.
