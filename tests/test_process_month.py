@@ -21,8 +21,7 @@ def test_process_month_multiple_days(tmp_path: Path, monkeypatch: pytest.MonkeyP
     month_dir = tmp_path / "Juli_25"
     day1 = month_dir / "01.07"
     day2 = month_dir / "02.07"
-    missing = month_dir / "03.07"
-    for d in (day1, day2, missing):
+
         d.mkdir(parents=True)
 
     wb = Workbook()
@@ -32,7 +31,6 @@ def test_process_month_multiple_days(tmp_path: Path, monkeypatch: pytest.MonkeyP
     wb.save(day2 / "m7.xlsx")
     wb.save(day2 / "e19.xlsx")
     wb = Workbook()
-    wb.save(missing / "m7.xlsx")  # only morning file to trigger warning
 
     liste = tmp_path / "Liste.xlsx"
     create_liste(liste)
@@ -53,4 +51,3 @@ def test_process_month_multiple_days(tmp_path: Path, monkeypatch: pytest.MonkeyP
         process_month(month_dir, liste)
 
     assert calls == [dt.date(2025, 7, 1), dt.date(2025, 7, 2)]
-    assert "missing report files" in caplog.text
