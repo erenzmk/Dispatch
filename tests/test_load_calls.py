@@ -97,3 +97,24 @@ def test_load_calls_does_not_leak_file_handles(tmp_path):
     for _ in range(3):
         load_calls(path)
         assert fd_count() == baseline
+
+
+def test_load_calls_warns_once_per_unknown(tmp_path, caplog):
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Report"
+    ws["A2"] = dt.datetime(2025, 7, 1)
+    ws["A5"] = "Employee ID"
+    ws["B5"] = "Employee Name"
+    ws["C5"] = "Open Date Time"
+    # Two rows with the same unknown technician
+    ws["A6"], ws["B6"], ws["C6"] = 1, "Bob", dt.datetime(2025, 6, 30)
+    ws["A7"], ws["B7"], ws["C7"] = 2, "Bob", dt.datetime(2025, 6, 30)
+    path = tmp_path / "report.xlsx"
+    wb.save(path)
+
+    with caplog.at_level("WARNING"):
+        load_calls(path, ["Alice"])
+
+    warnings = [r.message for r in caplog.records if "Unknown technician" in r.message]
+    assert warnings == [f"Unknown technician 'Bob' in {path}"]
