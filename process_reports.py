@@ -157,8 +157,26 @@ def load_calls(path: Path, valid_names: Iterable[str] | None = None) -> Tuple[dt
     name_idx = header_row.index("Employee Name")
     open_idx = header_row.index("Open Date Time")
 
-    target_cell = ws.cell(row=2, column=1).value
-    target_date = excel_to_date(target_cell)
+    # The report date may not always reside in a fixed cell.  Search the first
+    # few rows for something that looks like a date value and convert it.
+    target_date = None
+    for row in ws.iter_rows(min_row=1, max_row=5, values_only=True):
+        for cell in row:
+            if cell is None:
+                continue
+            try:
+                target_date = excel_to_date(cell)
+            except Exception:
+                # Non-numeric strings or other types that cannot be converted
+                # simply mean this cell does not contain the target date.
+                continue
+            else:
+                # Successfully converted to a date; stop searching
+                break
+        if target_date is not None:
+            break
+    if target_date is None:
+        raise ValueError("Date not found in report header")
     prev_day = prev_business_day(target_date)
 
     summary: Dict[str, Dict[str, int]] = {}
