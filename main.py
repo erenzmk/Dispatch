@@ -27,6 +27,20 @@ def main(argv: list[str] | None = None) -> None:
     p_warnings.add_argument("report_dir", type=Path, help="Path to report directory")
     p_warnings.add_argument("--liste", type=Path, default=Path("Liste.xlsx"), help="Path to Liste.xlsx")
 
+    p_all = sub.add_parser(
+        "run-all",
+        help="Process reports for a month, analyse them and show warnings in one step",
+    )
+    p_all.add_argument("month_dir", type=Path, help="Directory containing day folders")
+    p_all.add_argument("liste", type=Path, help="Path to Liste.xlsx")
+    p_all.add_argument(
+        "-o",
+        "--output",
+        type=Path,
+        default=Path("analysis.csv"),
+        help="Output CSV file for analysis",
+    )
+
     args = parser.parse_args(argv)
 
     if args.command == "process":
@@ -37,6 +51,10 @@ def main(argv: list[str] | None = None) -> None:
         analyze_month.main([str(args.month_dir), str(args.liste), "-o", str(args.output)])
     elif args.command == "warnings":
         aggregate_warnings.main([str(args.report_dir), "--liste", str(args.liste)])
+    elif args.command == "run-all":
+        process_reports.process_month(args.month_dir, args.liste)
+        analyze_month.main([str(args.month_dir), str(args.liste), "-o", str(args.output)])
+        aggregate_warnings.main([str(args.month_dir), "--liste", str(args.liste)])
 
 
 if __name__ == "__main__":

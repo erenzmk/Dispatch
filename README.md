@@ -1,98 +1,64 @@
 # Dispatch
 
-This repository contains daily call reports for field technicians.  Core
-functionality lives inside the :mod:`dispatch` package and is exposed via the
-``main.py`` command line interface.  ``process`` summarises the calls and
-updates ``Liste.xlsx`` with per-technician statistics.  It expects a morning
-report (file name contains ``7``) and an evening report (``19``) inside the
-given day directory.  By comparing both reports the script determines how many
-calls were completed during the day.
+Dieses Repository automatisiert die Auswertung von täglichen Anrufberichten der Servicetechniker. Der Kern der Logik liegt im Paket `dispatch` und wird über die Befehle in `main.py` bereitgestellt. Die Skripte lesen die Excel-Reporte der Früh- und Spätschicht, fassen die Werte je Techniker zusammen und schreiben die Ergebnisse in `Liste.xlsx`.
 
-## Usage
+## Nutzung
 
+### Einzelnen Tag verarbeiten
 ```bash
 python main.py process data/Juli_25/01.07 data/Liste.xlsx
 ```
+Der Befehl erwartet den Ordner des Tages (z. B. `data/Juli_25/01.07`) und den Pfad zur Excel-Gesamtliste (`data/Liste.xlsx`).
 
-The command expects the directory for the day (e.g. ``data/Juli_25/01.07``) and
-the path to the master workbook (``data/Liste.xlsx``).  The script requires
-[openpyxl](https://openpyxl.readthedocs.io/) to be installed.
-
-To process all days of a month in one run, use:
-
+### Kompletten Monat verarbeiten
 ```bash
 python main.py process-month data/Juli_25 data/Liste.xlsx
 ```
+Iteriert über alle Unterordner in `data/Juli_25` und verarbeitet jeden Tag, für den passende `*7*.xlsx`‑ und `*19*.xlsx`‑Dateien existieren.
 
-The command iterates over all subdirectories in ``data/Juli_25`` and processes
-each day that contains matching ``*7*.xlsx`` and ``*19*.xlsx`` files.
-
-To analyse a full month and report technicians without calls or belonging to
-another region, run:
-
+### Monat auswerten
 ```bash
 python main.py analyze data/Juli_25 data/Liste.xlsx --output report.csv
 ```
+Erstellt eine CSV-Datei mit Kategorien wie `no_calls` und `region_mismatch`.
 
-This writes a CSV file with the categories ``no_calls`` and ``region_mismatch``
-for each technician.
-
-To collect unknown technician names across multiple reports and count how often
-they appear, use the ``warnings`` subcommand:
-
+### Unbekannte Techniker zählen
 ```bash
 python main.py warnings data/Juli_25 --liste data/Liste.xlsx
 ```
+Durchsucht alle Berichte und fasst unbekannte Namen samt Häufigkeit zusammen.
 
-This command scans all reports below ``data/Juli_25`` and prints a summary of
-unresolved names to help maintain the alias list.
-
-## Generated files
-
-The project may produce CSV outputs such as `analysis.csv` and `techniker_export.csv`. These files are generated at runtime and are not checked into version control.
-
-## Troubleshooting
-
-### Empty summaries
-If no calls are written for a technician, ensure the daily report follows the
-expected template. The script searches for a row containing `Employee ID` to
-locate the header. Files lacking this marker produce empty summaries.
-
-### Missing files
-The day directory must contain a morning report (`*7*.xlsx`) and may optionally
-include an evening report (`*19*.xlsx`). If either file is missing or named
-incorrectly, processing will fail with `StopIteration` or `FileNotFoundError`.
-
-### Incorrect sheet names
-`Liste.xlsx` needs a worksheet named after the target month, such as `Juli_25`.
-A `KeyError` indicates the sheet is missing or misnamed. Verify that the sheet
-matches the pattern `<German month>_<yy>`.
-
-### Verbose logging
-To gain more insight into the processing steps, enable Python's logging at the
-debug level when running the script:
-
+### Alles in einem Schritt
 ```bash
-LOGLEVEL=DEBUG python main.py process data/Juli_25/01.07 data/Liste.xlsx
+python main.py run-all data/Juli_25 data/Liste.xlsx --output report.csv
+```
+Verarbeitet den Monat, erstellt die Analyse und zeigt unbekannte Techniker in einem einzelnen Durchlauf an.
+
+## Generierte Dateien
+
+Dateien wie `analysis.csv` oder `techniker_export.csv` werden zur Laufzeit erstellt und nicht versioniert.
+
+## Fehlerbehebung
+
+### Leere Auswertungen
+Wenn keine Einträge für einen Techniker erscheinen, prüfe, ob der Tagesreport die Zeile mit `Employee ID` enthält. Fehlt sie, kann der Header nicht erkannt werden.
+
+### Fehlende Dateien
+Der Tagesordner muss eine Morgen-Datei (`*7*.xlsx`) und optional eine Abend-Datei (`*19*.xlsx`) enthalten. Andernfalls schlägt die Verarbeitung fehl.
+
+### Falsche Blattnamen
+In `Liste.xlsx` muss ein Arbeitsblatt nach dem Muster `<Monat>_<JJ>` existieren, z. B. `Juli_25`. Ein `KeyError` weist auf ein fehlendes oder falsch benanntes Blatt hin.
+
+### Ausführliche Protokolle
+Für detailliertere Ausgaben kann das Logging auf DEBUG gesetzt werden:
+```bash
+$env:LOGLEVEL="DEBUG"
+python main.py process data/Juli_25/01.07 data/Liste.xlsx
 ```
 
-This configuration outputs additional details either to the console or to a
-file if logging is redirected.
-
-### Unknown technician names
-``dispatch.process_reports.load_calls`` compares reported names to those already
-listed in ``Liste.xlsx``. When a technician cannot be matched, the function
-emits a warning so unassigned calls are easy to spot during processing.
-
-### Manual assignment
-
-To interactively map unrecognized technician names to known ones, run the Tk GUI:
-
+### Zuordnung unbekannter Namen
+Mit der kleinen Tk‑Oberfläche lassen sich unbekannte Namen interaktiv zuweisen:
 ```bash
-python assign_gui.py  # uses data/ and Liste.xlsx by default
+python assign_gui.py  # nutzt standardmäßig data/ und Liste.xlsx
 ```
-
-On Windows, run `python assign_gui.py` to start the GUI.
-
-Unknown names appear on the left and can be dragged onto the list of valid technicians.  Press **Export** to print the chosen mappings.
-
+Das Fenster zeigt unbekannte Namen links; sie können per Drag & Drop einer bekannten Liste zugeordnet werden. Über **Export** werden die Zuordnungen ausgegeben.
