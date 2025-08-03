@@ -22,6 +22,7 @@ import re
 from collections import Counter
 from contextlib import closing
 from pathlib import Path
+from typing import Iterable
 
 from . import process_reports
 from .process_reports import load_calls, safe_load_workbook
@@ -55,12 +56,12 @@ def aggregate_warnings(report_dir: Path, valid_names: list[str]) -> Counter[str]
     handler = logging.StreamHandler(stream)
     handler.setLevel(logging.WARNING)
 
-    process_logger = process_reports.logger
-    original_level = process_logger.level
-    original_propagate = process_logger.propagate
-    process_logger.setLevel(logging.WARNING)
-    process_logger.propagate = False
-    process_logger.addHandler(handler)
+    capture_logger = logger.getChild("process")
+    capture_logger.propagate = False
+    capture_logger.addHandler(handler)
+
+    original_logger = process_reports.logger
+    process_reports.logger = capture_logger
     try:
         for file in sorted(report_dir.rglob("*.xlsx")):
             if file.name.lower().startswith("liste"):
@@ -78,10 +79,9 @@ def aggregate_warnings(report_dir: Path, valid_names: list[str]) -> Counter[str]
                 if match:
                     counter[match.group(1)] += 1
     finally:
-        process_logger.removeHandler(handler)
+        capture_logger.removeHandler(handler)
         handler.close()
-        process_logger.setLevel(original_level)
-        process_logger.propagate = original_propagate
+        process_reports.logger = original_logger
     return counter
 
 
