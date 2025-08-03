@@ -14,6 +14,7 @@
 - CLI mit Beispieldatei getestet und temporäre Dateien entfernt.
 - CLI-Aufruf mit fehlender Datei getestet, erwartete Fehlermeldung erhalten.
 
+-rc0bup-codex/resolve-merge-conflicts-and-fix-errors
 ## 2025-08-04
 - Mergekonflikte geprüft und beseitigt.
 - Abhängigkeiten installiert und Tests erneut ausgeführt.
@@ -50,3 +51,5 @@
 - Repository erneut geprüft, keine Konflikte.
 - Tests mit `pytest -q` ausgeführt: alle 24 Tests bestanden.
 - CLI mit Beispieldatei und fehlender Datei getestet, keine Ausgabedateien erstellt.
+=======
+-main
