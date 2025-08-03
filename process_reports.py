@@ -146,7 +146,6 @@ def load_calls(path: Path, valid_names: Iterable[str] | None = None) -> Tuple[dt
                 break
         if ws is None or header_row is None:
             raise ValueError("Header row not found in report")
-
         header_map = {
             _norm(cell): idx for idx, cell in enumerate(header_row) if isinstance(cell, str)
         }
