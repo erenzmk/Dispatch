@@ -51,12 +51,9 @@
 - Repository erneut geprüft, keine Konflikte.
 - Tests mit `pytest -q` ausgeführt: alle 24 Tests bestanden.
 - CLI mit Beispieldatei und fehlender Datei getestet, keine Ausgabedateien erstellt.
-=======
--main
 
-Kopie der Liste.xlsx nach C:\Temp
-
-Ausführung von process_month für data/Juli_25
-
-Datum, Uhrzeit, ggf. Probleme oder Warnungen
-
+## 2025-08-10
+- Unbekannte Techniker werden nun mit Vorschlägen protokolliert (`logs/unknown_technicians.log`).
+- Tests erweitert und mit `pytest -q` ausgeführt.
+- Monatsverarbeitung für `data/Juli_25` mit `data/Liste.xlsx` getestet; Logdatei erzeugt.
+- `.gitignore` um die neue Logdatei ergänzt.

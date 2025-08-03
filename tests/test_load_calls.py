@@ -143,3 +143,24 @@ def test_load_calls_warns_once_per_unknown(tmp_path, caplog):
 
     warnings = [r.message for r in caplog.records if "Unknown technician" in r.message]
     assert warnings == [f"Unknown technician 'Bob' in {path}"]
+
+
+def test_load_calls_logs_unknown_with_suggestion(tmp_path, caplog):
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Report"
+    ws["A2"] = dt.datetime(2025, 7, 1)
+    ws["A5"], ws["B5"], ws["C5"] = "Employee ID", "Employee Name", "Open Date Time"
+    ws["A6"], ws["B6"], ws["C6"] = 1, "Alicia", dt.datetime(2025, 6, 30)
+    path = tmp_path / "report.xlsx"
+    wb.save(path)
+    log_file = tmp_path / "unknown.log"
+
+    with caplog.at_level("WARNING"):
+        load_calls(path, ["Alice"], unknown_log=log_file)
+
+    warning = next(r.message for r in caplog.records if "Unknown technician" in r.message)
+    assert "Alicia" in warning and "Alice" in warning
+
+    content = log_file.read_text(encoding="utf-8").strip().split("\n")[-1]
+    assert "Alicia" in content and "Alice" in content
