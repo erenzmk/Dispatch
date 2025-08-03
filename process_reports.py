@@ -277,7 +277,20 @@ def main():
     parser.add_argument("liste", type=Path, help="Path to Liste.xlsx")
     args = parser.parse_args()
 
-    day_str = f"{args.day_dir.name}.2025"
+    # Determine year from parent directory (e.g. ``Juli_25`` -> 2025)
+    # or fall back to the current system year.
+    parent = args.day_dir.parent.name
+    year_part = None
+    if "_" in parent:
+        suffix = parent.rsplit("_", 1)[-1]
+        if suffix.isdigit():
+            year_part = int(suffix)
+            if year_part < 100:
+                year_part += 2000
+    if year_part is None:
+        year_part = dt.date.today().year
+
+    day_str = f"{args.day_dir.name}.{year_part}"
     day = dt.datetime.strptime(day_str, "%d.%m.%Y").date()
     month_sheet = f"{MONTH_MAP[day.month]}_{day.strftime('%y')}"
 
