@@ -13,12 +13,13 @@ from dispatch.aggregate_warnings import aggregate_warnings, gather_valid_names
 class AssignmentApp(tk.Tk):
     """Simple drag-and-drop GUI to map unknown names to known technicians."""
 
-    def __init__(self, unknown: Counter[str], valid: list[str]) -> None:
+    def __init__(self, unknown: Counter[str], valid: list[str], liste: Path) -> None:
         super().__init__()
         self.title("Techniker-Zuordnung")
 
         self._drag_item: str | None = None
         self.mappings: dict[str, str] = {}
+        self.liste_path = liste
 
         # Unknown names list
         left = ttk.Frame(self)
@@ -72,8 +73,31 @@ class AssignmentApp(tk.Tk):
         self._drag_item = None
 
     def _export(self) -> None:
-        for unknown, known in self.mappings.items():
-            print(f"{unknown},{known}")
+        """Export the technician mappings to a CSV file and Liste.xlsx."""
+        export_path = Path(__file__).resolve().parent / "techniker_export.csv"
+        with export_path.open("w", encoding="utf-8") as fh:
+            for unknown, known in self.mappings.items():
+                fh.write(f"{unknown},{known}\n")
+        print(f"Exportiert nach {export_path}")
+
+        try:
+            from openpyxl import load_workbook  # type: ignore
+
+            wb = load_workbook(self.liste_path)
+            sheet_name = "Zuordnungen"
+            if sheet_name in wb.sheetnames:
+                ws = wb[sheet_name]
+            else:
+                ws = wb.create_sheet(sheet_name)
+                ws.append(["Unbekannt", "Bekannt"])
+            for unknown, known in self.mappings.items():
+                ws.append([unknown, known])
+            wb.save(self.liste_path)
+            wb.close()
+            print(f"Liste aktualisiert: {self.liste_path}")
+        except Exception as exc:
+            print(f"Konnte Liste.xlsx nicht aktualisieren: {exc}")
+
         self.destroy()
 
 
@@ -105,7 +129,7 @@ def main(argv: list[str] | None = None) -> None:
         print("Install required dependencies with: pip install openpyxl")
         return
 
-    app = AssignmentApp(unknown, valid)
+    app = AssignmentApp(unknown, valid, args.liste)
     app.mainloop()
 
 
