@@ -3,6 +3,10 @@
 - Installed dependencies and ran tests.
 - Verified `python main.py process data/Juni_25/02.06 data/Liste.xlsx` updated the workbook.
 - `load_calls` wertet nun alle Arbeitsblätter eines Reports aus und summiert die Technikerstatistiken.
+ tn7wvc-codex/update-load_calls-to-process-all-worksheets
+- Namensauflösung verbessert: Einträge wie `"Nachname, Vorname (Team)"` werden nun zu `"Vorname Nachname"` normalisiert und zusätzlich gegen den Vornamen abgeglichen.
+=======
+main
 
 ## Next Steps
 - Address warnings about unknown technicians by updating the spreadsheet or code.

@@ -19,3 +19,8 @@ def test_removes_parentheses_and_surname():
 def test_falls_back_to_norm_when_no_match():
     valid = ["Daniyal"]
     assert na.canonical_name("Unknown", valid) == "Unknown"
+
+
+def test_matches_lastname_firstname_combination():
+    valid = ["Ammar Alali"]
+    assert na.canonical_name("Alali, Ammar (KZEWSKI)", valid) == "Ammar Alali"
