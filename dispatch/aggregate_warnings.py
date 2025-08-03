@@ -31,21 +31,37 @@ from .process_reports import load_calls, safe_load_workbook
 logger = logging.getLogger(__name__)
 
 
-def gather_valid_names(liste: Path) -> list[str]:
-    """Return a list of technician names from ``Liste.xlsx``.
+def gather_valid_names(liste: Path, sheet_name: str = "Technikernamen") -> list[str]:
+    """Return a sorted list of unique technician names from ``Liste.xlsx``.
 
-    Only the first column is inspected which is sufficient for our matching
-    needs.  Empty cells are ignored.
+    The worksheet *sheet_name* is inspected and the columns ``Technikername``
+    and ``PUOOS`` are read.  Empty cells are ignored and duplicates removed.
+    If the worksheet does not exist a :class:`ValueError` is raised.
     """
 
-    names: list[str] = []
+    names: set[str] = set()
     with closing(safe_load_workbook(liste, read_only=True)) as wb:
-        ws = wb.active
-        for cell in ws.iter_rows(min_row=2, max_col=1, values_only=True):
-            value = cell[0]
-            if value:
-                names.append(str(value).strip())
-    return names
+        try:
+            ws = wb[sheet_name]
+        except KeyError:  # sheet missing
+            raise ValueError(f"Tabellenblatt {sheet_name!r} fehlt in {liste}")
+
+        header = next(ws.iter_rows(min_row=1, max_row=1, values_only=True))
+        wanted = [
+            idx
+            for idx, title in enumerate(header)
+            if str(title).strip().lower() in {"technikername", "puoos"}
+        ]
+        if not wanted:
+            wanted = list(range(len(header)))
+
+        for row in ws.iter_rows(min_row=2, values_only=True):
+            for idx in wanted:
+                if idx < len(row):
+                    value = row[idx]
+                    if value:
+                        names.add(str(value).strip())
+    return sorted(names)
 
 
 def aggregate_warnings(report_dir: Path, valid_names: list[str]) -> Counter[str]:
@@ -91,9 +107,12 @@ def main(argv: Iterable[str] | None = None) -> None:  # pragma: no cover - conve
     parser.add_argument(
         "--liste", type=Path, default=Path("Liste.xlsx"), help="Path to Liste.xlsx"
     )
+    parser.add_argument(
+        "--sheet", default="Technikernamen", help="Name des Tabellenblatts mit Technikern"
+    )
     args = parser.parse_args(list(argv) if argv is not None else None)
 
-    valid = gather_valid_names(args.liste)
+    valid = gather_valid_names(args.liste, sheet_name=args.sheet)
     counter = aggregate_warnings(args.report_dir, valid)
     for name, count in counter.most_common():
         print(f"{name}: {count}")
