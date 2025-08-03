@@ -19,3 +19,18 @@ def test_gather_valid_names_reads_sheet_and_deduplicates(tmp_path):
 
     names = gather_valid_names(tmp_path / "Liste.xlsx")
     assert names == ["Ali", "Alice", "Bob"]
+moke7a-codex/fix-duplicate-technician-names-display
+
+
+def test_gather_valid_names_autodetects_sheet(tmp_path):
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Technikernamen + PUDO"
+    ws.append(["Technikername"])
+    ws.append(["Eva"])
+    wb.save(tmp_path / "Liste.xlsx")
+    wb.close()
+
+    assert gather_valid_names(tmp_path / "Liste.xlsx") == ["Eva"]
+=======
+main

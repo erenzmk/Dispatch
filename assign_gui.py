@@ -127,7 +127,10 @@ def main(argv: list[str] | None = None) -> None:
     )
     parser.add_argument(
         "--sheet",
-        default="Technikernamen",
+      moke7a-codex/fix-duplicate-technician-names-display
+=======
+        default="Technikernamen"
+      main
         help="Name des Tabellenblatts mit Technikern",
     )
     args = parser.parse_args(argv)
@@ -138,6 +141,9 @@ def main(argv: list[str] | None = None) -> None:
     except RuntimeError as exc:  # missing dependency like openpyxl
         print(exc)
         print("Install required dependencies with: pip install openpyxl")
+        return
+    except ValueError as exc:
+        print(exc)
         return
 
     app = AssignmentApp(unknown, valid, args.liste)

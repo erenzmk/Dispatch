@@ -125,7 +125,11 @@ class DispatchApp(tk.Tk):
         if not day_dir.is_dir() or not liste.is_file():
             messagebox.showerror("Fehler", "Pfad prüfen")
             return
-        valid = aggregate_warnings.gather_valid_names(liste)
+        try:
+            valid = aggregate_warnings.gather_valid_names(liste)
+        except ValueError as exc:
+            messagebox.showerror("Fehler", str(exc))
+            return
         unknown = aggregate_warnings.aggregate_warnings(day_dir, valid)
         for name, count in unknown.items():
             logging.info("%s: %s", name, count)
