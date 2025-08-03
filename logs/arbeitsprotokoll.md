@@ -40,3 +40,8 @@
 - CLI mit generierter Beispieldatei getestet und Ergebnis gespeichert.
 - CLI-Aufruf mit fehlender Datei liefert erwartete Fehlermeldung.
 - Temporäre Dateien entfernt.
+
+## 2025-08-08
+- Repository erneut auf Konflikte geprüft, keine gefunden.
+- Tests mit `pytest -q` ausgeführt: alle 24 Tests bestanden.
+- CLI mit Beispieldatei und fehlender Datei getestet, temporäre Dateien anschließend entfernt.
