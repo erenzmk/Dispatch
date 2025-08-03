@@ -5,7 +5,6 @@ import os
 
 import pytest
 from openpyxl import Workbook
-import logging
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from dispatch.process_reports import load_calls

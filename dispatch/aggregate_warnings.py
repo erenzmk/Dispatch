@@ -23,7 +23,11 @@ from collections import Counter
 from contextlib import closing
 from pathlib import Path
 
+from . import process_reports
 from .process_reports import load_calls, safe_load_workbook
+
+
+logger = logging.getLogger(__name__)
 
 
 def gather_valid_names(liste: Path) -> list[str]:
@@ -49,10 +53,10 @@ def aggregate_warnings(report_dir: Path, valid_names: list[str]) -> Counter[str]
     counter: Counter[str] = Counter()
     stream = io.StringIO()
     handler = logging.StreamHandler(stream)
-    root_logger = logging.getLogger()
-    root_logger.addHandler(handler)
-    previous_level = root_logger.level
-    root_logger.setLevel(logging.WARNING)
+    process_logger = process_reports.logger
+    process_logger.addHandler(handler)
+    previous_level = process_logger.level
+    process_logger.setLevel(logging.WARNING)
     try:
         for file in sorted(report_dir.rglob("*.xlsx")):
             if file.name.lower().startswith("liste"):
@@ -62,7 +66,7 @@ def aggregate_warnings(report_dir: Path, valid_names: list[str]) -> Counter[str]
             try:
                 load_calls(file, valid_names)
             except ValueError as exc:
-                print(f"{file}: {exc}")
+                logger.error("%s: %s", file, exc)
                 continue
             stream.seek(0)
             for line in stream.read().splitlines():
@@ -70,9 +74,9 @@ def aggregate_warnings(report_dir: Path, valid_names: list[str]) -> Counter[str]
                 if match:
                     counter[match.group(1)] += 1
     finally:
-        root_logger.removeHandler(handler)
+        process_logger.removeHandler(handler)
         handler.close()
-        root_logger.setLevel(previous_level)
+        process_logger.setLevel(previous_level)
     return counter
 
 

@@ -33,6 +33,9 @@ import warnings
 from contextlib import closing
 from .name_aliases import canonical_name
 
+
+logger = logging.getLogger(__name__)
+
 try:  # pragma: no cover - import guard
     from openpyxl import load_workbook
 except Exception:  # pragma: no cover - missing dependency
@@ -177,7 +180,7 @@ def load_calls(path: Path, valid_names: Iterable[str] | None = None) -> Tuple[dt
             tech_raw = str(row[name_idx]).strip()
             tech = canonical_name(tech_raw, valid_names or [])
             if valid_names and tech not in valid_names:
-                logging.warning("Unknown technician '%s' in %s", tech_raw, path)
+                logger.warning("Unknown technician '%s' in %s", tech_raw, path)
 
             open_date = excel_to_date(row[open_idx])
             data = summary.setdefault(tech, {"total": 0, "new": 0, "old": 0})
