@@ -22,6 +22,7 @@ import re
 from collections import Counter
 from contextlib import closing
 from pathlib import Path
+from typing import Iterable
 
 from . import process_reports
 from .process_reports import load_calls, safe_load_workbook
