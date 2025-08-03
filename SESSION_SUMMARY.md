@@ -24,3 +24,4 @@ main
 - `gui_app.py` bietet eine einfache Oberfläche mit Datumswahl, Start/Pause/Stopp, Namensprüfung und Logfenster.
 - Überflüssige Dateien `report.csv` und `july_analysis.csv` entfernt.
 - Alle Tests (`pytest`) laufen erfolgreich: 25 passed.
+- `process_month` meldet jetzt den Fortschritt und schreibt ein Log nach `logs/process_month.log`.

@@ -325,14 +325,55 @@ def update_liste(
         wb.close()
 
 
-def process_month(month_dir: Path, liste: Path) -> None:
-    """Process all day report directories within ``month_dir``."""
+def _init_month_logger(log_file: Path | None) -> None:
+    """Initialisiere eine einfache Logausgabe für die Monatsverarbeitung."""
+
+    fmt = logging.Formatter("%(asctime)s %(levelname)s %(message)s")
+
+    if not logger.handlers:
+        logger.setLevel(logging.INFO)
+        stream = logging.StreamHandler()
+        stream.setFormatter(fmt)
+        logger.addHandler(stream)
+        logger.propagate = False
+
+    if log_file is not None and not any(
+        isinstance(h, logging.FileHandler) and Path(h.baseFilename) == log_file
+        for h in logger.handlers
+    ):
+        log_file.parent.mkdir(parents=True, exist_ok=True)
+        file_handler = logging.FileHandler(log_file, encoding="utf-8")
+        file_handler.setFormatter(fmt)
+        logger.addHandler(file_handler)
+
+
+def process_month(
+    month_dir: Path, liste: Path, log_file: Path | None = Path("logs/process_month.log")
+) -> None:
+    """Process all day report directories within ``month_dir``.
+
+    Während der Verarbeitung werden Fortschrittsmeldungen sowohl auf der
+    Konsole als auch optional in ``log_file`` ausgegeben. So ist ersichtlich,
+    ob der Vorgang noch läuft oder bereits abgeschlossen ist.
+    """
+
+    _init_month_logger(log_file)
+    logger.info("Starte Verarbeitung für %s", month_dir)
 
     for day_dir in sorted(p for p in month_dir.iterdir() if p.is_dir()):
         morning = list(day_dir.glob("*7*.xlsx"))
         if not morning:
+            logger.debug("Kein Morgenreport in %s, überspringe", day_dir)
             continue
-        main([str(day_dir), str(liste)])
+        logger.info("Verarbeite %s", day_dir.name)
+        try:
+            main([str(day_dir), str(liste)])
+        except Exception:  # pragma: no cover - Fehler protokollieren
+            logger.exception("Fehler bei der Verarbeitung von %s", day_dir)
+        else:
+            logger.info("Fertig %s", day_dir.name)
+
+    logger.info("Monatsverarbeitung abgeschlossen")
 
 
 def main(argv: Iterable[str] | None = None) -> None:
