@@ -37,7 +37,7 @@ class AssignmentApp(tk.Tk):
         ttk.Label(middle, text="Bekannte Techniker").pack()
         self.valid = tk.Listbox(middle)
         self.valid.pack(fill="both", expand=True)
-        for name in valid:
+        for name in sorted(set(valid)):
             self.valid.insert("end", name)
         self.valid.bind("<ButtonRelease-1>", self._on_drop)
 
@@ -125,14 +125,21 @@ def main(argv: list[str] | None = None) -> None:
         default=base_dir / "data" / "Liste.xlsx",
         help="Pfad zur Liste.xlsx",
     )
+    parser.add_argument(
+        "--sheet",
+        help="Name des Tabellenblatts mit Technikern",
+    )
     args = parser.parse_args(argv)
 
     try:
-        valid = gather_valid_names(args.liste)
+        valid = gather_valid_names(args.liste, sheet_name=args.sheet)
         unknown = aggregate_warnings(args.report_dir, valid)
     except RuntimeError as exc:  # missing dependency like openpyxl
         print(exc)
         print("Install required dependencies with: pip install openpyxl")
+        return
+    except ValueError as exc:
+        print(exc)
         return
 
     app = AssignmentApp(unknown, valid, args.liste)

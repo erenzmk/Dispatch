@@ -25,3 +25,15 @@ main
 - Überflüssige Dateien `report.csv` und `july_analysis.csv` entfernt.
 - Alle Tests (`pytest`) laufen erfolgreich: 25 passed.
 - `process_month` meldet jetzt den Fortschritt und schreibt ein Log nach `logs/process_month.log`.
+
+## 2025-?? Update 2
+- `gather_valid_names` liest nun das Blatt "Technikernamen", berücksichtigt zusätzlich die Spalte "PUOOS" und entfernt doppelte Namen.
+- `AssignmentApp` dedupliziert die Liste bekannter Techniker beim Start.
+- Neue Option `--sheet` ermöglicht in `aggregate_warnings.py` und `assign_gui.py` die Auswahl eines anderen Tabellenblatts.
+- Test `test_gather_valid_names.py` ergänzt, alle Tests (`pytest`) laufen erfolgreich.
+
+## 2025-?? Update 3
+- `gather_valid_names` erkennt automatisch das Technik-Blatt und listet bei Fehlern alle verfügbaren Arbeitsblätter auf.
+- `assign_gui.py` und `aggregate_warnings.py` lassen `--sheet` optional und fangen fehlende Blätter ab.
+- `gui_app.py` zeigt bei fehlendem Tabellenblatt eine Fehlermeldung.
+- Zusätzlicher Test überprüft die automatische Blattwahl.
