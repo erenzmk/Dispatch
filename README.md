@@ -2,7 +2,10 @@
 
 This repository contains daily call reports for field technicians.  The
 `process_reports.py` script summarises the calls and updates `Liste.xlsx` with
-per-technician statistics.
+per-technician statistics.  It expects a morning report (file name contains
+`7`) and an evening report (`19`) inside the given day directory.  By comparing
+both reports the script determines how many calls were completed during the
+day.
 
 ## Usage
 
