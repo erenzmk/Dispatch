@@ -222,7 +222,7 @@ def update_liste(
         day_data = morning[tech]
         eve_total = evening.get(tech, {}).get("total", 0)
         closed = day_data["total"] - eve_total
-        ws.cell(row=row, column=start_col + 1).value = day.toordinal() + 693594
+        ws.cell(row=row, column=start_col + 1).value = day
         ws.cell(row=row, column=start_col + 2).value = PREV_DAY_MAP[day.weekday()]
         ws.cell(row=row, column=start_col + 7).value = closed
         ws.cell(row=row, column=start_col + 8).value = day_data["total"]
@@ -235,7 +235,7 @@ def update_liste(
         day_data = morning[tech]
         eve_total = evening.get(tech, {}).get("total", 0)
         closed = day_data["total"] - eve_total
-        ws.cell(row=row, column=start_col + 1).value = day.toordinal() + 693594
+        ws.cell(row=row, column=start_col + 1).value = day
         ws.cell(row=row, column=start_col + 2).value = PREV_DAY_MAP[day.weekday()]
         ws.cell(row=row, column=start_col + 7).value = closed
         ws.cell(row=row, column=start_col + 8).value = day_data["total"]
