@@ -17,11 +17,16 @@ def create_liste(path: Path) -> None:
     wb.save(path)
 
 
-def test_process_month_multiple_days(tmp_path: Path, monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture) -> None:
+def test_process_month_multiple_days(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
     month_dir = tmp_path / "Juli_25"
     day1 = month_dir / "01.07"
     day2 = month_dir / "02.07"
 
+    for d in (day1, day2):
         d.mkdir(parents=True)
 
     wb = Workbook()
@@ -30,7 +35,6 @@ def test_process_month_multiple_days(tmp_path: Path, monkeypatch: pytest.MonkeyP
     wb = Workbook()
     wb.save(day2 / "m7.xlsx")
     wb.save(day2 / "e19.xlsx")
-    wb = Workbook()
 
     liste = tmp_path / "Liste.xlsx"
     create_liste(liste)
