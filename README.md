@@ -60,3 +60,14 @@ file if logging is redirected.
 ``dispatch.process_reports.load_calls`` compares reported names to those already
 listed in ``Liste.xlsx``. When a technician cannot be matched, the function
 emits a warning so unassigned calls are easy to spot during processing.
+
+### Manual assignment
+
+To interactively map unrecognized technician names to known ones, run the Tk GUI:
+
+```bash
+python assign_gui.py data/Juli_25 --liste data/Liste.xlsx
+```
+
+Unknown names appear on the left and can be dragged onto the list of valid technicians.  Press **Export** to print the chosen mappings.
+
