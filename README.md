@@ -69,7 +69,7 @@ To interactively map unrecognized technician names to known ones, run the Tk GUI
 python assign_gui.py  # uses data/ and Liste.xlsx by default
 ```
 
-On Windows, the `assign_gui.bat` helper allows starting the GUI by double-clicking the file.
+On Windows, run `python assign_gui.py` to start the GUI.
 
 Unknown names appear on the left and can be dragged onto the list of valid technicians.  Press **Export** to print the chosen mappings.
 
