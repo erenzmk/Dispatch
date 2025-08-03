@@ -30,7 +30,7 @@ from __future__ import annotations
 import argparse
 import datetime as dt
 from pathlib import Path
-from typing import Dict
+from typing import Dict, Optional, Tuple
 import warnings
 
 try:
@@ -120,8 +120,14 @@ def prev_business_day(day: dt.date) -> dt.date:
     return day
 
 
-def load_calls(path: Path) -> Dict[str, Dict[str, int]]:
-    """Load a call report and summarise per technician."""
+def load_calls(path: Path) -> Tuple[dt.date, Dict[Tuple[str, Optional[str]], Dict[str, int]]]:
+    """Load a call report and summarise per technician.
+
+    Besides the name the reports may contain a ``PUDO`` column identifying the
+    pickup/drop-off location of a technician.  When available we include this
+    information in the returned mapping so that callers can disambiguate
+    technicians that share the same name.
+    """
     wb = safe_load_workbook(path, data_only=True, read_only=True)
     ws = wb.active
 
@@ -139,20 +145,31 @@ def load_calls(path: Path) -> Dict[str, Dict[str, int]]:
 
     name_idx = header_row.index("Employee Name")
     open_idx = header_row.index("Open Date Time")
+    pudo_idx = None
+    for col in ("PUDO", "Pudo", "Technician PUDO"):
+        if col in header_row:
+            pudo_idx = header_row.index(col)
+            break
 
     target_cell = ws.cell(row=2, column=1).value
     target_date = excel_to_date(target_cell)
     prev_day = prev_business_day(target_date)
 
-    summary: Dict[str, Dict[str, int]] = {}
+    summary: Dict[Tuple[str, Optional[str]], Dict[str, int]] = {}
     for row in ws.iter_rows(min_row=header_row_idx + 1, values_only=True):
         if row and isinstance(row[0], str) and row[0] == HEADER_MARKER:
             continue
         if not row or row[name_idx] in (None, ""):
             continue
         tech = str(row[name_idx]).strip()
+        pudo = (
+            str(row[pudo_idx]).strip()
+            if pudo_idx is not None and row[pudo_idx] not in (None, "")
+            else None
+        )
+        key = (tech, pudo)
         open_date = excel_to_date(row[open_idx])
-        data = summary.setdefault(tech, {"total": 0, "new": 0, "old": 0})
+        data = summary.setdefault(key, {"total": 0, "new": 0, "old": 0})
         data["total"] += 1
         if open_date == prev_day:
             data["new"] += 1
@@ -165,10 +182,18 @@ def update_liste(
     liste: Path,
     month_sheet: str,
     day: dt.date,
-    morning: Dict[str, Dict[str, int]],
-    evening: Dict[str, Dict[str, int]],
+    morning: Dict[Tuple[str, Optional[str]], Dict[str, int]],
+    evening: Dict[Tuple[str, Optional[str]], Dict[str, int]],
 ):
-    """Write aggregated values into the ``Liste.xlsx`` workbook."""
+    """Write aggregated values into the ``Liste.xlsx`` workbook.
+
+    Technicians are matched using both their name and ``PUDO`` value if
+    available.  This reduces ambiguities when multiple people share the same
+    name but work from different locations.  Any technicians present in the
+    reports but missing from ``Liste.xlsx`` are appended to the sheet.  If no
+    ``PUDO`` information is provided in the report the cell is marked with
+    ``"PUDO?"`` for manual completion.
+    """
     wb = safe_load_workbook(liste)
     if month_sheet not in wb.sheetnames:
         raise KeyError(f"Worksheet {month_sheet} does not exist in {liste}")
@@ -177,13 +202,34 @@ def update_liste(
     week_index = (day.day - 1) // 7
     start_col = 1 + week_index * 14
 
+    matched = set()
     for row in range(2, ws.max_row + 1):
         name_cell = ws.cell(row=row, column=1)
         tech = str(name_cell.value).strip() if name_cell.value else None
-        if not tech or tech not in morning:
+        pudo_cell = ws.cell(row=row, column=start_col + 3)
+        pudo = str(pudo_cell.value).strip() if pudo_cell.value else None
+        key = (tech, pudo)
+        if not tech or key not in morning:
             continue
-        day_data = morning[tech]
-        eve_total = evening.get(tech, {}).get("total", 0)
+        day_data = morning[key]
+        eve_total = evening.get(key, {}).get("total", 0)
+        closed = day_data["total"] - eve_total
+        ws.cell(row=row, column=start_col + 1).value = day.toordinal() + 693594
+        ws.cell(row=row, column=start_col + 2).value = PREV_DAY_MAP[day.weekday()]
+        ws.cell(row=row, column=start_col + 7).value = closed
+        ws.cell(row=row, column=start_col + 8).value = day_data["total"]
+        ws.cell(row=row, column=start_col + 9).value = day_data["old"]
+        ws.cell(row=row, column=start_col + 10).value = day_data["new"]
+        matched.add(key)
+
+    for key, day_data in morning.items():
+        if key in matched:
+            continue
+        tech, pudo = key
+        row = ws.max_row + 1
+        ws.cell(row=row, column=1).value = tech
+        ws.cell(row=row, column=start_col + 3).value = pudo if pudo else "PUDO?"
+        eve_total = evening.get(key, {}).get("total", 0)
         closed = day_data["total"] - eve_total
         ws.cell(row=row, column=start_col + 1).value = day.toordinal() + 693594
         ws.cell(row=row, column=start_col + 2).value = PREV_DAY_MAP[day.weekday()]
@@ -209,7 +255,7 @@ def main():
     morning = next(args.day_dir.glob("*7*.xlsx"))
     evening_file = next(args.day_dir.glob("*19*.xlsx"), None)
     target_date, morning_summary = load_calls(morning)
-    evening_summary: Dict[str, Dict[str, int]] = {}
+    evening_summary: Dict[Tuple[str, Optional[str]], Dict[str, int]] = {}
     if evening_file:
         _, evening_summary = load_calls(evening_file)
     update_liste(args.liste, month_sheet, target_date, morning_summary, evening_summary)
