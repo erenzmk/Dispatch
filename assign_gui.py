@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 from __future__ import annotations
 
 import argparse
@@ -6,7 +7,7 @@ from pathlib import Path
 import tkinter as tk
 from tkinter import ttk
 
-from dispatch.aggregate_warnings import gather_valid_names, aggregate_warnings
+from dispatch.aggregate_warnings import aggregate_warnings, gather_valid_names
 
 
 class AssignmentApp(tk.Tk):
@@ -77,13 +78,32 @@ class AssignmentApp(tk.Tk):
 
 
 def main(argv: list[str] | None = None) -> None:
-    parser = argparse.ArgumentParser(description="Interaktive Zuordnung unbekannter Techniker")
-    parser.add_argument("report_dir", type=Path, help="Verzeichnis mit Tagesberichten")
-    parser.add_argument("--liste", type=Path, default=Path("Liste.xlsx"), help="Pfad zur Liste.xlsx")
+    base_dir = Path(__file__).resolve().parent
+    parser = argparse.ArgumentParser(
+        description="Interaktive Zuordnung unbekannter Techniker"
+    )
+    parser.add_argument(
+        "report_dir",
+        nargs="?",
+        type=Path,
+        default=base_dir / "data",
+        help="Verzeichnis mit Tagesberichten",
+    )
+    parser.add_argument(
+        "--liste",
+        type=Path,
+        default=base_dir / "data" / "Liste.xlsx",
+        help="Pfad zur Liste.xlsx",
+    )
     args = parser.parse_args(argv)
 
-    valid = gather_valid_names(args.liste)
-    unknown = aggregate_warnings(args.report_dir, valid)
+    try:
+        valid = gather_valid_names(args.liste)
+        unknown = aggregate_warnings(args.report_dir, valid)
+    except RuntimeError as exc:  # missing dependency like openpyxl
+        print(exc)
+        print("Install required dependencies with: pip install openpyxl")
+        return
 
     app = AssignmentApp(unknown, valid)
     app.mainloop()
