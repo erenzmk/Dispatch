@@ -53,10 +53,14 @@ def aggregate_warnings(report_dir: Path, valid_names: list[str]) -> Counter[str]
     counter: Counter[str] = Counter()
     stream = io.StringIO()
     handler = logging.StreamHandler(stream)
+    handler.setLevel(logging.WARNING)
+
     process_logger = process_reports.logger
-    process_logger.addHandler(handler)
-    previous_level = process_logger.level
+    original_level = process_logger.level
+    original_propagate = process_logger.propagate
     process_logger.setLevel(logging.WARNING)
+    process_logger.propagate = False
+    process_logger.addHandler(handler)
     try:
         for file in sorted(report_dir.rglob("*.xlsx")):
             if file.name.lower().startswith("liste"):
@@ -76,7 +80,8 @@ def aggregate_warnings(report_dir: Path, valid_names: list[str]) -> Counter[str]
     finally:
         process_logger.removeHandler(handler)
         handler.close()
-        process_logger.setLevel(previous_level)
+        process_logger.setLevel(original_level)
+        process_logger.propagate = original_propagate
     return counter
 
 
