@@ -176,6 +176,8 @@ def load_calls(path: Path, valid_names: Iterable[str] | None = None) -> Tuple[dt
                 continue
             tech_raw = str(row[name_idx]).strip()
             tech = canonical_name(tech_raw, valid_names or [])
+            if valid_names and tech not in valid_names:
+                logging.warning("Unknown technician '%s' in %s", tech_raw, path)
 
             open_date = excel_to_date(row[open_idx])
             data = summary.setdefault(tech, {"total": 0, "new": 0, "old": 0})
