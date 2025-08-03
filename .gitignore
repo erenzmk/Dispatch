@@ -2,6 +2,7 @@
 analysis.csv
 techniker_export.csv
 data/~$Liste.xlsx
+logs/unknown_technicians.log
 
 # Bytecode
 __pycache__/

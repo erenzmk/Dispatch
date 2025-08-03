@@ -51,12 +51,16 @@
 - Repository erneut geprüft, keine Konflikte.
 - Tests mit `pytest -q` ausgeführt: alle 24 Tests bestanden.
 - CLI mit Beispieldatei und fehlender Datei getestet, keine Ausgabedateien erstellt.
-=======
--main
 
-Kopie der Liste.xlsx nach C:\Temp
-
-Ausführung von process_month für data/Juli_25
-
-Datum, Uhrzeit, ggf. Probleme oder Warnungen
-
+## 2025-08-10
+- Unbekannte Techniker werden nun mit Vorschlägen protokolliert (`logs/unknown_technicians.log`).
+- Tests erweitert und mit `pytest -q` ausgeführt.
+- Monatsverarbeitung für `data/Juli_25` mit `data/Liste.xlsx` getestet; Logdatei erzeugt.
+- `.gitignore` um die neue Logdatei ergänzt.
+## 2025-08-10 (später, PowerShell)
+- `pytest -q` in PowerShell ausgeführt: 25 Tests bestanden, 1 übersprungen.
+- Versuch, `process_month` mit Here-Doc auszuführen, scheiterte wegen PowerShell-Syntax.
+- Hinweis: in PowerShell `python -c` oder Here-String verwenden.
+- `process_month` lässt sich direkt mit relativen Pfaden im Repo aufrufen:
+  `python -c "from pathlib import Path; from dispatch.process_reports import process_month; process_month(Path('data/Juli_25'), Path('data/Liste.xlsx'))"`
+- Keine Nutzung von `C:/Temp` notwendig; alle Pfade bleiben im Repo.
