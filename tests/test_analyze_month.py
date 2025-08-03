@@ -6,7 +6,7 @@ import sys
 from openpyxl import Workbook
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from analyze_month import analyze_month
+from dispatch.analyze_month import analyze_month
 
 
 def _create_report(path: Path, names: list[str]) -> None:

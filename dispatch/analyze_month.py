@@ -5,7 +5,7 @@ import csv
 from pathlib import Path
 from typing import Iterable
 
-from process_reports import load_calls, safe_load_workbook
+from .process_reports import load_calls, safe_load_workbook
 
 
 def _read_names_from_liste(liste: Path, sheet: str) -> list[str]:

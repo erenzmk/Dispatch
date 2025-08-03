@@ -5,7 +5,7 @@ import pytest
 from openpyxl import Workbook
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from process_reports import main
+from dispatch.process_reports import main
 
 
 def create_liste(path: Path) -> None:

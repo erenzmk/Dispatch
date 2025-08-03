@@ -1,7 +1,7 @@
 import warnings
 from pathlib import Path
 import pytest
-import process_reports
+from dispatch import process_reports
 
 @pytest.mark.parametrize("message", process_reports.OPENPYXL_WARNINGS)
 def test_safe_load_workbook_suppresses_openpyxl_warnings(tmp_path, monkeypatch, message):
