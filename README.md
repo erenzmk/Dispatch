@@ -17,6 +17,16 @@ The command expects the directory for the day (e.g. `Juli_25/01.07`) and the
 path to the master workbook (`Liste.xlsx`).  The script requires
 [openpyxl](https://openpyxl.readthedocs.io/) to be installed.
 
+To analyse a full month and report technicians without calls or belonging to
+another region, run:
+
+```bash
+python analyze_month.py Juli_25 Liste.xlsx --output report.csv
+```
+
+This writes a CSV file with the categories `no_calls` and `region_mismatch` for
+each technician.
+
 ## Troubleshooting
 
 ### Empty summaries
