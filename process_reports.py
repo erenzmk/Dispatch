@@ -29,6 +29,7 @@ import datetime as dt
 from pathlib import Path
 from typing import Dict, Iterable, Tuple
 import warnings
+import logging
 from name_aliases import canonical_name
 
 try:
@@ -47,6 +48,9 @@ warnings.filterwarnings(
     message="Data Validation extension is not supported and will be removed",
     category=UserWarning,
 )
+
+
+logger = logging.getLogger(__name__)
 
 
 def safe_load_workbook(filename: Path | str, *args, **kwargs):
@@ -189,6 +193,7 @@ def update_liste(
     evening: Dict[str, Dict[str, int]],
 ):
     """Write aggregated values into the ``Liste.xlsx`` workbook."""
+    logger.info("Updating workbook %s sheet %s for %s", liste, month_sheet, day)
     wb = safe_load_workbook(liste)
     if month_sheet not in wb.sheetnames:
         raise KeyError(f"Worksheet {month_sheet} does not exist in {liste}")
@@ -237,6 +242,14 @@ def update_liste(
         ws.cell(row=row, column=start_col + 8).value = day_data["total"]
         ws.cell(row=row, column=start_col + 9).value = day_data["old"]
         ws.cell(row=row, column=start_col + 10).value = day_data["new"]
+        logger.info(
+            "Updated %s: closed=%d total=%d old=%d new=%d",
+            tech,
+            closed,
+            day_data["total"],
+            day_data["old"],
+            day_data["new"],
+        )
 
     for tech in remaining:
         row = ws.max_row + 1
@@ -250,16 +263,36 @@ def update_liste(
         ws.cell(row=row, column=start_col + 8).value = day_data["total"]
         ws.cell(row=row, column=start_col + 9).value = day_data["old"]
         ws.cell(row=row, column=start_col + 10).value = day_data["new"]
+        logger.info(
+            "Added %s: closed=%d total=%d old=%d new=%d",
+            tech,
+            closed,
+            day_data["total"],
+            day_data["old"],
+            day_data["new"],
+        )
 
     wb.save(liste)
 
 
 def main():
     parser = argparse.ArgumentParser(description="Process dispatch reports")
-    parser.add_argument("day_dir", type=Path,
-                        help="Directory containing daily reports (e.g. Juli_25/01.07)")
+    parser.add_argument(
+        "day_dir",
+        type=Path,
+        help="Directory containing daily reports (e.g. Juli_25/01.07)",
+    )
     parser.add_argument("liste", type=Path, help="Path to Liste.xlsx")
+    parser.add_argument(
+        "-v",
+        "--verbose",
+        action="store_true",
+        help="Enable verbose logging",
+    )
     args = parser.parse_args()
+
+    logging.basicConfig(level=logging.INFO if args.verbose else logging.WARNING)
+    logger.info("Selected day directory: %s", args.day_dir)
 
     day_str = f"{args.day_dir.name}.2025"
     day = dt.datetime.strptime(day_str, "%d.%m.%Y").date()
@@ -279,11 +312,20 @@ def main():
     name_wb.close()
 
     morning = next(args.day_dir.glob("*7*.xlsx"))
+    logger.info("Morning report: %s", morning)
     evening_file = next(args.day_dir.glob("*19*.xlsx"), None)
+    if evening_file:
+        logger.info("Evening report: %s", evening_file)
+    else:
+        logger.info("No evening report found in %s", args.day_dir)
     target_date, morning_summary = load_calls(morning, valid_names)
+    total_morning = sum(v["total"] for v in morning_summary.values())
+    logger.info("Aggregated %d calls from morning report", total_morning)
     evening_summary: Dict[str, Dict[str, int]] = {}
     if evening_file:
         _, evening_summary = load_calls(evening_file, valid_names)
+        total_evening = sum(v["total"] for v in evening_summary.values())
+        logger.info("Aggregated %d calls from evening report", total_evening)
     update_liste(args.liste, month_sheet, target_date, morning_summary, evening_summary)
 
 

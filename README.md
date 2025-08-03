@@ -16,3 +16,10 @@ python process_reports.py Juli_25/01.07 Liste.xlsx
 The command expects the directory for the day (e.g. `Juli_25/01.07`) and the
 path to the master workbook (`Liste.xlsx`).  The script requires
 [openpyxl](https://openpyxl.readthedocs.io/) to be installed.
+
+Enable verbose logging with `--verbose` to see which files are processed and
+how the worksheet is updated:
+
+```bash
+python process_reports.py Juli_25/01.07 Liste.xlsx --verbose
+```
