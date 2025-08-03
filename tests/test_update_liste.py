@@ -1,0 +1,29 @@
+import datetime as dt
+from pathlib import Path
+
+from openpyxl import Workbook, load_workbook
+
+from process_reports import update_liste
+
+
+def test_update_liste(tmp_path: Path):
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Juli_25"
+    ws.cell(row=2, column=1, value="Alice")
+    ws.cell(row=3, column=1, value="Bob")
+    file = tmp_path / "liste.xlsx"
+    wb.save(file)
+
+    morning = {"Alice": {"total": 3, "new": 1, "old": 2}}
+    evening = {"Alice": {"total": 1, "new": 0, "old": 1}}
+
+    update_liste(file, "Juli_25", dt.date(2025, 7, 1), morning, evening)
+
+    wb2 = load_workbook(file)
+    ws2 = wb2["Juli_25"]
+
+    assert ws2.cell(row=2, column=8).value == 2
+    assert ws2.cell(row=2, column=9).value == 3
+    assert ws2.cell(row=2, column=10).value == 2
+    assert ws2.cell(row=2, column=11).value == 1
