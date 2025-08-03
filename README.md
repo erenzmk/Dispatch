@@ -28,6 +28,10 @@ python main.py analyze data/Juli_25 data/Liste.xlsx --output report.csv
 This writes a CSV file with the categories ``no_calls`` and ``region_mismatch``
 for each technician.
 
+## Generated files
+
+The project may produce CSV outputs such as `analysis.csv` and `techniker_export.csv`. These files are generated at runtime and are not checked into version control.
+
 ## Troubleshooting
 
 ### Empty summaries

@@ -1,0 +1,3 @@
+# Ignore runtime-generated CSVs
+analysis.csv
+techniker_export.csv
