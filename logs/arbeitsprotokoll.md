@@ -12,3 +12,7 @@
 - Zusätzlichen Test für diesen Fall geschrieben.
 - pytest erneut ausgeführt.
 - CLI-Test ohne vorhandene Datei geprüft.
+## 2025-08-04
+- Mergekonflikte geprüft und beseitigt.
+- Abhängigkeiten installiert und Tests erneut ausgeführt.
+- CLI mit Beispielreport getestet und temporäre Dateien entfernt.
