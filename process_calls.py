@@ -7,6 +7,7 @@ import pandas as pd
 
 def process_report(file_path: Union[str, Path], technician_name: str) -> pd.DataFrame:
     """Lese einen Excel-Bericht ein und klassifiziere Calls."""
+
     # Alle Reiter laden und zu einem DataFrame kombinieren
     all_sheets = pd.read_excel(file_path, sheet_name=None)
     df = pd.concat(all_sheets.values(), ignore_index=True)
@@ -49,7 +50,7 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    result_df = process_report(args.report_file, args.techniker)
+
     result_df.to_excel(args.output, index=False)
     print(f"Ergebnis gespeichert: {args.output}")
 

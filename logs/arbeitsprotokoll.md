@@ -6,3 +6,4 @@
 - pytest ausgeführt: alle 23 Tests bestanden.
 - Änderungen in Git committet.
 - CLI-Test mit Beispielreport durchgeführt und temporäre Dateien entfernt.
+
