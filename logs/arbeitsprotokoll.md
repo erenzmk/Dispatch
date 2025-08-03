@@ -13,3 +13,4 @@
 - pytest ausgeführt.
 - CLI mit Beispieldatei getestet und temporäre Dateien entfernt.
 - CLI-Aufruf mit fehlender Datei getestet, erwartete Fehlermeldung erhalten.
+
