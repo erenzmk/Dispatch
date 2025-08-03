@@ -57,3 +57,13 @@
 - Tests erweitert und mit `pytest -q` ausgeführt.
 - Monatsverarbeitung für `data/Juli_25` mit `data/Liste.xlsx` getestet; Logdatei erzeugt.
 - `.gitignore` um die neue Logdatei ergänzt.
+87lm7d-codex/fix-powershell-syntax-for-python-script
+## 2025-08-10 (später, PowerShell)
+- `pytest -q` in PowerShell ausgeführt: 25 Tests bestanden, 1 übersprungen.
+- Versuch, `process_month` mit Here-Doc auszuführen, scheiterte wegen PowerShell-Syntax.
+- Hinweis: in PowerShell `python -c` oder Here-String verwenden.
+- `process_month` lässt sich direkt mit relativen Pfaden im Repo aufrufen:
+  `python -c "from pathlib import Path; from dispatch.process_reports import process_month; process_month(Path('data/Juli_25'), Path('data/Liste.xlsx'))"`
+- Keine Nutzung von `C:/Temp` notwendig; alle Pfade bleiben im Repo.
+=======
+main
