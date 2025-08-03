@@ -26,6 +26,7 @@ from typing import Iterable
 
 from . import process_reports
 from .process_reports import load_calls, safe_load_workbook
+from .name_aliases import load_aliases
 
 
 logger = logging.getLogger(__name__)
@@ -38,6 +39,7 @@ def gather_valid_names(liste: Path) -> list[str]:
     needs.  Empty cells are ignored.
     """
 
+    load_aliases(liste)
     names: list[str] = []
     with closing(safe_load_workbook(liste, read_only=True)) as wb:
         ws = wb.active
