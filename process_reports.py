@@ -30,8 +30,9 @@ from __future__ import annotations
 import argparse
 import datetime as dt
 from pathlib import Path
-from typing import Dict
+from typing import Dict, Iterable, Tuple
 import warnings
+from name_aliases import canonical_name
 
 try:
     from openpyxl import load_workbook
@@ -120,8 +121,17 @@ def prev_business_day(day: dt.date) -> dt.date:
     return day
 
 
-def load_calls(path: Path) -> Dict[str, Dict[str, int]]:
-    """Load a call report and summarise per technician."""
+def load_calls(path: Path, valid_names: Iterable[str] | None = None) -> Tuple[dt.date, Dict[str, Dict[str, int]]]:
+    """Load a call report and summarise per technician.
+
+    Parameters
+    ----------
+    path:
+        Excel file to read.
+    valid_names:
+        Iterable of canonical names from ``Liste.xlsx`` used to match
+        technician names via fuzzy comparison.
+    """
     wb = safe_load_workbook(path, data_only=True, read_only=True)
     ws = wb.active
 
@@ -150,7 +160,8 @@ def load_calls(path: Path) -> Dict[str, Dict[str, int]]:
             continue
         if not row or row[name_idx] in (None, ""):
             continue
-        tech = str(row[name_idx]).strip()
+        tech_raw = str(row[name_idx]).strip()
+        tech = canonical_name(tech_raw, valid_names or [])
         open_date = excel_to_date(row[open_idx])
         data = summary.setdefault(tech, {"total": 0, "new": 0, "old": 0})
         data["total"] += 1
@@ -173,6 +184,30 @@ def update_liste(
     if month_sheet not in wb.sheetnames:
         raise KeyError(f"Worksheet {month_sheet} does not exist in {liste}")
     ws = wb[month_sheet]
+
+    # Canonicalise technician names already present in the sheet
+    names_in_sheet: list[str] = []
+    for row in range(2, ws.max_row + 1):
+        cell = ws.cell(row=row, column=1)
+        if not cell.value:
+            continue
+        name = str(cell.value).strip()
+        canon = canonical_name(name, names_in_sheet)
+        cell.value = canon
+        names_in_sheet.append(canon)
+
+    def canonicalize_summary(summary: Dict[str, Dict[str, int]]) -> Dict[str, Dict[str, int]]:
+        result: Dict[str, Dict[str, int]] = {}
+        for name, stats in summary.items():
+            canon = canonical_name(name, names_in_sheet)
+            agg = result.setdefault(canon, {"total": 0, "new": 0, "old": 0})
+            agg["total"] += stats["total"]
+            agg["new"] += stats["new"]
+            agg["old"] += stats["old"]
+        return result
+
+    morning = canonicalize_summary(morning)
+    evening = canonicalize_summary(evening)
 
     week_index = (day.day - 1) // 7
     start_col = 1 + week_index * 14
@@ -206,12 +241,24 @@ def main():
     month_sheet = day.strftime("%B_%y").capitalize()
     month_sheet = f"{MONTH_MAP[day.month]}_{day.strftime('%y')}"
 
+    # Read existing technician names to aid fuzzy matching
+    name_wb = safe_load_workbook(args.liste, read_only=True)
+    if month_sheet not in name_wb.sheetnames:
+        raise KeyError(f"Worksheet {month_sheet} does not exist in {args.liste}")
+    ws_names = name_wb[month_sheet]
+    valid_names = [
+        str(ws_names.cell(row=r, column=1).value).strip()
+        for r in range(2, ws_names.max_row + 1)
+        if ws_names.cell(row=r, column=1).value
+    ]
+    name_wb.close()
+
     morning = next(args.day_dir.glob("*7*.xlsx"))
     evening_file = next(args.day_dir.glob("*19*.xlsx"), None)
-    target_date, morning_summary = load_calls(morning)
+    target_date, morning_summary = load_calls(morning, valid_names)
     evening_summary: Dict[str, Dict[str, int]] = {}
     if evening_file:
-        _, evening_summary = load_calls(evening_file)
+        _, evening_summary = load_calls(evening_file, valid_names)
     update_liste(args.liste, month_sheet, target_date, morning_summary, evening_summary)
 
 
