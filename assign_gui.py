@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 from __future__ import annotations
 
 import argparse
@@ -96,8 +97,13 @@ def main(argv: list[str] | None = None) -> None:
     )
     args = parser.parse_args(argv)
 
-    valid = gather_valid_names(args.liste)
-    unknown = aggregate_warnings(args.report_dir, valid)
+    try:
+        valid = gather_valid_names(args.liste)
+        unknown = aggregate_warnings(args.report_dir, valid)
+    except RuntimeError as exc:  # missing dependency like openpyxl
+        print(exc)
+        print("Install required dependencies with: pip install openpyxl")
+        return
 
     app = AssignmentApp(unknown, valid)
     app.mainloop()
