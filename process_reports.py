@@ -145,9 +145,13 @@ def load_calls(path: Path, valid_names: Iterable[str] | None = None) -> Tuple[dt
         for idx, row in enumerate(
             sheet.iter_rows(min_row=1, max_row=20, values_only=True), 1
         ):
+<<<<<<< r4i1tc-codex/update-load_calls-to-iterate-worksheets
             if row and any(
                 cell == HEADER_MARKER for cell in row if isinstance(cell, str)
             ):
+=======
+            if row and row[0] == HEADER_MARKER:
+>>>>>>> main
                 header_row = list(row)
                 header_row_idx = idx
                 ws = sheet
