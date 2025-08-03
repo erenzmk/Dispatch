@@ -27,3 +27,5 @@ def test_update_liste(tmp_path: Path):
     assert ws2.cell(row=2, column=9).value == 3
     assert ws2.cell(row=2, column=10).value == 2
     assert ws2.cell(row=2, column=11).value == 1
+    for col in range(8, 12):
+        assert ws2.cell(row=3, column=col).value is None
