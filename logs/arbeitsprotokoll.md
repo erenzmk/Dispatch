@@ -21,3 +21,8 @@
 - Unbenutzten Import in den Tests entfernt.
 - Abhängigkeiten erneut installiert und Tests erfolgreich ausgeführt.
 - CLI-Test mit Beispieldatei durchgeführt und erzeugte Dateien gelöscht.
+
+## 2025-08-05
+- Repository geprüft und keine Mergekonflikte mehr gefunden.
+- Abhängigkeiten installiert und Tests erfolgreich ausgeführt.
+- CLI-Skript mit Beispieldatei getestet und temporäre Dateien entfernt.
