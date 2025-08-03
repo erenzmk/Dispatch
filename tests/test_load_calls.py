@@ -8,7 +8,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from process_reports import load_calls
 
 
-def test_selects_correct_sheet(tmp_path):
+def test_load_calls_selects_correct_sheet(tmp_path):
     wb = Workbook()
     ws1 = wb.active
     ws1["A1"] = "not the sheet"

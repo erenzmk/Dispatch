@@ -145,7 +145,9 @@ def load_calls(path: Path, valid_names: Iterable[str] | None = None) -> Tuple[dt
         for idx, row in enumerate(
             sheet.iter_rows(min_row=1, max_row=20, values_only=True), 1
         ):
-            if row and HEADER_MARKER in row:
+            if row and any(
+                cell == HEADER_MARKER for cell in row if isinstance(cell, str)
+            ):
                 header_row = list(row)
                 header_row_idx = idx
                 ws = sheet
@@ -164,7 +166,9 @@ def load_calls(path: Path, valid_names: Iterable[str] | None = None) -> Tuple[dt
 
     summary: Dict[str, Dict[str, int]] = {}
     for row in ws.iter_rows(min_row=header_row_idx + 1, values_only=True):
-        if row and isinstance(row[0], str) and row[0] == HEADER_MARKER:
+        if row and any(
+            cell == HEADER_MARKER for cell in row if isinstance(cell, str)
+        ):
             continue
         if not row or row[name_idx] in (None, ""):
             continue
