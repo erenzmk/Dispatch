@@ -29,6 +29,7 @@ import datetime as dt
 from pathlib import Path
 from typing import Dict, Iterable, Tuple
 import warnings
+import logging
 from name_aliases import canonical_name
 
 try:
@@ -134,6 +135,7 @@ def load_calls(path: Path, valid_names: Iterable[str] | None = None) -> Tuple[dt
         technician names via fuzzy comparison.
     """
     wb = safe_load_workbook(path, data_only=True, read_only=True)
+    valid_set = set(valid_names or [])
 
     def _norm(value: str) -> str:
         return value.strip().lower()
@@ -185,6 +187,10 @@ def load_calls(path: Path, valid_names: Iterable[str] | None = None) -> Tuple[dt
             continue
         tech_raw = str(row[name_idx]).strip()
         tech = canonical_name(tech_raw, valid_names or [])
+        if valid_set and tech not in valid_set:
+            logging.warning(
+                "Techniker '%s' konnte nicht eindeutig zugeordnet werden", tech_raw
+            )
         open_date = excel_to_date(row[open_idx])
         data = summary.setdefault(tech, {"total": 0, "new": 0, "old": 0})
         data["total"] += 1

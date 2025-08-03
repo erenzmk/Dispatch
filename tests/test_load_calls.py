@@ -4,6 +4,7 @@ import sys
 
 import pytest
 from openpyxl import Workbook
+import logging
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from process_reports import load_calls
@@ -69,3 +70,24 @@ def test_load_calls_missing_required_columns(tmp_path):
     with pytest.raises(ValueError) as exc:
         load_calls(path)
     assert "Open Date Time" in str(exc.value)
+
+
+def test_load_calls_logs_warning_for_unknown_name(tmp_path, caplog):
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Report"
+    ws["A2"] = dt.datetime(2025, 7, 1)
+    ws["A5"] = "Employee ID"
+    ws["B5"] = "Employee Name"
+    ws["C5"] = "Open Date Time"
+    ws["A6"] = 1
+    ws["B6"] = "Someone"
+    ws["C6"] = dt.datetime(2025, 6, 30)
+
+    path = tmp_path / "report.xlsx"
+    wb.save(path)
+
+    valid_names = ["Alice"]
+    with caplog.at_level(logging.WARNING):
+        load_calls(path, valid_names)
+    assert any("Someone" in rec.message for rec in caplog.records)
