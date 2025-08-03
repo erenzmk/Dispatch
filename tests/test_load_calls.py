@@ -2,6 +2,7 @@ import datetime as dt
 from pathlib import Path
 import sys
 
+import pytest
 from openpyxl import Workbook
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
@@ -29,3 +30,42 @@ def test_load_calls_selects_correct_sheet(tmp_path):
 
     assert target_date == dt.date(2025, 7, 1)
     assert summary == {"Alice": {"total": 1, "new": 1, "old": 0}}
+
+
+def test_load_calls_handles_header_variations(tmp_path):
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Report"
+    ws["A2"] = dt.datetime(2025, 7, 1)
+    ws["A5"] = " employee id "
+    ws["B5"] = "EMPLOYEE NAME "
+    ws["C5"] = " open date time "
+    ws["A6"] = 1
+    ws["B6"] = "Alice"
+    ws["C6"] = dt.datetime(2025, 6, 30)
+
+    path = tmp_path / "report.xlsx"
+    wb.save(path)
+
+    target_date, summary = load_calls(path)
+
+    assert target_date == dt.date(2025, 7, 1)
+    assert summary == {"Alice": {"total": 1, "new": 1, "old": 0}}
+
+
+def test_load_calls_missing_required_columns(tmp_path):
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Report"
+    ws["A2"] = dt.datetime(2025, 7, 1)
+    ws["A5"] = "Employee ID"
+    ws["B5"] = "Employee Name"  # missing Open Date Time
+    ws["A6"] = 1
+    ws["B6"] = "Alice"
+
+    path = tmp_path / "report.xlsx"
+    wb.save(path)
+
+    with pytest.raises(ValueError) as exc:
+        load_calls(path)
+    assert "Open Date Time" in str(exc.value)

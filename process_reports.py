@@ -135,15 +135,19 @@ def load_calls(path: Path, valid_names: Iterable[str] | None = None) -> Tuple[dt
     """
     wb = safe_load_workbook(path, data_only=True, read_only=True)
 
+    def _norm(value: str) -> str:
+        return value.strip().lower()
+
     header_row = None
     header_row_idx = None
     ws = None
+    marker_norm = _norm(HEADER_MARKER)
     for sheet in wb.worksheets:
         for idx, row in enumerate(
             sheet.iter_rows(min_row=1, max_row=20, values_only=True), 1
         ):
             if row and any(
-                cell == HEADER_MARKER for cell in row if isinstance(cell, str)
+                _norm(cell) == marker_norm for cell in row if isinstance(cell, str)
             ):
                 header_row = list(row)
                 header_row_idx = idx
@@ -154,8 +158,18 @@ def load_calls(path: Path, valid_names: Iterable[str] | None = None) -> Tuple[dt
     if ws is None or header_row is None:
         raise ValueError("Header row not found in report")
 
-    name_idx = header_row.index("Employee Name")
-    open_idx = header_row.index("Open Date Time")
+    header_map = {
+        _norm(cell): idx for idx, cell in enumerate(header_row) if isinstance(cell, str)
+    }
+    required = ["Employee Name", "Open Date Time"]
+    missing = [col for col in required if _norm(col) not in header_map]
+    if missing:
+        raise ValueError(
+            "Missing required column(s): " + ", ".join(missing)
+        )
+
+    name_idx = header_map[_norm("Employee Name")]
+    open_idx = header_map[_norm("Open Date Time")]
 
     target_cell = ws.cell(row=2, column=1).value
     target_date = excel_to_date(target_cell)
@@ -164,7 +178,7 @@ def load_calls(path: Path, valid_names: Iterable[str] | None = None) -> Tuple[dt
     summary: Dict[str, Dict[str, int]] = {}
     for row in ws.iter_rows(min_row=header_row_idx + 1, values_only=True):
         if row and any(
-            cell == HEADER_MARKER for cell in row if isinstance(cell, str)
+            _norm(cell) == marker_norm for cell in row if isinstance(cell, str)
         ):
             continue
         if not row or row[name_idx] in (None, ""):
