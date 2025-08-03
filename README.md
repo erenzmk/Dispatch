@@ -18,6 +18,15 @@ The command expects the directory for the day (e.g. ``data/Juli_25/01.07``) and
 the path to the master workbook (``data/Liste.xlsx``).  The script requires
 [openpyxl](https://openpyxl.readthedocs.io/) to be installed.
 
+To process all days of a month in one run, use:
+
+```bash
+python main.py process-month data/Juli_25 data/Liste.xlsx
+```
+
+The command iterates over all subdirectories in ``data/Juli_25`` and processes
+each day that contains matching ``*7*.xlsx`` and ``*19*.xlsx`` files.
+
 To analyse a full month and report technicians without calls or belonging to
 another region, run:
 

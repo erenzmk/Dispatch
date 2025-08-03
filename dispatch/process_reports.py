@@ -270,6 +270,30 @@ def update_liste(
         wb.close()
 
 
+def process_month(month_dir: Path, liste: Path) -> None:
+    """Process all day report directories within ``month_dir``.
+
+    Each subdirectory is expected to contain a morning (``*7*.xlsx``) and an
+    evening (``*19*.xlsx``) report. If either file is absent, the directory is
+    skipped and a warning notes which pattern(s) were missing.
+    """
+
+    for day_dir in sorted(p for p in month_dir.iterdir() if p.is_dir()):
+        morning = list(day_dir.glob("*7*.xlsx"))
+        evening = list(day_dir.glob("*19*.xlsx"))
+        if not morning or not evening:
+            missing: list[str] = []
+            if not morning:
+                missing.append("*7*.xlsx")
+            if not evening:
+                missing.append("*19*.xlsx")
+            logger.warning(
+                "Skipping %s: missing %s", day_dir, " and ".join(missing)
+            )
+            continue
+        main([str(day_dir), str(liste)])
+
+
 def main(argv: Iterable[str] | None = None) -> None:
     parser = argparse.ArgumentParser(description="Process dispatch reports")
     parser.add_argument(

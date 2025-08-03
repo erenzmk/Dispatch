@@ -14,6 +14,10 @@ def main(argv: list[str] | None = None) -> None:
     p_process.add_argument("day_dir", type=Path, help="Directory containing daily reports")
     p_process.add_argument("liste", type=Path, help="Path to Liste.xlsx")
 
+    p_process_month = sub.add_parser("process-month", help="Process all day reports in a month")
+    p_process_month.add_argument("month_dir", type=Path, help="Directory containing day folders")
+    p_process_month.add_argument("liste", type=Path, help="Path to Liste.xlsx")
+
     p_analyze = sub.add_parser("analyze", help="Analyse a month of reports")
     p_analyze.add_argument("month_dir", type=Path, help="Directory containing day folders")
     p_analyze.add_argument("liste", type=Path, help="Path to Liste.xlsx")
@@ -27,6 +31,8 @@ def main(argv: list[str] | None = None) -> None:
 
     if args.command == "process":
         process_reports.main([str(args.day_dir), str(args.liste)])
+    elif args.command == "process-month":
+        process_reports.process_month(args.month_dir, args.liste)
     elif args.command == "analyze":
         analyze_month.main([str(args.month_dir), str(args.liste), "-o", str(args.output)])
     elif args.command == "warnings":
