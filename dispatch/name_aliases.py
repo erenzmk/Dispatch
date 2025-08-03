@@ -52,25 +52,30 @@ def canonical_name(name: str, valid_names: Iterable[str], cutoff: float = 0.8) -
 
     # ``name`` may come in various formats, e.g. ``"Doe, John (Team)"`` or
     # just ``"john"``.  Normalise by removing parenthetical information and by
-    # taking the part after a comma (which usually holds the first name).
+    # converting "Lastname, Firstname" into the more common
+    # "Firstname Lastname" format used in the spreadsheet.
     norm = name.strip()
     if not norm:
         return norm
 
     # Drop anything inside parentheses to ignore organisational hints.
     norm = re.sub(r"\([^)]*\)", "", norm)
-    # If the remaining string contains a comma we assume ``Lastname, Firstname``
-    # and keep the part after the last comma which typically is the name used in
-    # the spreadsheet.
+    candidates: list[str]
     if "," in norm:
-        norm = norm.split(",")[-1]
-
-    norm = norm.strip()
-    key = norm.lower()
-
-    if key in _ALIAS_MAP:
-        return _ALIAS_MAP[key]
+        parts = [p.strip() for p in norm.split(",") if p.strip()]
+        flipped = " ".join(parts[1:] + parts[:1]) if len(parts) > 1 else parts[0]
+        first_only = parts[1] if len(parts) > 1 else parts[0]
+        candidates = [flipped, first_only]
+    else:
+        candidates = [norm]
 
     valid_map = {v.lower(): v for v in valid_names}
-    matches = get_close_matches(key, list(valid_map.keys()), n=1, cutoff=cutoff)
-    return valid_map[matches[0]] if matches else norm
+    for cand in candidates:
+        key = cand.strip().lower()
+        if key in _ALIAS_MAP:
+            return _ALIAS_MAP[key]
+        matches = get_close_matches(key, list(valid_map.keys()), n=1, cutoff=cutoff)
+        if matches:
+            return valid_map[matches[0]]
+
+    return candidates[0].strip()
