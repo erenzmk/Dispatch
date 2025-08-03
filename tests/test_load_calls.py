@@ -95,24 +95,3 @@ def test_load_calls_does_not_leak_file_handles(tmp_path):
     for _ in range(3):
         load_calls(path)
         assert fd_count() == baseline
-
-
-def test_load_calls_logs_warning_for_unknown_name(tmp_path, caplog):
-    wb = Workbook()
-    ws = wb.active
-    ws.title = "Report"
-    ws["A2"] = dt.datetime(2025, 7, 1)
-    ws["A5"] = "Employee ID"
-    ws["B5"] = "Employee Name"
-    ws["C5"] = "Open Date Time"
-    ws["A6"] = 1
-    ws["B6"] = "Someone"
-    ws["C6"] = dt.datetime(2025, 6, 30)
-
-    path = tmp_path / "report.xlsx"
-    wb.save(path)
-
-    valid_names = ["Alice"]
-    with caplog.at_level(logging.WARNING):
-        load_calls(path, valid_names)
-    assert any("Someone" in rec.message for rec in caplog.records)

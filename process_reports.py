@@ -125,7 +125,6 @@ def load_calls(path: Path, valid_names: Iterable[str] | None = None) -> Tuple[dt
         def _norm(value: str) -> str:
             return value.strip().lower()
 
-        valid_set = set(valid_names or [])
 
         header_row = None
         header_row_idx = None
@@ -146,6 +145,7 @@ def load_calls(path: Path, valid_names: Iterable[str] | None = None) -> Tuple[dt
                 break
         if ws is None or header_row is None:
             raise ValueError("Header row not found in report")
+
         header_map = {
             _norm(cell): idx for idx, cell in enumerate(header_row) if isinstance(cell, str)
         }
@@ -173,10 +173,7 @@ def load_calls(path: Path, valid_names: Iterable[str] | None = None) -> Tuple[dt
                 continue
             tech_raw = str(row[name_idx]).strip()
             tech = canonical_name(tech_raw, valid_names or [])
-            if valid_set and tech not in valid_set:
-                logging.warning(
-                    "Techniker '%s' konnte nicht eindeutig zugeordnet werden", tech_raw
-                )
+
             open_date = excel_to_date(row[open_idx])
             data = summary.setdefault(tech, {"total": 0, "new": 0, "old": 0})
             data["total"] += 1
