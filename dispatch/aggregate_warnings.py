@@ -57,7 +57,11 @@ def aggregate_warnings(report_dir: Path, valid_names: list[str]) -> Counter[str]
         for file in sorted(report_dir.rglob("*.xlsx")):
             stream.seek(0)
             stream.truncate(0)
-            load_calls(file, valid_names)
+            try:
+                load_calls(file, valid_names)
+            except ValueError as exc:
+                print(f"{file}: {exc}")
+                continue
             stream.seek(0)
             for line in stream.read().splitlines():
                 match = re.search(r"'([^']+)'", line)
