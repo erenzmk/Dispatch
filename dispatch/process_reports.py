@@ -133,12 +133,16 @@ def load_calls(path: Path, valid_names: Iterable[str] | None = None) -> Tuple[dt
         def _norm(value: str) -> str:
             return value.strip().lower()
 
-
-        header_row = None
-        header_row_idx = None
-        ws = None
         marker_norm = _norm(HEADER_MARKER)
+        summary: Dict[str, Dict[str, int]] = {}
+        unknown: set[str] = set()
+        target_date: dt.date | None = None
+        prev_day: dt.date | None = None
+        missing_required: list[str] | None = None
+
         for sheet in wb.worksheets:
+            header_row = None
+            header_row_idx = None
             for idx, row in enumerate(
                 sheet.iter_rows(min_row=1, max_row=20, values_only=True), 1
             ):
@@ -147,51 +151,54 @@ def load_calls(path: Path, valid_names: Iterable[str] | None = None) -> Tuple[dt
                 ):
                     header_row = list(row)
                     header_row_idx = idx
-                    ws = sheet
                     break
-            if ws is not None:
-                break
-        if ws is None or header_row is None:
+            if header_row is None:
+                continue
+
+            header_map = {
+                _norm(cell): idx for idx, cell in enumerate(header_row) if isinstance(cell, str)
+            }
+            required = ["Employee Name", "Open Date Time"]
+            missing = [col for col in required if _norm(col) not in header_map]
+            if missing:
+                missing_required = missing
+                continue
+
+            name_idx = header_map[_norm("Employee Name")]
+            open_idx = header_map[_norm("Open Date Time")]
+
+            if target_date is None:
+                target_cell = sheet.cell(row=2, column=1).value
+                target_date = excel_to_date(target_cell)
+                prev_day = prev_business_day(target_date)
+
+            for row in sheet.iter_rows(min_row=header_row_idx + 1, values_only=True):
+                if row and any(
+                    _norm(cell) == marker_norm for cell in row if isinstance(cell, str)
+                ):
+                    continue
+                if not row or row[name_idx] in (None, ""):
+                    continue
+                tech_raw = str(row[name_idx]).strip()
+                tech = canonical_name(tech_raw, valid_names or [])
+                if valid_names and tech not in valid_names:
+                    unknown.add(tech_raw)
+
+                open_date = excel_to_date(row[open_idx])
+                data = summary.setdefault(tech, {"total": 0, "new": 0, "old": 0})
+                data["total"] += 1
+                if prev_day is not None and open_date == prev_day:
+                    data["new"] += 1
+                else:
+                    data["old"] += 1
+
+        if target_date is None:
+            if missing_required:
+                raise ValueError(
+                    "Missing required column(s): " + ", ".join(missing_required)
+                )
             raise ValueError("Header row not found in report")
 
-        header_map = {
-            _norm(cell): idx for idx, cell in enumerate(header_row) if isinstance(cell, str)
-        }
-        required = ["Employee Name", "Open Date Time"]
-        missing = [col for col in required if _norm(col) not in header_map]
-        if missing:
-            raise ValueError(
-                "Missing required column(s): " + ", ".join(missing)
-            )
-
-        name_idx = header_map[_norm("Employee Name")]
-        open_idx = header_map[_norm("Open Date Time")]
-
-        target_cell = ws.cell(row=2, column=1).value
-        target_date = excel_to_date(target_cell)
-        prev_day = prev_business_day(target_date)
-
-        summary: Dict[str, Dict[str, int]] = {}
-        unknown: set[str] = set()
-        for row in ws.iter_rows(min_row=header_row_idx + 1, values_only=True):
-            if row and any(
-                _norm(cell) == marker_norm for cell in row if isinstance(cell, str)
-            ):
-                continue
-            if not row or row[name_idx] in (None, ""):
-                continue
-            tech_raw = str(row[name_idx]).strip()
-            tech = canonical_name(tech_raw, valid_names or [])
-            if valid_names and tech not in valid_names:
-                unknown.add(tech_raw)
-
-            open_date = excel_to_date(row[open_idx])
-            data = summary.setdefault(tech, {"total": 0, "new": 0, "old": 0})
-            data["total"] += 1
-            if open_date == prev_day:
-                data["new"] += 1
-            else:
-                data["old"] += 1
         for name in sorted(unknown):
             logger.warning("Unknown technician '%s' in %s", name, path)
         return target_date, summary

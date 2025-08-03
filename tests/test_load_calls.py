@@ -54,6 +54,31 @@ def test_load_calls_handles_header_variations(tmp_path):
     assert summary == {"Alice": {"total": 1, "new": 1, "old": 0}}
 
 
+def test_load_calls_aggregates_all_sheets(tmp_path):
+    wb = Workbook()
+    ws1 = wb.active
+    ws1.title = "Report1"
+    ws1["A2"] = dt.datetime(2025, 7, 1)
+    ws1["A5"], ws1["B5"], ws1["C5"] = "Employee ID", "Employee Name", "Open Date Time"
+    ws1["A6"], ws1["B6"], ws1["C6"] = 1, "Alice", dt.datetime(2025, 6, 30)
+
+    ws2 = wb.create_sheet("Report2")
+    ws2["A2"] = dt.datetime(2025, 7, 1)
+    ws2["A5"], ws2["B5"], ws2["C5"] = "Employee ID", "Employee Name", "Open Date Time"
+    ws2["A6"], ws2["B6"], ws2["C6"] = 2, "Bob", dt.datetime(2025, 6, 29)
+
+    path = tmp_path / "report.xlsx"
+    wb.save(path)
+
+    target_date, summary = load_calls(path)
+
+    assert target_date == dt.date(2025, 7, 1)
+    assert summary == {
+        "Alice": {"total": 1, "new": 1, "old": 0},
+        "Bob": {"total": 1, "new": 0, "old": 1},
+    }
+
+
 def test_load_calls_missing_required_columns(tmp_path):
     wb = Workbook()
     ws = wb.active
