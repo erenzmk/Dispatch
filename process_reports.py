@@ -26,10 +26,11 @@ from __future__ import annotations
 
 import argparse
 import datetime as dt
+import logging
 from pathlib import Path
 from typing import Dict, Iterable, Tuple
 import warnings
-import logging
+from contextlib import closing
 from name_aliases import canonical_name
 
 try:
@@ -37,17 +38,11 @@ try:
 except Exception as exc:  # pragma: no cover - missing dependency
     raise SystemExit("openpyxl is required: {}".format(exc))
 
-# Suppress noisy openpyxl warnings about missing styles and unsupported features
-warnings.filterwarnings(
-    "ignore",
-    message="Workbook contains no default style, apply openpyxl's default",
-    category=UserWarning,
-)
-warnings.filterwarnings(
-    "ignore",
-    message="Data Validation extension is not supported and will be removed",
-    category=UserWarning,
-)
+# Known noisy openpyxl warnings to suppress when loading workbooks.
+OPENPYXL_WARNINGS = [
+    "Workbook contains no default style, apply openpyxl's default",
+    "Data Validation extension is not supported and will be removed",
+]
 
 
 def safe_load_workbook(filename: Path | str, *args, **kwargs):
@@ -66,16 +61,8 @@ def safe_load_workbook(filename: Path | str, *args, **kwargs):
         raise FileNotFoundError(f"Workbook not found: {path}")
 
     with warnings.catch_warnings():
-        warnings.filterwarnings(
-            "ignore",
-            message="Workbook contains no default style, apply openpyxl's default",
-            category=UserWarning,
-        )
-        warnings.filterwarnings(
-            "ignore",
-            message="Data Validation extension is not supported and will be removed",
-            category=UserWarning,
-        )
+        for msg in OPENPYXL_WARNINGS:
+            warnings.filterwarnings("ignore", message=msg, category=UserWarning)
         return load_workbook(path, *args, **kwargs)
 
 
@@ -134,71 +121,73 @@ def load_calls(path: Path, valid_names: Iterable[str] | None = None) -> Tuple[dt
         Iterable of canonical names from ``Liste.xlsx`` used to match
         technician names via fuzzy comparison.
     """
-    wb = safe_load_workbook(path, data_only=True, read_only=True)
-    valid_set = set(valid_names or [])
+    with closing(safe_load_workbook(path, data_only=True, read_only=True)) as wb:
+        def _norm(value: str) -> str:
+            return value.strip().lower()
 
-    def _norm(value: str) -> str:
-        return value.strip().lower()
+        valid_set = set(valid_names or [])
 
-    header_row = None
-    header_row_idx = None
-    ws = None
-    marker_norm = _norm(HEADER_MARKER)
-    for sheet in wb.worksheets:
-        for idx, row in enumerate(
-            sheet.iter_rows(min_row=1, max_row=20, values_only=True), 1
-        ):
+        header_row = None
+        header_row_idx = None
+        ws = None
+        marker_norm = _norm(HEADER_MARKER)
+        for sheet in wb.worksheets:
+            for idx, row in enumerate(
+                sheet.iter_rows(min_row=1, max_row=20, values_only=True), 1
+            ):
+                if row and any(
+                    _norm(cell) == marker_norm for cell in row if isinstance(cell, str)
+                ):
+                    header_row = list(row)
+                    header_row_idx = idx
+                    ws = sheet
+                    break
+            if ws is not None:
+                break
+        if ws is None or header_row is None:
+            raise ValueError("Header row not found in report")
+
+        header_map = {
+            _norm(cell): idx for idx, cell in enumerate(header_row) if isinstance(cell, str)
+        }
+        required = ["Employee Name", "Open Date Time"]
+        missing = [col for col in required if _norm(col) not in header_map]
+        if missing:
+            raise ValueError(
+                "Missing required column(s): " + ", ".join(missing)
+            )
+
+        name_idx = header_map[_norm("Employee Name")]
+        open_idx = header_map[_norm("Open Date Time")]
+
+        target_cell = ws.cell(row=2, column=1).value
+        target_date = excel_to_date(target_cell)
+        prev_day = prev_business_day(target_date)
+
+        summary: Dict[str, Dict[str, int]] = {}
+        for row in ws.iter_rows(min_row=header_row_idx + 1, values_only=True):
             if row and any(
                 _norm(cell) == marker_norm for cell in row if isinstance(cell, str)
             ):
-                header_row = list(row)
-                header_row_idx = idx
-                ws = sheet
-                break
-        if ws is not None:
-            break
-    if ws is None or header_row is None:
-        raise ValueError("Header row not found in report")
-
-    header_map = {
-        _norm(cell): idx for idx, cell in enumerate(header_row) if isinstance(cell, str)
-    }
-    required = ["Employee Name", "Open Date Time"]
-    missing = [col for col in required if _norm(col) not in header_map]
-    if missing:
-        raise ValueError(
-            "Missing required column(s): " + ", ".join(missing)
-        )
-
-    name_idx = header_map[_norm("Employee Name")]
-    open_idx = header_map[_norm("Open Date Time")]
-
-    target_cell = ws.cell(row=2, column=1).value
-    target_date = excel_to_date(target_cell)
-    prev_day = prev_business_day(target_date)
-
-    summary: Dict[str, Dict[str, int]] = {}
-    for row in ws.iter_rows(min_row=header_row_idx + 1, values_only=True):
-        if row and any(
-            _norm(cell) == marker_norm for cell in row if isinstance(cell, str)
-        ):
-            continue
-        if not row or row[name_idx] in (None, ""):
-            continue
-        tech_raw = str(row[name_idx]).strip()
-        tech = canonical_name(tech_raw, valid_names or [])
-        if valid_set and tech not in valid_set:
-            logging.warning(
-                "Techniker '%s' konnte nicht eindeutig zugeordnet werden", tech_raw
-            )
-        open_date = excel_to_date(row[open_idx])
-        data = summary.setdefault(tech, {"total": 0, "new": 0, "old": 0})
-        data["total"] += 1
-        if open_date == prev_day:
-            data["new"] += 1
-        else:
-            data["old"] += 1
-    return target_date, summary
+                continue
+            if not row or row[name_idx] in (None, ""):
+                continue
+            tech_raw = str(row[name_idx]).strip()
+            tech = canonical_name(tech_raw, valid_names or [])
+            if valid_set and tech not in valid_set:
+                logging.warning(
+                    "Techniker '%s' konnte nicht eindeutig zugeordnet werden", tech_raw
+                )
+            open_date = excel_to_date(row[open_idx])
+            data = summary.setdefault(tech, {"total": 0, "new": 0, "old": 0})
+            data["total"] += 1
+            if open_date == prev_day:
+                data["new"] += 1
+            else:
+                data["old"] += 1
+        # Explicitly close workbook to avoid leaking file handles
+        wb.close()
+        return target_date, summary
 
 
 def update_liste(
@@ -212,68 +201,71 @@ def update_liste(
     if not morning:
         raise ValueError("Morning report produced no data")
     wb = safe_load_workbook(liste)
-    if month_sheet not in wb.sheetnames:
-        raise KeyError(f"Worksheet {month_sheet} does not exist in {liste}")
-    ws = wb[month_sheet]
+    try:
+        if month_sheet not in wb.sheetnames:
+            raise KeyError(f"Worksheet {month_sheet} does not exist in {liste}")
+        ws = wb[month_sheet]
 
-    # Canonicalise technician names already present in the sheet
-    names_in_sheet: list[str] = []
-    for row in range(2, ws.max_row + 1):
-        cell = ws.cell(row=row, column=1)
-        if not cell.value:
-            continue
-        name = str(cell.value).strip()
-        canon = canonical_name(name, names_in_sheet)
-        cell.value = canon
-        names_in_sheet.append(canon)
-
-    def canonicalize_summary(summary: Dict[str, Dict[str, int]]) -> Dict[str, Dict[str, int]]:
-        result: Dict[str, Dict[str, int]] = {}
-        for name, stats in summary.items():
+        # Canonicalise technician names already present in the sheet
+        names_in_sheet: list[str] = []
+        for row in range(2, ws.max_row + 1):
+            cell = ws.cell(row=row, column=1)
+            if not cell.value:
+                continue
+            name = str(cell.value).strip()
             canon = canonical_name(name, names_in_sheet)
-            agg = result.setdefault(canon, {"total": 0, "new": 0, "old": 0})
-            agg["total"] += stats["total"]
-            agg["new"] += stats["new"]
-            agg["old"] += stats["old"]
-        return result
+            cell.value = canon
+            names_in_sheet.append(canon)
 
-    morning = canonicalize_summary(morning)
-    evening = canonicalize_summary(evening)
+        def canonicalize_summary(summary: Dict[str, Dict[str, int]]) -> Dict[str, Dict[str, int]]:
+            result: Dict[str, Dict[str, int]] = {}
+            for name, stats in summary.items():
+                canon = canonical_name(name, names_in_sheet)
+                agg = result.setdefault(canon, {"total": 0, "new": 0, "old": 0})
+                agg["total"] += stats["total"]
+                agg["new"] += stats["new"]
+                agg["old"] += stats["old"]
+            return result
 
-    week_index = (day.day - 1) // 7
-    start_col = 1 + week_index * 14
-    remaining = set(morning)
+        morning = canonicalize_summary(morning)
+        evening = canonicalize_summary(evening)
 
-    for row in range(2, ws.max_row + 1):
-        name_cell = ws.cell(row=row, column=1)
-        tech = str(name_cell.value).strip() if name_cell.value else None
-        if not tech or tech not in morning:
-            continue
-        remaining.discard(tech)
-        day_data = morning[tech]
-        eve_total = evening.get(tech, {}).get("total", 0)
-        closed = day_data["total"] - eve_total
-        ws.cell(row=row, column=start_col + 1).value = day
-        ws.cell(row=row, column=start_col + 2).value = PREV_DAY_MAP[day.weekday()]
-        ws.cell(row=row, column=start_col + 7).value = closed
-        ws.cell(row=row, column=start_col + 8).value = day_data["total"]
-        ws.cell(row=row, column=start_col + 9).value = day_data["old"]
-        ws.cell(row=row, column=start_col + 10).value = day_data["new"]
+        week_index = (day.day - 1) // 7
+        start_col = 1 + week_index * 14
+        remaining = set(morning)
 
-    for tech in remaining:
-        row = ws.max_row + 1
-        ws.cell(row=row, column=1).value = tech
-        day_data = morning[tech]
-        eve_total = evening.get(tech, {}).get("total", 0)
-        closed = day_data["total"] - eve_total
-        ws.cell(row=row, column=start_col + 1).value = day
-        ws.cell(row=row, column=start_col + 2).value = PREV_DAY_MAP[day.weekday()]
-        ws.cell(row=row, column=start_col + 7).value = closed
-        ws.cell(row=row, column=start_col + 8).value = day_data["total"]
-        ws.cell(row=row, column=start_col + 9).value = day_data["old"]
-        ws.cell(row=row, column=start_col + 10).value = day_data["new"]
+        for row in range(2, ws.max_row + 1):
+            name_cell = ws.cell(row=row, column=1)
+            tech = str(name_cell.value).strip() if name_cell.value else None
+            if not tech or tech not in morning:
+                continue
+            remaining.discard(tech)
+            day_data = morning[tech]
+            eve_total = evening.get(tech, {}).get("total", 0)
+            closed = day_data["total"] - eve_total
+            ws.cell(row=row, column=start_col + 1).value = day
+            ws.cell(row=row, column=start_col + 2).value = PREV_DAY_MAP[day.weekday()]
+            ws.cell(row=row, column=start_col + 7).value = closed
+            ws.cell(row=row, column=start_col + 8).value = day_data["total"]
+            ws.cell(row=row, column=start_col + 9).value = day_data["old"]
+            ws.cell(row=row, column=start_col + 10).value = day_data["new"]
 
-    wb.save(liste)
+        for tech in remaining:
+            row = ws.max_row + 1
+            ws.cell(row=row, column=1).value = tech
+            day_data = morning[tech]
+            eve_total = evening.get(tech, {}).get("total", 0)
+            closed = day_data["total"] - eve_total
+            ws.cell(row=row, column=start_col + 1).value = day
+            ws.cell(row=row, column=start_col + 2).value = PREV_DAY_MAP[day.weekday()]
+            ws.cell(row=row, column=start_col + 7).value = closed
+            ws.cell(row=row, column=start_col + 8).value = day_data["total"]
+            ws.cell(row=row, column=start_col + 9).value = day_data["old"]
+            ws.cell(row=row, column=start_col + 10).value = day_data["new"]
+
+        wb.save(liste)
+    finally:
+        wb.close()
 
 
 def main():
@@ -283,7 +275,20 @@ def main():
     parser.add_argument("liste", type=Path, help="Path to Liste.xlsx")
     args = parser.parse_args()
 
-    day_str = f"{args.day_dir.name}.2025"
+    # Determine year from parent directory (e.g. ``Juli_25`` -> 2025)
+    # or fall back to the current system year.
+    parent = args.day_dir.parent.name
+    year_part = None
+    if "_" in parent:
+        suffix = parent.rsplit("_", 1)[-1]
+        if suffix.isdigit():
+            year_part = int(suffix)
+            if year_part < 100:
+                year_part += 2000
+    if year_part is None:
+        year_part = dt.date.today().year
+
+    day_str = f"{args.day_dir.name}.{year_part}"
     day = dt.datetime.strptime(day_str, "%d.%m.%Y").date()
     month_sheet = f"{MONTH_MAP[day.month]}_{day.strftime('%y')}"
 
