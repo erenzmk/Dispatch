@@ -137,18 +137,22 @@ def load_calls(path: Path, valid_names: Iterable[str] | None = None) -> Tuple[dt
         technician names via fuzzy comparison.
     """
     wb = safe_load_workbook(path, data_only=True, read_only=True)
-    ws = wb.active
 
     header_row = None
     header_row_idx = None
-    for idx, row in enumerate(
-        ws.iter_rows(min_row=1, max_row=20, values_only=True), 1
-    ):
-        if row and row[0] == HEADER_MARKER:
-            header_row = list(row)
-            header_row_idx = idx
+    ws = None
+    for sheet in wb.worksheets:
+        for idx, row in enumerate(
+            sheet.iter_rows(min_row=1, max_row=20, values_only=True), 1
+        ):
+            if row and HEADER_MARKER in row:
+                header_row = list(row)
+                header_row_idx = idx
+                ws = sheet
+                break
+        if ws is not None:
             break
-    if header_row is None:
+    if ws is None or header_row is None:
         raise ValueError("Header row not found in report")
 
     name_idx = header_row.index("Employee Name")
