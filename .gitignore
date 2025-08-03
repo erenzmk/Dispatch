@@ -2,3 +2,7 @@
 analysis.csv
 techniker_export.csv
 data/~$Liste.xlsx
+
+# Bytecode
+__pycache__/
+*.pyc
