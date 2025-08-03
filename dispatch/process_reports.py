@@ -31,7 +31,7 @@ from pathlib import Path
 from typing import Dict, Iterable, Tuple
 import warnings
 from contextlib import closing
-from name_aliases import canonical_name
+from .name_aliases import canonical_name
 
 try:
     from openpyxl import load_workbook
@@ -262,12 +262,15 @@ def update_liste(
         wb.close()
 
 
-def main():
+def main(argv: Iterable[str] | None = None) -> None:
     parser = argparse.ArgumentParser(description="Process dispatch reports")
-    parser.add_argument("day_dir", type=Path,
-                        help="Directory containing daily reports (e.g. Juli_25/01.07)")
+    parser.add_argument(
+        "day_dir",
+        type=Path,
+        help="Directory containing daily reports (e.g. Juli_25/01.07)",
+    )
     parser.add_argument("liste", type=Path, help="Path to Liste.xlsx")
-    args = parser.parse_args()
+    args = parser.parse_args(list(argv) if argv is not None else None)
 
     # Determine year from parent directory (e.g. ``Juli_25`` -> 2025)
     # or fall back to the current system year.

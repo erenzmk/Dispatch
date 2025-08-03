@@ -8,7 +8,7 @@ from openpyxl import Workbook
 import logging
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from process_reports import load_calls
+from dispatch.process_reports import load_calls
 
 
 def test_load_calls_selects_correct_sheet(tmp_path):

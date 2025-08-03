@@ -23,7 +23,7 @@ from collections import Counter
 from contextlib import closing
 from pathlib import Path
 
-from process_reports import load_calls, safe_load_workbook
+from .process_reports import load_calls, safe_load_workbook
 
 
 def gather_valid_names(liste: Path) -> list[str]:
@@ -70,13 +70,13 @@ def aggregate_warnings(report_dir: Path, valid_names: list[str]) -> Counter[str]
     return counter
 
 
-def main() -> None:  # pragma: no cover - convenience script
+def main(argv: Iterable[str] | None = None) -> None:  # pragma: no cover - convenience script
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("report_dir", type=Path, help="Path to Juli_25 directory")
     parser.add_argument(
         "--liste", type=Path, default=Path("Liste.xlsx"), help="Path to Liste.xlsx"
     )
-    args = parser.parse_args()
+    args = parser.parse_args(list(argv) if argv is not None else None)
 
     valid = gather_valid_names(args.liste)
     counter = aggregate_warnings(args.report_dir, valid)

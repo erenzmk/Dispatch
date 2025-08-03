@@ -6,7 +6,7 @@ import pytest
 from openpyxl import Workbook
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from process_reports import main
+from dispatch.process_reports import main
 
 
 def create_liste(path: Path, sheet: str) -> None:
@@ -39,8 +39,8 @@ def test_main_uses_year_from_parent(tmp_path: Path, monkeypatch: pytest.MonkeyPa
         called["target_date"] = target_date
 
     monkeypatch.setattr(sys, "argv", ["process_reports.py", str(day_dir), str(liste)])
-    monkeypatch.setattr("process_reports.load_calls", fake_load_calls)
-    monkeypatch.setattr("process_reports.update_liste", fake_update_liste)
+    monkeypatch.setattr("dispatch.process_reports.load_calls", fake_load_calls)
+    monkeypatch.setattr("dispatch.process_reports.update_liste", fake_update_liste)
 
     main()
 
