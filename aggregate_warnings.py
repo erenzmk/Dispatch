@@ -51,6 +51,7 @@ def aggregate_warnings(report_dir: Path, valid_names: list[str]) -> Counter[str]
     handler = logging.StreamHandler(stream)
     root_logger = logging.getLogger()
     root_logger.addHandler(handler)
+    previous_level = root_logger.level
     root_logger.setLevel(logging.WARNING)
     try:
         for file in sorted(report_dir.rglob("*.xlsx")):
@@ -64,6 +65,8 @@ def aggregate_warnings(report_dir: Path, valid_names: list[str]) -> Counter[str]
                     counter[match.group(1)] += 1
     finally:
         root_logger.removeHandler(handler)
+        handler.close()
+        root_logger.setLevel(previous_level)
     return counter
 
 
