@@ -208,68 +208,71 @@ def update_liste(
     if not morning:
         raise ValueError("Morning report produced no data")
     wb = safe_load_workbook(liste)
-    if month_sheet not in wb.sheetnames:
-        raise KeyError(f"Worksheet {month_sheet} does not exist in {liste}")
-    ws = wb[month_sheet]
+    try:
+        if month_sheet not in wb.sheetnames:
+            raise KeyError(f"Worksheet {month_sheet} does not exist in {liste}")
+        ws = wb[month_sheet]
 
-    # Canonicalise technician names already present in the sheet
-    names_in_sheet: list[str] = []
-    for row in range(2, ws.max_row + 1):
-        cell = ws.cell(row=row, column=1)
-        if not cell.value:
-            continue
-        name = str(cell.value).strip()
-        canon = canonical_name(name, names_in_sheet)
-        cell.value = canon
-        names_in_sheet.append(canon)
-
-    def canonicalize_summary(summary: Dict[str, Dict[str, int]]) -> Dict[str, Dict[str, int]]:
-        result: Dict[str, Dict[str, int]] = {}
-        for name, stats in summary.items():
+        # Canonicalise technician names already present in the sheet
+        names_in_sheet: list[str] = []
+        for row in range(2, ws.max_row + 1):
+            cell = ws.cell(row=row, column=1)
+            if not cell.value:
+                continue
+            name = str(cell.value).strip()
             canon = canonical_name(name, names_in_sheet)
-            agg = result.setdefault(canon, {"total": 0, "new": 0, "old": 0})
-            agg["total"] += stats["total"]
-            agg["new"] += stats["new"]
-            agg["old"] += stats["old"]
-        return result
+            cell.value = canon
+            names_in_sheet.append(canon)
 
-    morning = canonicalize_summary(morning)
-    evening = canonicalize_summary(evening)
+        def canonicalize_summary(summary: Dict[str, Dict[str, int]]) -> Dict[str, Dict[str, int]]:
+            result: Dict[str, Dict[str, int]] = {}
+            for name, stats in summary.items():
+                canon = canonical_name(name, names_in_sheet)
+                agg = result.setdefault(canon, {"total": 0, "new": 0, "old": 0})
+                agg["total"] += stats["total"]
+                agg["new"] += stats["new"]
+                agg["old"] += stats["old"]
+            return result
 
-    week_index = (day.day - 1) // 7
-    start_col = 1 + week_index * 14
-    remaining = set(morning)
+        morning = canonicalize_summary(morning)
+        evening = canonicalize_summary(evening)
 
-    for row in range(2, ws.max_row + 1):
-        name_cell = ws.cell(row=row, column=1)
-        tech = str(name_cell.value).strip() if name_cell.value else None
-        if not tech or tech not in morning:
-            continue
-        remaining.discard(tech)
-        day_data = morning[tech]
-        eve_total = evening.get(tech, {}).get("total", 0)
-        closed = day_data["total"] - eve_total
-        ws.cell(row=row, column=start_col + 1).value = day
-        ws.cell(row=row, column=start_col + 2).value = PREV_DAY_MAP[day.weekday()]
-        ws.cell(row=row, column=start_col + 7).value = closed
-        ws.cell(row=row, column=start_col + 8).value = day_data["total"]
-        ws.cell(row=row, column=start_col + 9).value = day_data["old"]
-        ws.cell(row=row, column=start_col + 10).value = day_data["new"]
+        week_index = (day.day - 1) // 7
+        start_col = 1 + week_index * 14
+        remaining = set(morning)
 
-    for tech in remaining:
-        row = ws.max_row + 1
-        ws.cell(row=row, column=1).value = tech
-        day_data = morning[tech]
-        eve_total = evening.get(tech, {}).get("total", 0)
-        closed = day_data["total"] - eve_total
-        ws.cell(row=row, column=start_col + 1).value = day
-        ws.cell(row=row, column=start_col + 2).value = PREV_DAY_MAP[day.weekday()]
-        ws.cell(row=row, column=start_col + 7).value = closed
-        ws.cell(row=row, column=start_col + 8).value = day_data["total"]
-        ws.cell(row=row, column=start_col + 9).value = day_data["old"]
-        ws.cell(row=row, column=start_col + 10).value = day_data["new"]
+        for row in range(2, ws.max_row + 1):
+            name_cell = ws.cell(row=row, column=1)
+            tech = str(name_cell.value).strip() if name_cell.value else None
+            if not tech or tech not in morning:
+                continue
+            remaining.discard(tech)
+            day_data = morning[tech]
+            eve_total = evening.get(tech, {}).get("total", 0)
+            closed = day_data["total"] - eve_total
+            ws.cell(row=row, column=start_col + 1).value = day
+            ws.cell(row=row, column=start_col + 2).value = PREV_DAY_MAP[day.weekday()]
+            ws.cell(row=row, column=start_col + 7).value = closed
+            ws.cell(row=row, column=start_col + 8).value = day_data["total"]
+            ws.cell(row=row, column=start_col + 9).value = day_data["old"]
+            ws.cell(row=row, column=start_col + 10).value = day_data["new"]
 
-    wb.save(liste)
+        for tech in remaining:
+            row = ws.max_row + 1
+            ws.cell(row=row, column=1).value = tech
+            day_data = morning[tech]
+            eve_total = evening.get(tech, {}).get("total", 0)
+            closed = day_data["total"] - eve_total
+            ws.cell(row=row, column=start_col + 1).value = day
+            ws.cell(row=row, column=start_col + 2).value = PREV_DAY_MAP[day.weekday()]
+            ws.cell(row=row, column=start_col + 7).value = closed
+            ws.cell(row=row, column=start_col + 8).value = day_data["total"]
+            ws.cell(row=row, column=start_col + 9).value = day_data["old"]
+            ws.cell(row=row, column=start_col + 10).value = day_data["new"]
+
+        wb.save(liste)
+    finally:
+        wb.close()
 
 
 def main():
