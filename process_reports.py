@@ -280,13 +280,25 @@ def main():
     ]
     name_wb.close()
 
-    morning = next(args.day_dir.glob("*7*.xlsx"))
-    evening_file = next(args.day_dir.glob("*19*.xlsx"), None)
+    morning_files = list(args.day_dir.glob("*7*.xlsx"))
+    if not morning_files:
+        raise FileNotFoundError(
+            f"Morning report (*7*.xlsx) not found in {args.day_dir}"
+        )
+    morning = morning_files[0]
+
+    evening_files = list(args.day_dir.glob("*19*.xlsx"))
+    if not evening_files:
+        raise FileNotFoundError(
+            f"Evening report (*19*.xlsx) not found in {args.day_dir}"
+        )
+    evening_file = evening_files[0]
+
     target_date, morning_summary = load_calls(morning, valid_names)
-    evening_summary: Dict[str, Dict[str, int]] = {}
-    if evening_file:
-        _, evening_summary = load_calls(evening_file, valid_names)
-    update_liste(args.liste, month_sheet, target_date, morning_summary, evening_summary)
+    _, evening_summary = load_calls(evening_file, valid_names)
+    update_liste(
+        args.liste, month_sheet, target_date, morning_summary, evening_summary
+    )
 
 
 if __name__ == "__main__":
