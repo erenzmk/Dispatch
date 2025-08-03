@@ -176,12 +176,14 @@ def update_liste(
 
     week_index = (day.day - 1) // 7
     start_col = 1 + week_index * 14
+    remaining = set(morning)
 
     for row in range(2, ws.max_row + 1):
         name_cell = ws.cell(row=row, column=1)
         tech = str(name_cell.value).strip() if name_cell.value else None
         if not tech or tech not in morning:
             continue
+        remaining.discard(tech)
         day_data = morning[tech]
         eve_total = evening.get(tech, {}).get("total", 0)
         closed = day_data["total"] - eve_total
@@ -191,6 +193,20 @@ def update_liste(
         ws.cell(row=row, column=start_col + 8).value = day_data["total"]
         ws.cell(row=row, column=start_col + 9).value = day_data["old"]
         ws.cell(row=row, column=start_col + 10).value = day_data["new"]
+
+    for tech in remaining:
+        row = ws.max_row + 1
+        ws.cell(row=row, column=1).value = tech
+        day_data = morning[tech]
+        eve_total = evening.get(tech, {}).get("total", 0)
+        closed = day_data["total"] - eve_total
+        ws.cell(row=row, column=start_col + 1).value = day.toordinal() + 693594
+        ws.cell(row=row, column=start_col + 2).value = PREV_DAY_MAP[day.weekday()]
+        ws.cell(row=row, column=start_col + 7).value = closed
+        ws.cell(row=row, column=start_col + 8).value = day_data["total"]
+        ws.cell(row=row, column=start_col + 9).value = day_data["old"]
+        ws.cell(row=row, column=start_col + 10).value = day_data["new"]
+
     wb.save(liste)
 
 
