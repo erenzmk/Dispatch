@@ -9,6 +9,17 @@ ALIASES = {
     # "jon doe": "John Doe",
 }
 
+# Cached lower-case mapping of aliases to canonical names.  Tests and callers
+# may mutate :data:`ALIASES`, so provide a helper to rebuild this cache when
+# needed.
+_ALIAS_MAP = {k.lower(): v for k, v in ALIASES.items()}
+
+
+def refresh_alias_map() -> None:
+    """Rebuild the cached alias mapping from :data:`ALIASES`."""
+    global _ALIAS_MAP
+    _ALIAS_MAP = {k.lower(): v for k, v in ALIASES.items()}
+
 
 def canonical_name(name: str, valid_names: Iterable[str], cutoff: float = 0.8) -> str:
     """Return the canonical representation for *name*.
@@ -27,9 +38,8 @@ def canonical_name(name: str, valid_names: Iterable[str], cutoff: float = 0.8) -
         return norm
 
     key = norm.lower()
-    alias_map = {k.lower(): v for k, v in ALIASES.items()}
-    if key in alias_map:
-        return alias_map[key]
+    if key in _ALIAS_MAP:
+        return _ALIAS_MAP[key]
 
     valid_map = {v.lower(): v for v in valid_names}
     matches = get_close_matches(key, list(valid_map.keys()), n=1, cutoff=cutoff)
