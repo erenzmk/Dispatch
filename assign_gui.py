@@ -82,6 +82,7 @@ class AssignmentApp(tk.Tk):
 
         try:
             from openpyxl import load_workbook  # type: ignore
+            from openpyxl.utils.exceptions import InvalidFileException  # type: ignore
 
             wb = load_workbook(self.liste_path)
             sheet_name = "Zuordnungen"
@@ -95,8 +96,13 @@ class AssignmentApp(tk.Tk):
             wb.save(self.liste_path)
             wb.close()
             print(f"Liste aktualisiert: {self.liste_path}")
+        except ImportError:
+            print("Konnte Liste.xlsx nicht aktualisieren: openpyxl ist nicht installiert")
+        except InvalidFileException as exc:
+            print(f"Konnte Liste.xlsx nicht aktualisieren: {exc}")
         except Exception as exc:
             print(f"Konnte Liste.xlsx nicht aktualisieren: {exc}")
+            raise
 
         self.destroy()
 
