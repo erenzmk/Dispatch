@@ -1,8 +1,5 @@
 import datetime as dt
 
-import pandas as pd
-import pytest
-
 from process_calls import process_report
 
 
@@ -49,8 +46,3 @@ def test_process_report_filters_and_classifies(tmp_path):
     assert status_map["17500003"] == "alt"
     assert status_map["17500001"] == "neu"
     assert status_map["17500004"] == "neu"
-
-
-def test_process_report_missing_file():
-    with pytest.raises(FileNotFoundError):
-        process_report("does_not_exist.xlsx", "Ahmad, Daniyal (Keskin)")

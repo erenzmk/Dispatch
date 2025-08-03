@@ -7,9 +7,6 @@ import pandas as pd
 
 def process_report(file_path: Union[str, Path], technician_name: str) -> pd.DataFrame:
     """Lese einen Excel-Bericht ein und klassifiziere Calls."""
-    file_path = Path(file_path)
-    if not file_path.exists():
-        raise FileNotFoundError(f"Berichtsdatei nicht gefunden: {file_path}")
 
     # Alle Reiter laden und zu einem DataFrame kombinieren
     all_sheets = pd.read_excel(file_path, sheet_name=None)
@@ -53,11 +50,6 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    try:
-        result_df = process_report(args.report_file, args.techniker)
-    except FileNotFoundError as err:
-        print(err)
-        return
 
     result_df.to_excel(args.output, index=False)
     print(f"Ergebnis gespeichert: {args.output}")
