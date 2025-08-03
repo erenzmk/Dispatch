@@ -1,6 +1,7 @@
 import datetime as dt
 from pathlib import Path
 import sys
+import os
 
 import pytest
 from openpyxl import Workbook
@@ -69,3 +70,27 @@ def test_load_calls_missing_required_columns(tmp_path):
     with pytest.raises(ValueError) as exc:
         load_calls(path)
     assert "Open Date Time" in str(exc.value)
+
+
+def test_load_calls_does_not_leak_file_handles(tmp_path):
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Report"
+    ws["A2"] = dt.datetime(2025, 7, 1)
+    ws["A5"] = "Employee ID"
+    ws["B5"] = "Employee Name"
+    ws["C5"] = "Open Date Time"
+    ws["A6"] = 1
+    ws["B6"] = "Alice"
+    ws["C6"] = dt.datetime(2025, 6, 30)
+
+    path = tmp_path / "report.xlsx"
+    wb.save(path)
+
+    def fd_count() -> int:
+        return len(os.listdir("/proc/self/fd"))
+
+    baseline = fd_count()
+    for _ in range(3):
+        load_calls(path)
+        assert fd_count() == baseline
