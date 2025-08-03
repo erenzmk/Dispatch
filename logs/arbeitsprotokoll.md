@@ -16,3 +16,8 @@
 - Mergekonflikte geprüft und beseitigt.
 - Abhängigkeiten installiert und Tests erneut ausgeführt.
 - CLI mit Beispielreport getestet und temporäre Dateien entfernt.
+
+## 2025-08-04 (später)
+- Unbenutzten Import in den Tests entfernt.
+- Abhängigkeiten erneut installiert und Tests erfolgreich ausgeführt.
+- CLI-Test mit Beispieldatei durchgeführt und erzeugte Dateien gelöscht.
