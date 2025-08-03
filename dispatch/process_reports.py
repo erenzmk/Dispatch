@@ -15,9 +15,11 @@ corresponding month. The workbook contains weekly column blocks consisting of
     name, date, weekday, pudo, pickup time, valid, info, pre-closed,
     total calls, old calls, new calls, details, mails
 
-Blocks are repeated for each week and separated by an empty column.  The first
-block starts at column ``A``.  To update values for a given date ``d`` the
-block index is ``(d.day-1)//7`` and the starting column is ``1 + index*14``.
+Blocks are repeated for each week and separated by an empty column. Each day
+occupies its own 13-column block and weeks consist of seven such blocks.
+The first block starts at column ``A``.  For a date ``d`` the week index is
+``(d.day-1)//7`` and the day index within the week is ``(d.day-1)%7``.  The
+starting column is therefore ``1 + week_index*14*7 + day_index*14``.
 
 The script requires :mod:`openpyxl` for reading and writing Excel files.
 """
@@ -232,8 +234,15 @@ def update_liste(
         morning = canonicalize_summary(morning)
         evening = canonicalize_summary(evening)
 
+        # Determine the start column for the given date.  ``Liste.xlsx`` stores
+        # daily values in blocks of 13 columns, separated by an empty column.
+        # Seven such blocks form a week.  The previous implementation only
+        # considered the week index which caused all days of the same week to
+        # overwrite each other.  We now also offset by the weekday inside the
+        # week so each day has its own column range.
         week_index = (day.day - 1) // 7
-        start_col = 1 + week_index * 14
+        day_index = (day.day - 1) % 7
+        start_col = 1 + week_index * 14 * 7 + day_index * 14
         remaining = set(morning)
 
         for row in range(2, ws.max_row + 1):
