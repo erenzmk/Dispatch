@@ -10,9 +10,6 @@ ALIASES = {
     # "jon doe": "John Doe",
 }
 
-# Pre-compute a case-insensitive lookup so we don't rebuild it on every call.
-_ALIAS_MAP = {k.casefold(): v for k, v in ALIASES.items()}
-
 
 def canonical_name(name: str, valid_names: Iterable[str], cutoff: float = 0.8) -> str:
     """Return the canonical representation for *name*.
@@ -30,8 +27,9 @@ def canonical_name(name: str, valid_names: Iterable[str], cutoff: float = 0.8) -
         return norm
 
     key = norm.casefold()
-    if key in _ALIAS_MAP:
-        return _ALIAS_MAP[key]
+    alias_map = {k.casefold(): v for k, v in ALIASES.items()}
+    if key in alias_map:
+        return alias_map[key]
 
     valid_map = {v.casefold(): v for v in valid_names}
     matches = get_close_matches(key, list(valid_map.keys()), n=1, cutoff=cutoff)

@@ -18,7 +18,6 @@ def test_alias_lookup_is_case_insensitive(monkeypatch):
     """Alias keys should be resolved without regard to case."""
 
     monkeypatch.setitem(na.ALIASES, "bObBy", "Bob")
-    monkeypatch.setitem(na._ALIAS_MAP, "bobby", "Bob")
 
     assert na.canonical_name("BOBBY", ["Alice", "Bob"]) == "Bob"
 
