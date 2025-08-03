@@ -33,7 +33,7 @@ from pathlib import Path
 from typing import Dict, Iterable, Tuple
 import warnings
 from contextlib import closing
-from .name_aliases import canonical_name
+from .name_aliases import canonical_name, load_aliases
 
 
 logger = logging.getLogger(__name__)
@@ -306,6 +306,11 @@ def main(argv: Iterable[str] | None = None) -> None:
     )
     parser.add_argument("liste", type=Path, help="Path to Liste.xlsx")
     args = parser.parse_args(list(argv) if argv is not None else None)
+
+    # Load optional technician alias mappings from Liste.xlsx so that
+    # ``canonical_name`` can resolve previously assigned variants.  Missing
+    # dependencies or worksheets are ignored silently.
+    load_aliases(args.liste)
 
     # Determine year from parent directory (e.g. ``Juli_25`` -> 2025)
     # or fall back to the current system year.

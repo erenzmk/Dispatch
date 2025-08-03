@@ -18,7 +18,13 @@ output tidy.
 
 from difflib import get_close_matches
 import re
+from pathlib import Path
 from typing import Iterable
+
+try:  # pragma: no cover - optional dependency for reading Liste.xlsx
+    from openpyxl import load_workbook
+except Exception:  # pragma: no cover - handled gracefully when missing
+    load_workbook = None  # type: ignore[assignment]
 
 # Map alternate spellings or abbreviations to their canonical form.
 # Extend this mapping as needed. Keys are treated case-insensitively.
@@ -36,6 +42,45 @@ def refresh_alias_map() -> None:
     """Rebuild the cached alias mapping from :data:`ALIASES`."""
     global _ALIAS_MAP
     _ALIAS_MAP = {k.lower(): v for k, v in ALIASES.items()}
+
+
+def load_aliases(liste: Path | str) -> None:
+    """Populate :data:`ALIASES` from the ``Zuordnungen`` sheet of *liste*.
+
+    The optional "Zuordnungen" worksheet in ``Liste.xlsx`` stores mappings of
+    unknown technician names to their canonical counterparts as created by the
+    :mod:`assign_gui` helper.  Each row contains the unknown name in column A and
+    the desired canonical name in column B.  When present these assignments are
+    merged into :data:`ALIASES` so subsequent calls to :func:`canonical_name`
+    resolve them automatically.
+
+    Missing dependencies or absent worksheets are silently ignored to keep the
+    calling code simple.
+    """
+
+    if load_workbook is None:
+        return
+
+    path = Path(liste)
+    if not path.exists():
+        return
+
+    try:
+        wb = load_workbook(path, read_only=True)
+    except Exception:  # pragma: no cover - invalid workbook or other errors
+        return
+
+    try:
+        if "Zuordnungen" not in wb.sheetnames:
+            return
+        ws = wb["Zuordnungen"]
+        for unknown, known in ws.iter_rows(min_row=2, max_col=2, values_only=True):
+            if unknown and known:
+                ALIASES[str(unknown).strip()] = str(known).strip()
+    finally:
+        wb.close()
+
+    refresh_alias_map()
 
 
 def canonical_name(name: str, valid_names: Iterable[str], cutoff: float = 0.8) -> str:

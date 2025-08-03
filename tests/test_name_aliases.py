@@ -19,3 +19,22 @@ def test_removes_parentheses_and_surname():
 def test_falls_back_to_norm_when_no_match():
     valid = ["Daniyal"]
     assert na.canonical_name("Unknown", valid) == "Unknown"
+
+
+def test_load_aliases_from_liste(tmp_path, monkeypatch):
+    from openpyxl import Workbook
+
+    # Create Liste.xlsx with Zuordnungen sheet mapping "Bobi" -> "Bob"
+    wb = Workbook()
+    ws = wb.create_sheet("Zuordnungen")
+    ws.append(["Unbekannt", "Bekannt"])
+    ws.append(["Bobi", "Bob"])
+    wb.save(tmp_path / "Liste.xlsx")
+    wb.close()
+
+    # Start with empty aliases
+    monkeypatch.setattr(na, "ALIASES", {})
+    na.refresh_alias_map()
+
+    na.load_aliases(tmp_path / "Liste.xlsx")
+    assert na.canonical_name("bobi", ["Bob"]) == "Bob"

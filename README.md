@@ -62,3 +62,6 @@ Mit der kleinen Tk‑Oberfläche lassen sich unbekannte Namen interaktiv zuweise
 python assign_gui.py  # nutzt standardmäßig data/ und Liste.xlsx
 ```
 Das Fenster zeigt unbekannte Namen links; sie können per Drag & Drop einer bekannten Liste zugeordnet werden. Über **Export** werden die Zuordnungen ausgegeben.
+Die exportierten Zuordnungen landen in einem Arbeitsblatt "Zuordnungen" der
+``Liste.xlsx`` und werden bei späteren Verarbeitungen automatisch
+berücksichtigt.

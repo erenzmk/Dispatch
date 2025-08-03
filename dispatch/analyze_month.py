@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Iterable
 
 from .process_reports import load_calls, safe_load_workbook
+from .name_aliases import load_aliases
 
 
 def _read_names_from_liste(liste: Path, sheet: str) -> list[str]:
@@ -26,6 +27,7 @@ def _read_names_from_liste(liste: Path, sheet: str) -> list[str]:
 
 def analyze_month(month_dir: Path, liste: Path, output: Path) -> None:
     """Analyse all day folders inside *month_dir* and write summary to CSV."""
+    load_aliases(liste)
     month_sheet = month_dir.name
     valid_names = _read_names_from_liste(liste, month_sheet)
     expected = set(valid_names)
