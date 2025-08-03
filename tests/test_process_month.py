@@ -28,8 +28,9 @@ def test_process_month_multiple_days(
 
     for d in (day1, day2):
         d.mkdir(parents=True)
+        wb = Workbook()
         for name in ("m7.xlsx", "e19.xlsx"):
-            Workbook().save(d / name)
+            wb.save(d / name)
 
     liste = tmp_path / "Liste.xlsx"
     create_liste(liste)
