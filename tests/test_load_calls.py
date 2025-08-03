@@ -72,7 +72,10 @@ def test_load_calls_missing_required_columns(tmp_path):
         load_calls(path)
     assert "Open Date Time" in str(exc.value)
 
-
+@pytest.mark.skipif(
+    not Path("/proc/self/fd").exists(),
+    reason="Requires /proc filesystem for file descriptor counting",
+)
 def test_load_calls_does_not_leak_file_handles(tmp_path):
     wb = Workbook()
     ws = wb.active
