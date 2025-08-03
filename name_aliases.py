@@ -17,8 +17,9 @@ def canonical_name(name: str, valid_names: Iterable[str], cutoff: float = 0.8) -
     ``Liste.xlsx``.  First the static :data:`ALIASES` mapping is checked,
     otherwise :func:`difflib.get_close_matches` is used to find the closest
     match above ``cutoff``. Matching is performed case-insensitively so that
-    names like ``"ALICE"`` still resolve to ``"Alice"``. If no match is found,
-    ``name`` is returned unchanged.
+    names like ``"ALICE"`` still resolve to ``"Alice"``. Leading and trailing
+    whitespace is removed before matching. If no match is found, the stripped
+    name is returned unchanged.
     """
 
     norm = name.strip()
