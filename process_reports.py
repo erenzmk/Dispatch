@@ -263,7 +263,6 @@ def main():
 
     day_str = f"{args.day_dir.name}.2025"
     day = dt.datetime.strptime(day_str, "%d.%m.%Y").date()
-    month_sheet = day.strftime("%B_%y").capitalize()
     month_sheet = f"{MONTH_MAP[day.month]}_{day.strftime('%y')}"
 
     # Read existing technician names to aid fuzzy matching
