@@ -20,11 +20,10 @@ import io
 import logging
 import re
 from collections import Counter
+from contextlib import closing
 from pathlib import Path
 
-from openpyxl import load_workbook
-
-from process_reports import load_calls
+from process_reports import load_calls, safe_load_workbook
 
 
 def gather_valid_names(liste: Path) -> list[str]:
@@ -34,13 +33,13 @@ def gather_valid_names(liste: Path) -> list[str]:
     needs.  Empty cells are ignored.
     """
 
-    wb = load_workbook(liste, read_only=True)
-    ws = wb.active
     names: list[str] = []
-    for cell in ws.iter_rows(min_row=2, max_col=1, values_only=True):
-        value = cell[0]
-        if value:
-            names.append(str(value).strip())
+    with closing(safe_load_workbook(liste, read_only=True)) as wb:
+        ws = wb.active
+        for cell in ws.iter_rows(min_row=2, max_col=1, values_only=True):
+            value = cell[0]
+            if value:
+                names.append(str(value).strip())
     return names
 
 
