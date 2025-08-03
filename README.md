@@ -37,6 +37,16 @@ python main.py analyze data/Juli_25 data/Liste.xlsx --output report.csv
 This writes a CSV file with the categories ``no_calls`` and ``region_mismatch``
 for each technician.
 
+To collect unknown technician names across multiple reports and count how often
+they appear, use the ``warnings`` subcommand:
+
+```bash
+python main.py warnings data/Juli_25 --liste data/Liste.xlsx
+```
+
+This command scans all reports below ``data/Juli_25`` and prints a summary of
+unresolved names to help maintain the alias list.
+
 ## Generated files
 
 The project may produce CSV outputs such as `analysis.csv` and `techniker_export.csv`. These files are generated at runtime and are not checked into version control.
