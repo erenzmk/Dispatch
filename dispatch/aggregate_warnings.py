@@ -55,6 +55,9 @@ def aggregate_warnings(report_dir: Path, valid_names: list[str]) -> Counter[str]
     root_logger.setLevel(logging.WARNING)
     try:
         for file in sorted(report_dir.rglob("*.xlsx")):
+            stem = file.stem
+            if re.match(r"liste($|[^a-z])", stem, re.IGNORECASE):
+                continue  # skip the aggregated Liste workbook and copies
             stream.seek(0)
             stream.truncate(0)
             try:
