@@ -14,6 +14,7 @@ def test_update_liste(tmp_path: Path):
     ws.cell(row=3, column=1, value="Bob")
     file = tmp_path / "liste.xlsx"
     wb.save(file)
+    wb.close()
 
     morning = {"Alice": {"total": 3, "new": 1, "old": 2}}
     evening = {"Alice": {"total": 1, "new": 0, "old": 1}}
@@ -27,3 +28,4 @@ def test_update_liste(tmp_path: Path):
     assert ws2.cell(row=2, column=9).value == 3
     assert ws2.cell(row=2, column=10).value == 2
     assert ws2.cell(row=2, column=11).value == 1
+    wb2.close()
