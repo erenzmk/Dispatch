@@ -53,3 +53,10 @@
 - CLI mit Beispieldatei und fehlender Datei getestet, keine Ausgabedateien erstellt.
 =======
 -main
+
+Kopie der Liste.xlsx nach C:\Temp
+
+Ausführung von process_month für data/Juli_25
+
+Datum, Uhrzeit, ggf. Probleme oder Warnungen
+
