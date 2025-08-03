@@ -283,10 +283,7 @@ def update_liste(
 
 
 def process_month(month_dir: Path, liste: Path) -> None:
-    """Process all day report directories within ``month_dir``.
-
-in
-    """
+    """Process all day report directories within ``month_dir``."""
 
     for day_dir in sorted(p for p in month_dir.iterdir() if p.is_dir()):
         morning = list(day_dir.glob("*7*.xlsx"))
