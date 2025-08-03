@@ -6,6 +6,8 @@ This script processes daily technician call reports. For each day directory
 evening file named with ``19``. The morning report is used to determine for
 each technician the number of calls in total as well as how many are "new"
 (``Open Date Time`` equals the previous business day) or "old".  The evening
+each technician the number of calls in total as well as how many are "new"
+(``Open Date Time`` equals the previous business day) or "old".  The evening
 report lists the still open calls which allows the script to derive how many
 were completed during the day.
 
@@ -29,11 +31,24 @@ import argparse
 import datetime as dt
 from pathlib import Path
 from typing import Dict
+import warnings
 
 try:
     from openpyxl import load_workbook
 except Exception as exc:  # pragma: no cover - missing dependency
     raise SystemExit("openpyxl is required: {}".format(exc))
+
+# Suppress noisy openpyxl warnings about missing styles and unsupported features
+warnings.filterwarnings(
+    "ignore",
+    message="Workbook contains no default style, apply openpyxl's default",
+    category=UserWarning,
+)
+warnings.filterwarnings(
+    "ignore",
+    message="Data Validation extension is not supported and will be removed",
+    category=UserWarning,
+)
 
 
 HEADER_MARKER = "Employee ID"
