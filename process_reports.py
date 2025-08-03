@@ -3,13 +3,10 @@ Automate dispatch call summaries.
 
 This script processes daily technician call reports. For each day directory
 (e.g. ``Juli_25/01.07``) it expects a morning file named with ``7`` and an
-evening file named with ``19``. The morning report is used to determine for
-each technician the number of calls in total as well as how many are "new"
-(``Open Date Time`` equals the previous business day) or "old".  The evening
-each technician the number of calls in total as well as how many are "new"
-(``Open Date Time`` equals the previous business day) or "old".  The evening
-report lists the still open calls which allows the script to derive how many
-were completed during the day.
+evening file named with ``19``. The morning report counts each technician's
+total calls and how many are "new" (``Open Date Time`` equals the previous
+business day) versus "old". The evening report lists the still-open calls so the
+script can derive how many were completed during the day.
 
 The aggregated values are written into ``Liste.xlsx`` on the sheet for the
 corresponding month. The workbook contains weekly column blocks consisting of
