@@ -12,3 +12,10 @@
 
 ## Offene Punkte
 - Aliasliste regelmäßig pflegen, damit künftige Berichte automatisch erkannt werden.
+
+## 2025-?? Update
+- `process_reports.py` schreibt nur noch die Werte aus dem Morgenreport und überschreibt bestehende Datumsfelder nicht.
+- Neues optionales Argument `--date` erlaubt das gewünschte Datum manuell vorzugeben.
+- `gui_app.py` bietet eine einfache Oberfläche mit Datumswahl, Start/Pause/Stopp, Namensprüfung und Logfenster.
+- Überflüssige Dateien `report.csv` und `july_analysis.csv` entfernt.
+- Alle Tests (`pytest`) laufen erfolgreich: 24 passed.

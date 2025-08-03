@@ -24,17 +24,16 @@ def test_main_uses_year_from_parent(tmp_path: Path, monkeypatch: pytest.MonkeyPa
     liste = tmp_path / "Liste.xlsx"
     create_liste(liste, "Juli_26")
 
-    # Create dummy morning and evening files
+    # Create dummy morning file only
     wb = Workbook()
     wb.save(day_dir / "morning7.xlsx")
-    wb.save(day_dir / "evening19.xlsx")
 
     def fake_load_calls(path, valid_names=None):
         return dt.date(2026, 7, 1), {}
 
     called = {}
 
-    def fake_update_liste(liste_path, month_sheet, target_date, morning_summary, evening_summary):
+    def fake_update_liste(liste_path, month_sheet, target_date, morning_summary):
         called["month_sheet"] = month_sheet
         called["target_date"] = target_date
 
