@@ -37,17 +37,11 @@ try:
 except Exception as exc:  # pragma: no cover - missing dependency
     raise SystemExit("openpyxl is required: {}".format(exc))
 
-# Suppress noisy openpyxl warnings about missing styles and unsupported features
-warnings.filterwarnings(
-    "ignore",
-    message="Workbook contains no default style, apply openpyxl's default",
-    category=UserWarning,
-)
-warnings.filterwarnings(
-    "ignore",
-    message="Data Validation extension is not supported and will be removed",
-    category=UserWarning,
-)
+# Known noisy openpyxl warnings to suppress when loading workbooks.
+OPENPYXL_WARNINGS = [
+    "Workbook contains no default style, apply openpyxl's default",
+    "Data Validation extension is not supported and will be removed",
+]
 
 
 def safe_load_workbook(filename: Path | str, *args, **kwargs):
@@ -66,16 +60,8 @@ def safe_load_workbook(filename: Path | str, *args, **kwargs):
         raise FileNotFoundError(f"Workbook not found: {path}")
 
     with warnings.catch_warnings():
-        warnings.filterwarnings(
-            "ignore",
-            message="Workbook contains no default style, apply openpyxl's default",
-            category=UserWarning,
-        )
-        warnings.filterwarnings(
-            "ignore",
-            message="Data Validation extension is not supported and will be removed",
-            category=UserWarning,
-        )
+        for msg in OPENPYXL_WARNINGS:
+            warnings.filterwarnings("ignore", message=msg, category=UserWarning)
         return load_workbook(path, *args, **kwargs)
 
 
