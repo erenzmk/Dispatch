@@ -31,6 +31,7 @@ from .process_reports import load_calls, safe_load_workbook
 logger = logging.getLogger(__name__)
 
 
+moke7a-codex/fix-duplicate-technician-names-display
 def gather_valid_names(liste: Path, sheet_name: str | None = None) -> list[str]:
     """Return a sorted list of unique technician names from ``Liste.xlsx``.
 
@@ -40,10 +41,19 @@ def gather_valid_names(liste: Path, sheet_name: str | None = None) -> list[str]:
     ignoriert und doppelte Einträge entfernt.  Ist kein passendes Tabellenblatt
     vorhanden, wird eine :class:`ValueError` mit den vorhandenen Blattnamen
     ausgelöst.
+=======
+def gather_valid_names(liste: Path, sheet_name: str = "Technikernamen") -> list[str]:
+    """Return a sorted list of unique technician names from ``Liste.xlsx``.
+
+    The worksheet *sheet_name* is inspected and the columns ``Technikername``
+    and ``PUOOS`` are read.  Empty cells are ignored and duplicates removed.
+    If the worksheet does not exist a :class:`ValueError` is raised.
+main
     """
 
     names: set[str] = set()
     with closing(safe_load_workbook(liste, read_only=True)) as wb:
+moke7a-codex/fix-duplicate-technician-names-display
         if sheet_name is None:
             target = next(
                 (name for name in wb.sheetnames if "technik" in name.lower()),
@@ -60,6 +70,12 @@ def gather_valid_names(liste: Path, sheet_name: str | None = None) -> list[str]:
                     f"Tabellenblatt {sheet_name!r} fehlt in {liste}; vorhanden: {', '.join(wb.sheetnames)}"
                 )
             ws = wb[sheet_name]
+=======
+        try:
+            ws = wb[sheet_name]
+        except KeyError:  # sheet missing
+            raise ValueError(f"Tabellenblatt {sheet_name!r} fehlt in {liste}")
+ main
 
         header = next(ws.iter_rows(min_row=1, max_row=1, values_only=True))
         wanted = [
@@ -123,7 +139,11 @@ def main(argv: Iterable[str] | None = None) -> None:  # pragma: no cover - conve
         "--liste", type=Path, default=Path("Liste.xlsx"), help="Path to Liste.xlsx"
     )
     parser.add_argument(
+moke7a-codex/fix-duplicate-technician-names-display
         "--sheet", help="Name des Tabellenblatts mit Technikern"
+=======
+        "--sheet", default="Technikernamen", help="Name des Tabellenblatts mit Technikern"
+main
     )
     args = parser.parse_args(list(argv) if argv is not None else None)
 

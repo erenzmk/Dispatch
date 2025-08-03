@@ -127,6 +127,10 @@ def main(argv: list[str] | None = None) -> None:
     )
     parser.add_argument(
         "--sheet",
+      moke7a-codex/fix-duplicate-technician-names-display
+=======
+        default="Technikernamen"
+      main
         help="Name des Tabellenblatts mit Technikern",
     )
     args = parser.parse_args(argv)
