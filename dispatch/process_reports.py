@@ -33,10 +33,10 @@ import warnings
 from contextlib import closing
 from .name_aliases import canonical_name
 
-try:
+try:  # pragma: no cover - import guard
     from openpyxl import load_workbook
-except Exception as exc:  # pragma: no cover - missing dependency
-    raise SystemExit("openpyxl is required: {}".format(exc))
+except Exception:  # pragma: no cover - missing dependency
+    load_workbook = None  # type: ignore[assignment]
 
 # Known noisy openpyxl warnings to suppress when loading workbooks.
 OPENPYXL_WARNINGS = [
@@ -59,6 +59,9 @@ def safe_load_workbook(filename: Path | str, *args, **kwargs):
     path = Path(filename)
     if not path.exists():
         raise FileNotFoundError(f"Workbook not found: {path}")
+
+    if load_workbook is None:
+        raise RuntimeError("openpyxl is required to load workbooks")
 
     with warnings.catch_warnings():
         for msg in OPENPYXL_WARNINGS:

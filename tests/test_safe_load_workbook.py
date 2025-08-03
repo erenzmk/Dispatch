@@ -19,3 +19,11 @@ def test_safe_load_workbook_suppresses_openpyxl_warnings(tmp_path, monkeypatch, 
         result = process_reports.safe_load_workbook(dummy)
     assert not caught
     assert result is not None
+
+
+def test_safe_load_workbook_requires_openpyxl(tmp_path, monkeypatch):
+    dummy = tmp_path / "dummy.xlsx"
+    dummy.write_text("dummy")
+    monkeypatch.setattr(process_reports, "load_workbook", None)
+    with pytest.raises(RuntimeError, match="openpyxl is required"):
+        process_reports.safe_load_workbook(dummy)
