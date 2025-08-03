@@ -29,8 +29,7 @@ def test_process_month_multiple_days(
     for d in (day1, day2):
         d.mkdir(parents=True)
         wb = Workbook()
-        for name in ("m7.xlsx", "e19.xlsx"):
-            wb.save(d / name)
+        wb.save(d / "m7.xlsx")
 
     liste = tmp_path / "Liste.xlsx"
     create_liste(liste)
@@ -41,7 +40,7 @@ def test_process_month_multiple_days(
 
     calls: list[dt.date] = []
 
-    def fake_update_liste(liste_path, month_sheet, target_date, morning_summary, evening_summary):
+    def fake_update_liste(liste_path, month_sheet, target_date, morning_summary):
         calls.append(target_date)
 
     monkeypatch.setattr("dispatch.process_reports.load_calls", fake_load_calls)

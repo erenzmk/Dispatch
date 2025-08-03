@@ -202,9 +202,13 @@ def update_liste(
     month_sheet: str,
     day: dt.date,
     morning: Dict[str, Dict[str, int]],
-    evening: Dict[str, Dict[str, int]],
 ):
-    """Write aggregated values into the ``Liste.xlsx`` workbook."""
+    """Write aggregated values into the ``Liste.xlsx`` workbook.
+
+    Nur die Werte aus dem Morgenreport werden übernommen; Abendberichte
+    werden nicht mehr berücksichtigt. Bereits eingetragene Datumswerte
+    in der Liste bleiben unverändert.
+    """
     if not morning:
         raise ValueError("Morning report produced no data")
     wb = safe_load_workbook(liste)
@@ -235,7 +239,6 @@ def update_liste(
             return result
 
         morning = canonicalize_summary(morning)
-        evening = canonicalize_summary(evening)
 
         # Determine the start column for the given date.  ``Liste.xlsx`` stores
         # daily values in blocks of 13 columns, separated by an empty column.
@@ -255,11 +258,12 @@ def update_liste(
                 continue
             remaining.discard(tech)
             day_data = morning[tech]
-            eve_total = evening.get(tech, {}).get("total", 0)
-            closed = day_data["total"] - eve_total
-            ws.cell(row=row, column=start_col + 1).value = day
+            # Datum nur setzen, wenn die Zelle leer ist
+            date_cell = ws.cell(row=row, column=start_col + 1)
+            if date_cell.value is None:
+                date_cell.value = day
             ws.cell(row=row, column=start_col + 2).value = PREV_DAY_MAP[day.weekday()]
-            ws.cell(row=row, column=start_col + 7).value = closed
+            ws.cell(row=row, column=start_col + 7).value = day_data["total"]
             ws.cell(row=row, column=start_col + 8).value = day_data["total"]
             ws.cell(row=row, column=start_col + 9).value = day_data["old"]
             ws.cell(row=row, column=start_col + 10).value = day_data["new"]
@@ -268,11 +272,11 @@ def update_liste(
             row = ws.max_row + 1
             ws.cell(row=row, column=1).value = tech
             day_data = morning[tech]
-            eve_total = evening.get(tech, {}).get("total", 0)
-            closed = day_data["total"] - eve_total
-            ws.cell(row=row, column=start_col + 1).value = day
+            date_cell = ws.cell(row=row, column=start_col + 1)
+            if date_cell.value is None:
+                date_cell.value = day
             ws.cell(row=row, column=start_col + 2).value = PREV_DAY_MAP[day.weekday()]
-            ws.cell(row=row, column=start_col + 7).value = closed
+            ws.cell(row=row, column=start_col + 7).value = day_data["total"]
             ws.cell(row=row, column=start_col + 8).value = day_data["total"]
             ws.cell(row=row, column=start_col + 9).value = day_data["old"]
             ws.cell(row=row, column=start_col + 10).value = day_data["new"]
@@ -287,9 +291,7 @@ def process_month(month_dir: Path, liste: Path) -> None:
 
     for day_dir in sorted(p for p in month_dir.iterdir() if p.is_dir()):
         morning = list(day_dir.glob("*7*.xlsx"))
-        evening = list(day_dir.glob("*19*.xlsx"))
-        if not morning or not evening:
-
+        if not morning:
             continue
         main([str(day_dir), str(liste)])
 
@@ -302,6 +304,11 @@ def main(argv: Iterable[str] | None = None) -> None:
         help="Directory containing daily reports (e.g. Juli_25/01.07)",
     )
     parser.add_argument("liste", type=Path, help="Path to Liste.xlsx")
+    parser.add_argument(
+        "--date",
+        type=lambda s: dt.datetime.strptime(s, "%d.%m.%Y").date(),
+        help="Datum, das in die Liste eingetragen werden soll (dd.mm.yyyy)",
+    )
     args = parser.parse_args(list(argv) if argv is not None else None)
 
     # Determine year from parent directory (e.g. ``Juli_25`` -> 2025)
@@ -317,8 +324,11 @@ def main(argv: Iterable[str] | None = None) -> None:
     if year_part is None:
         year_part = dt.date.today().year
 
-    day_str = f"{args.day_dir.name}.{year_part}"
-    day = dt.datetime.strptime(day_str, "%d.%m.%Y").date()
+    if args.date:
+        day = args.date
+    else:
+        day_str = f"{args.day_dir.name}.{year_part}"
+        day = dt.datetime.strptime(day_str, "%d.%m.%Y").date()
     month_sheet = f"{MONTH_MAP[day.month]}_{day.strftime('%y')}"
 
     # Read existing technician names to aid fuzzy matching
@@ -340,18 +350,8 @@ def main(argv: Iterable[str] | None = None) -> None:
         )
     morning = morning_files[0]
 
-    evening_files = list(args.day_dir.glob("*19*.xlsx"))
-    if not evening_files:
-        raise FileNotFoundError(
-            f"Evening report (*19*.xlsx) not found in {args.day_dir}"
-        )
-    evening_file = evening_files[0]
-
     target_date, morning_summary = load_calls(morning, valid_names)
-    _, evening_summary = load_calls(evening_file, valid_names)
-    update_liste(
-        args.liste, month_sheet, target_date, morning_summary, evening_summary
-    )
+    update_liste(args.liste, month_sheet, target_date, morning_summary)
 
 
 if __name__ == "__main__":

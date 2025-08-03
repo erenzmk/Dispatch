@@ -19,14 +19,13 @@ def test_update_liste(tmp_path: Path):
     wb.save(file)
 
     morning = {"Alice": {"total": 3, "new": 1, "old": 2}}
-    evening = {"Alice": {"total": 1, "new": 0, "old": 1}}
 
-    update_liste(file, "Juli_25", dt.date(2025, 7, 1), morning, evening)
+    update_liste(file, "Juli_25", dt.date(2025, 7, 1), morning)
 
     wb2 = load_workbook(file)
     ws2 = wb2["Juli_25"]
 
-    assert ws2.cell(row=2, column=8).value == 2
+    assert ws2.cell(row=2, column=8).value == 3
     assert ws2.cell(row=2, column=9).value == 3
     assert ws2.cell(row=2, column=10).value == 2
     assert ws2.cell(row=2, column=11).value == 1
@@ -44,7 +43,7 @@ def test_update_liste_empty_morning(tmp_path: Path):
     wb.save(file)
 
     with pytest.raises(ValueError, match="no data"):
-        update_liste(file, "Juli_25", dt.date(2025, 7, 1), {}, {})
+        update_liste(file, "Juli_25", dt.date(2025, 7, 1), {})
 
 
 def test_update_liste_multiple_runs(tmp_path: Path):
@@ -56,10 +55,9 @@ def test_update_liste_multiple_runs(tmp_path: Path):
     wb.save(file)
 
     morning = {"Alice": {"total": 1, "new": 0, "old": 1}}
-    evening = {"Alice": {"total": 0, "new": 0, "old": 0}}
 
-    update_liste(file, "Juli_25", dt.date(2025, 7, 1), morning, evening)
-    update_liste(file, "Juli_25", dt.date(2025, 7, 2), morning, evening)
+    update_liste(file, "Juli_25", dt.date(2025, 7, 1), morning)
+    update_liste(file, "Juli_25", dt.date(2025, 7, 2), morning)
 
     wb2 = load_workbook(file)
     ws2 = wb2["Juli_25"]
