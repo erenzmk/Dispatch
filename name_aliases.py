@@ -10,6 +10,16 @@ ALIASES = {
     # "jon doe": "John Doe",
 }
 
+# Cache a case-folded version of ``ALIASES`` for efficient lookups.
+_ALIAS_MAP = {k.casefold(): v for k, v in ALIASES.items()}
+
+
+def refresh_alias_map() -> None:
+    """Rebuild the internal alias cache after mutating :data:`ALIASES`."""
+
+    global _ALIAS_MAP
+    _ALIAS_MAP = {k.casefold(): v for k, v in ALIASES.items()}
+
 
 def canonical_name(name: str, valid_names: Iterable[str], cutoff: float = 0.8) -> str:
     """Return the canonical representation for *name*.
@@ -27,9 +37,8 @@ def canonical_name(name: str, valid_names: Iterable[str], cutoff: float = 0.8) -
         return norm
 
     key = norm.casefold()
-    alias_map = {k.casefold(): v for k, v in ALIASES.items()}
-    if key in alias_map:
-        return alias_map[key]
+    if key in _ALIAS_MAP:
+        return _ALIAS_MAP[key]
 
     valid_map = {v.casefold(): v for v in valid_names}
     matches = get_close_matches(key, list(valid_map.keys()), n=1, cutoff=cutoff)
