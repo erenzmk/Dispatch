@@ -2,6 +2,7 @@ import datetime as dt
 from pathlib import Path
 
 from openpyxl import Workbook, load_workbook
+import pytest
 
 from process_reports import update_liste
 
@@ -31,3 +32,14 @@ def test_update_liste(tmp_path: Path):
     assert ws2.cell(row=3, column=9).value is None
     assert ws2.cell(row=3, column=10).value is None
     assert ws2.cell(row=3, column=11).value is None
+
+
+def test_update_liste_empty_morning(tmp_path: Path):
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Juli_25"
+    file = tmp_path / "liste.xlsx"
+    wb.save(file)
+
+    with pytest.raises(ValueError, match="no data"):
+        update_liste(file, "Juli_25", dt.date(2025, 7, 1), {}, {})

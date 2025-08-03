@@ -189,6 +189,8 @@ def update_liste(
     evening: Dict[str, Dict[str, int]],
 ):
     """Write aggregated values into the ``Liste.xlsx`` workbook."""
+    if not morning:
+        raise ValueError("Morning report produced no data")
     wb = safe_load_workbook(liste)
     if month_sheet not in wb.sheetnames:
         raise KeyError(f"Worksheet {month_sheet} does not exist in {liste}")
