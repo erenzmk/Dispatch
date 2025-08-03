@@ -181,8 +181,6 @@ def load_calls(path: Path, valid_names: Iterable[str] | None = None) -> Tuple[dt
                 data["new"] += 1
             else:
                 data["old"] += 1
-        # Explicitly close workbook to avoid leaking file handles
-        wb.close()
         return target_date, summary
 
 
