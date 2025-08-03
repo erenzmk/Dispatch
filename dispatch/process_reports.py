@@ -172,6 +172,7 @@ def load_calls(path: Path, valid_names: Iterable[str] | None = None) -> Tuple[dt
         prev_day = prev_business_day(target_date)
 
         summary: Dict[str, Dict[str, int]] = {}
+        unknown: set[str] = set()
         for row in ws.iter_rows(min_row=header_row_idx + 1, values_only=True):
             if row and any(
                 _norm(cell) == marker_norm for cell in row if isinstance(cell, str)
@@ -182,7 +183,7 @@ def load_calls(path: Path, valid_names: Iterable[str] | None = None) -> Tuple[dt
             tech_raw = str(row[name_idx]).strip()
             tech = canonical_name(tech_raw, valid_names or [])
             if valid_names and tech not in valid_names:
-                logger.warning("Unknown technician '%s' in %s", tech_raw, path)
+                unknown.add(tech_raw)
 
             open_date = excel_to_date(row[open_idx])
             data = summary.setdefault(tech, {"total": 0, "new": 0, "old": 0})
@@ -191,6 +192,8 @@ def load_calls(path: Path, valid_names: Iterable[str] | None = None) -> Tuple[dt
                 data["new"] += 1
             else:
                 data["old"] += 1
+        for name in sorted(unknown):
+            logger.warning("Unknown technician '%s' in %s", name, path)
         return target_date, summary
 
 
