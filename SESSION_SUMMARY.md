@@ -39,3 +39,7 @@
 - `gather_valid_names` bevorzugt nun ausdrücklich das Blatt "Technikernamen" und greift nur bei Bedarf auf ein Blatt mit "technik" im Namen zurück.
 - Dokumentation bereinigt.
 - Alle Tests (`pytest`) laufen weiterhin erfolgreich.
+
+## 2025-?? Update 5
+- `gather_valid_names` sucht jetzt gezielt nach einem Blatt mit "Technikernamen" im Titel und meldet einen Fehler, wenn keines gefunden wird; Monatsreiter werden dadurch ignoriert.
+- Zusätzliche Tests prüfen die neue Blattsuche sowie den Fehlerfall ohne Technik-Blatt.

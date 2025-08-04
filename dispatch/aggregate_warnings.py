@@ -32,32 +32,28 @@ logger = logging.getLogger(__name__)
 
 
 def gather_valid_names(liste: Path, sheet_name: str | None = None) -> list[str]:
-    """Return a sorted list of unique technician names from ``Liste.xlsx``.
+    """Lese eindeutige Techniker aus ``Liste.xlsx``.
 
-    Standardmäßig wird das Tabellenblatt ``"Technikernamen"`` geöffnet. Ist
-    *sheet_name* ``None`` und dieses Blatt fehlt, wird das erste Blatt gesucht,
-    dessen Titel ``"technik"`` enthält. Über das Argument ``--sheet`` kann ein
-    beliebiges Blatt gewählt werden. Die Spalten ``Technikername`` und ``PUOOS``
-    werden eingelesen, leere Zellen ignoriert und doppelte Einträge entfernt.
-    Fehlt das Tabellenblatt, wird eine :class:`ValueError` mit den vorhandenen
-    Blattnamen ausgelöst.
+    Ohne Angabe von *sheet_name* wird nach einem Tabellenblatt gesucht, dessen
+    Titel ``"Technikernamen"`` enthält. Ist kein entsprechendes Blatt
+    vorhanden, werden die vorhandenen Blattnamen gemeldet. Über ``--sheet`` kann
+    ein beliebiges Blatt explizit gewählt werden. Die Spalten ``Technikername``
+    und ``PUOOS`` werden eingelesen, leere Zellen ignoriert und doppelte
+    Einträge entfernt.
     """
 
     names: set[str] = set()
     with closing(safe_load_workbook(liste, read_only=True)) as wb:
         if sheet_name is None:
-            if "Technikernamen" in wb.sheetnames:
-                ws = wb["Technikernamen"]
-            else:
-                target = next(
-                    (name for name in wb.sheetnames if "technik" in name.lower()),
-                    None,
+            target = next(
+                (name for name in wb.sheetnames if "technikernamen" in name.lower()),
+                None,
+            )
+            if target is None:
+                raise ValueError(
+                    f"Kein Tabellenblatt mit 'Technikernamen' in {liste}; vorhanden: {', '.join(wb.sheetnames)}"
                 )
-                if target is None:
-                    raise ValueError(
-                        f"Kein Tabellenblatt mit Technikern in {liste}; vorhanden: {', '.join(wb.sheetnames)}"
-                    )
-                ws = wb[target]
+            ws = wb[target]
         else:
             if sheet_name not in wb.sheetnames:
                 raise ValueError(
