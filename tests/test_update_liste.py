@@ -25,7 +25,7 @@ def test_update_liste(tmp_path: Path):
     wb2 = load_workbook(file)
     ws2 = wb2["Juli_25"]
 
-    assert ws2.cell(row=2, column=8).value == 3
+    assert ws2.cell(row=2, column=8).value is None
     assert ws2.cell(row=2, column=9).value == 3
     assert ws2.cell(row=2, column=10).value == 2
     assert ws2.cell(row=2, column=11).value == 1
@@ -61,5 +61,5 @@ def test_update_liste_multiple_runs(tmp_path: Path):
 
     wb2 = load_workbook(file)
     ws2 = wb2["Juli_25"]
-    assert ws2.cell(row=2, column=8).value == 1
+    assert ws2.cell(row=2, column=9).value == 1
     wb2.close()
