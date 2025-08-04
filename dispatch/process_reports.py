@@ -307,7 +307,6 @@ def update_liste(
             if date_cell.value is None:
                 date_cell.value = day
             ws.cell(row=row, column=start_col + 2).value = PREV_DAY_MAP[day.weekday()]
-            ws.cell(row=row, column=start_col + 7).value = day_data["total"]
             ws.cell(row=row, column=start_col + 8).value = day_data["total"]
             ws.cell(row=row, column=start_col + 9).value = day_data["old"]
             ws.cell(row=row, column=start_col + 10).value = day_data["new"]
@@ -320,7 +319,6 @@ def update_liste(
             if date_cell.value is None:
                 date_cell.value = day
             ws.cell(row=row, column=start_col + 2).value = PREV_DAY_MAP[day.weekday()]
-            ws.cell(row=row, column=start_col + 7).value = day_data["total"]
             ws.cell(row=row, column=start_col + 8).value = day_data["total"]
             ws.cell(row=row, column=start_col + 9).value = day_data["old"]
             ws.cell(row=row, column=start_col + 10).value = day_data["new"]

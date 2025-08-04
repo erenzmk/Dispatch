@@ -69,3 +69,8 @@
 - Mergekonflikte in Quell- und Testdateien beseitigt.
 - `gather_valid_names` und GUI-Argumente bereinigt.
 - `pytest` ausgeführt: alle Tests bestanden.
+
+## 2025-08-04 (noch später)
+- Spaltenzuordnung in `update_liste` korrigiert.
+- Tests angepasst und mit `pytest -q` ausgeführt.
+- CLI mit Beispieldatei getestet und temporäre Dateien entfernt.
