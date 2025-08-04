@@ -28,17 +28,12 @@
 - `AssignmentApp` dedupliziert die Liste bekannter Techniker beim Start.
 - Neue Option `--sheet` ermöglicht in `aggregate_warnings.py` und `assign_gui.py` die Auswahl eines anderen Tabellenblatts.
 - Test `test_gather_valid_names.py` ergänzt, alle Tests (`pytest`) laufen erfolgreich.
- x6a1td-codex/fix-duplicate-technician-names-display
-=======
-moke7a-codex/fix-duplicate-technician-names-display
-main
 
 ## 2025-?? Update 3
 - `gather_valid_names` erkennt automatisch das Technik-Blatt und listet bei Fehlern alle verfügbaren Arbeitsblätter auf.
 - `assign_gui.py` und `aggregate_warnings.py` lassen `--sheet` optional und fangen fehlende Blätter ab.
 - `gui_app.py` zeigt bei fehlendem Tabellenblatt eine Fehlermeldung.
 - Zusätzlicher Test überprüft die automatische Blattwahl.
- x6a1td-codex/fix-duplicate-technician-names-display
 
 ## 2025-?? Update 4
 - `gather_valid_names` bevorzugt nun ausdrücklich das Blatt "Technikernamen" und greift nur bei Bedarf auf ein Blatt mit "technik" im Namen zurück.
@@ -48,7 +43,8 @@ main
 ## 2025-?? Update 5
 - `gather_valid_names` sucht jetzt gezielt nach einem Blatt mit "Technikernamen" im Titel und meldet einen Fehler, wenn keines gefunden wird; Monatsreiter werden dadurch ignoriert.
 - Zusätzliche Tests prüfen die neue Blattsuche sowie den Fehlerfall ohne Technik-Blatt.
-=======
-=======
-main
-main
+
+## 2025-?? Update 6
+- Versehentlich eingecheckte Merge-Konflikt-Markierungen entfernt.
+- `assign_gui.py` und `aggregate_warnings.py` akzeptieren weiterhin optional `--sheet`.
+- Tests aufgeräumt und erneut erfolgreich ausgeführt.

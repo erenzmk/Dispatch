@@ -31,59 +31,26 @@ from .process_reports import load_calls, safe_load_workbook
 logger = logging.getLogger(__name__)
 
 
-<<<<<< x6a1td-codex/fix-duplicate-technician-names-display
 def gather_valid_names(liste: Path, sheet_name: str | None = None) -> list[str]:
-    """Lese eindeutige Techniker aus ``Liste.xlsx``.
+    """Gib eine sortierte Liste einzigartiger Techniker aus ``Liste.xlsx`` zurück.
 
-    Ohne Angabe von *sheet_name* wird nach einem Tabellenblatt gesucht, dessen
+    Ohne Angabe von *sheet_name* wird das erste Tabellenblatt gewählt, dessen
     Titel ``"Technikernamen"`` enthält. Ist kein entsprechendes Blatt
-    vorhanden, werden die vorhandenen Blattnamen gemeldet. Über ``--sheet`` kann
-    ein beliebiges Blatt explizit gewählt werden. Die Spalten ``Technikername``
-    und ``PUOOS`` werden eingelesen, leere Zellen ignoriert und doppelte
-    Einträge entfernt.
-=======
-moke7a-codex/fix-duplicate-technician-names-display
-def gather_valid_names(liste: Path, sheet_name: str | None = None) -> list[str]:
-    """Return a sorted list of unique technician names from ``Liste.xlsx``.
-
-    If *sheet_name* is ``None`` the first worksheet whose title contains
-    ``"technik"`` is used.  Otherwise the explicitly given worksheet is opened.
-    The columns ``Technikername`` und ``PUOOS`` werden eingelesen, leere Zellen
-    ignoriert und doppelte Einträge entfernt.  Ist kein passendes Tabellenblatt
     vorhanden, wird eine :class:`ValueError` mit den vorhandenen Blattnamen
-    ausgelöst.
-=======
-def gather_valid_names(liste: Path, sheet_name: str = "Technikernamen") -> list[str]:
-    """Return a sorted list of unique technician names from ``Liste.xlsx``.
-
-    The worksheet *sheet_name* is inspected and the columns ``Technikername``
-    and ``PUOOS`` are read.  Empty cells are ignored and duplicates removed.
-    If the worksheet does not exist a :class:`ValueError` is raised.
-main
->>>>>> main
+    ausgelöst. Die Spalten ``Technikername`` und ``PUOOS`` werden eingelesen,
+    leere Zellen ignoriert und doppelte Einträge entfernt.
     """
 
     names: set[str] = set()
     with closing(safe_load_workbook(liste, read_only=True)) as wb:
-<<<<<< x6a1td-codex/fix-duplicate-technician-names-display
         if sheet_name is None:
             target = next(
                 (name for name in wb.sheetnames if "technikernamen" in name.lower()),
-=======
-moke7a-codex/fix-duplicate-technician-names-display
-        if sheet_name is None:
-            target = next(
-                (name for name in wb.sheetnames if "technik" in name.lower()),
->>>>>> main
                 None,
             )
             if target is None:
                 raise ValueError(
-<<<<<< x6a1td-codex/fix-duplicate-technician-names-display
                     f"Kein Tabellenblatt mit 'Technikernamen' in {liste}; vorhanden: {', '.join(wb.sheetnames)}"
-=======
-                    f"Kein Tabellenblatt mit Technikern in {liste}; vorhanden: {', '.join(wb.sheetnames)}"
->>>>>> main
                 )
             ws = wb[target]
         else:
@@ -92,15 +59,6 @@ moke7a-codex/fix-duplicate-technician-names-display
                     f"Tabellenblatt {sheet_name!r} fehlt in {liste}; vorhanden: {', '.join(wb.sheetnames)}"
                 )
             ws = wb[sheet_name]
-<<<<<< x6a1td-codex/fix-duplicate-technician-names-display
-=======
-=======
-        try:
-            ws = wb[sheet_name]
-        except KeyError:  # sheet missing
-            raise ValueError(f"Tabellenblatt {sheet_name!r} fehlt in {liste}")
- main
->>>>>> main
 
         header = next(ws.iter_rows(min_row=1, max_row=1, values_only=True))
         wanted = [
@@ -163,17 +121,7 @@ def main(argv: Iterable[str] | None = None) -> None:  # pragma: no cover - conve
     parser.add_argument(
         "--liste", type=Path, default=Path("Liste.xlsx"), help="Path to Liste.xlsx"
     )
-    parser.add_argument(
-<<<<<< x6a1td-codex/fix-duplicate-technician-names-display
-        "--sheet", help="Name des Tabellenblatts mit Technikern"
-=======
-moke7a-codex/fix-duplicate-technician-names-display
-        "--sheet", help="Name des Tabellenblatts mit Technikern"
-=======
-        "--sheet", default="Technikernamen", help="Name des Tabellenblatts mit Technikern"
-main
->>>>>> main
-    )
+    parser.add_argument("--sheet", help="Name des Tabellenblatts mit Technikern")
     args = parser.parse_args(list(argv) if argv is not None else None)
 
     valid = gather_valid_names(args.liste, sheet_name=args.sheet)
