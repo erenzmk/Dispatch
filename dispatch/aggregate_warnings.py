@@ -31,21 +31,56 @@ from .process_reports import load_calls, safe_load_workbook
 logger = logging.getLogger(__name__)
 
 
-def gather_valid_names(liste: Path) -> list[str]:
-    """Return a list of technician names from ``Liste.xlsx``.
+def gather_valid_names(liste: Path, sheet_name: str | None = None) -> list[str]:
+    """Return a sorted list of unique technician names from ``Liste.xlsx``.
 
-    Only the first column is inspected which is sufficient for our matching
-    needs.  Empty cells are ignored.
+    Standardmäßig wird das Tabellenblatt ``"Technikernamen"`` geöffnet. Ist
+    *sheet_name* ``None`` und dieses Blatt fehlt, wird das erste Blatt gesucht,
+    dessen Titel ``"technik"`` enthält. Über das Argument ``--sheet`` kann ein
+    beliebiges Blatt gewählt werden. Die Spalten ``Technikername`` und ``PUOOS``
+    werden eingelesen, leere Zellen ignoriert und doppelte Einträge entfernt.
+    Fehlt das Tabellenblatt, wird eine :class:`ValueError` mit den vorhandenen
+    Blattnamen ausgelöst.
     """
 
-    names: list[str] = []
+    names: set[str] = set()
     with closing(safe_load_workbook(liste, read_only=True)) as wb:
-        ws = wb.active
-        for cell in ws.iter_rows(min_row=2, max_col=1, values_only=True):
-            value = cell[0]
-            if value:
-                names.append(str(value).strip())
-    return names
+        if sheet_name is None:
+            if "Technikernamen" in wb.sheetnames:
+                ws = wb["Technikernamen"]
+            else:
+                target = next(
+                    (name for name in wb.sheetnames if "technik" in name.lower()),
+                    None,
+                )
+                if target is None:
+                    raise ValueError(
+                        f"Kein Tabellenblatt mit Technikern in {liste}; vorhanden: {', '.join(wb.sheetnames)}"
+                    )
+                ws = wb[target]
+        else:
+            if sheet_name not in wb.sheetnames:
+                raise ValueError(
+                    f"Tabellenblatt {sheet_name!r} fehlt in {liste}; vorhanden: {', '.join(wb.sheetnames)}"
+                )
+            ws = wb[sheet_name]
+
+        header = next(ws.iter_rows(min_row=1, max_row=1, values_only=True))
+        wanted = [
+            idx
+            for idx, title in enumerate(header)
+            if str(title).strip().lower() in {"technikername", "puoos"}
+        ]
+        if not wanted:
+            wanted = list(range(len(header)))
+
+        for row in ws.iter_rows(min_row=2, values_only=True):
+            for idx in wanted:
+                if idx < len(row):
+                    value = row[idx]
+                    if value:
+                        names.add(str(value).strip())
+    return sorted(names)
 
 
 def aggregate_warnings(report_dir: Path, valid_names: list[str]) -> Counter[str]:
@@ -91,9 +126,12 @@ def main(argv: Iterable[str] | None = None) -> None:  # pragma: no cover - conve
     parser.add_argument(
         "--liste", type=Path, default=Path("Liste.xlsx"), help="Path to Liste.xlsx"
     )
+    parser.add_argument(
+        "--sheet", help="Name des Tabellenblatts mit Technikern"
+    )
     args = parser.parse_args(list(argv) if argv is not None else None)
 
-    valid = gather_valid_names(args.liste)
+    valid = gather_valid_names(args.liste, sheet_name=args.sheet)
     counter = aggregate_warnings(args.report_dir, valid)
     for name, count in counter.most_common():
         print(f"{name}: {count}")
