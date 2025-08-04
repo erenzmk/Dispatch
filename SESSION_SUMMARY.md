@@ -54,3 +54,10 @@
   Zeilen, deren Auftragsnummer mit "17" beginnt. Stundenbuchungen und andere
   Einträge werden ignoriert, wodurch unrealistische Tageswerte vermieden werden.
 - Neuer Test stellt sicher, dass Nicht-Call-Nummern übersprungen werden.
+
+## 2025-?? Update 8
+- `gui_app.py` verarbeitet nun wahlweise einen einzelnen Tagesordner oder alle
+  Unterordner eines Monatsordners.
+- Damit wird ein Fehler behoben, bei dem die Verarbeitung scheiterte, wenn ein
+  Monatsordner gewählt wurde.
+- Alle Tests (`pytest`) laufen weiterhin erfolgreich.

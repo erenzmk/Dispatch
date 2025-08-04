@@ -83,13 +83,22 @@ class DispatchApp(tk.Tk):
             return None
 
     def _worker_main(self, day_dir: Path, liste: Path, date: dt.date | None) -> None:
-        argv = [str(day_dir), str(liste)]
-        if date:
-            argv += ["--date", date.strftime("%d.%m.%Y")]
-        try:
-            process_reports.main(argv)
-        except Exception as exc:  # pragma: no cover - interactive
-            logging.exception("Verarbeitung fehlgeschlagen: %s", exc)
+        """Verarbeitet entweder einen Tagesordner oder alle Unterordner."""
+
+        # Ermitteln, ob direkt ein Tagesordner übergeben wurde
+        if any(day_dir.glob("*7*.xlsx")):
+            targets = [day_dir]
+        else:
+            targets = sorted(p for p in day_dir.iterdir() if p.is_dir())
+
+        for target in targets:
+            argv = [str(target), str(liste)]
+            if date and len(targets) == 1:
+                argv += ["--date", date.strftime("%d.%m.%Y")]
+            try:
+                process_reports.main(argv)
+            except Exception as exc:  # pragma: no cover - interactive
+                logging.exception("Verarbeitung fehlgeschlagen: %s", exc)
 
     def _start(self) -> None:
         if self._worker and self._worker.is_alive():
