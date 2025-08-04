@@ -198,6 +198,7 @@ def load_calls(
 
             name_idx = header_map[_norm("Employee Name")]
             open_idx = header_map[_norm("Open Date Time")]
+            work_idx = header_map.get(_norm("Work Order Number"))
 
             if target_date is None:
                 target_cell = sheet.cell(row=2, column=1).value
@@ -211,6 +212,10 @@ def load_calls(
                     continue
                 if not row or row[name_idx] in (None, ""):
                     continue
+                if work_idx is not None:
+                    wo = row[work_idx]
+                    if not wo or not str(wo).startswith("17"):
+                        continue
                 tech_raw = str(row[name_idx]).strip()
                 tech = canonical_name(tech_raw, valid_names or [])
                 if valid_names and tech not in valid_names:

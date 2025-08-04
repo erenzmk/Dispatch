@@ -164,3 +164,25 @@ def test_load_calls_logs_unknown_with_suggestion(tmp_path, caplog):
 
     content = log_file.read_text(encoding="utf-8").strip().split("\n")[-1]
     assert "Alicia" in content and "Alice" in content
+
+
+def test_load_calls_ignores_non_call_numbers(tmp_path):
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Report"
+    ws["A2"] = dt.datetime(2025, 7, 1)
+    ws["A5"], ws["B5"], ws["C5"], ws["D5"] = (
+        "Employee ID",
+        "Employee Name",
+        "Work Order Number",
+        "Open Date Time",
+    )
+    ws["A6"], ws["B6"], ws["C6"], ws["D6"] = 1, "Alice", "17500001", dt.datetime(2025, 6, 30)
+    ws["A7"], ws["B7"], ws["C7"], ws["D7"] = 2, "Alice", "HOURS", dt.datetime(2025, 6, 30)
+    path = tmp_path / "report.xlsx"
+    wb.save(path)
+
+    target_date, summary = load_calls(path)
+
+    assert target_date == dt.date(2025, 7, 1)
+    assert summary == {"Alice": {"total": 1, "new": 1, "old": 0}}
