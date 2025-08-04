@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 from __future__ import annotations
 
 import argparse
@@ -110,7 +109,7 @@ class AssignmentApp(tk.Tk):
 def main(argv: list[str] | None = None) -> None:
     base_dir = Path(__file__).resolve().parent
     parser = argparse.ArgumentParser(
-        description="Interaktive Zuordnung unbekannter Techniker"
+        description="Interaktive Zuordnung unbekannter Techniker",
     )
     parser.add_argument(
         "report_dir",
@@ -127,13 +126,6 @@ def main(argv: list[str] | None = None) -> None:
     )
     parser.add_argument(
         "--sheet",
-<<<<<< x6a1td-codex/fix-duplicate-technician-names-display
-=======
-      moke7a-codex/fix-duplicate-technician-names-display
-=======
-        default="Technikernamen"
-      main
->>>>>> main
         help="Name des Tabellenblatts mit Technikern",
     )
     args = parser.parse_args(argv)
@@ -155,3 +147,4 @@ def main(argv: list[str] | None = None) -> None:
 
 if __name__ == "__main__":  # pragma: no cover - GUI entry point
     main()
+
