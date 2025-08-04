@@ -127,10 +127,13 @@ def main(argv: list[str] | None = None) -> None:
     )
     parser.add_argument(
         "--sheet",
+<<<<<< x6a1td-codex/fix-duplicate-technician-names-display
+=======
       moke7a-codex/fix-duplicate-technician-names-display
 =======
         default="Technikernamen"
       main
+>>>>>> main
         help="Name des Tabellenblatts mit Technikern",
     )
     args = parser.parse_args(argv)

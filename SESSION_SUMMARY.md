@@ -2,11 +2,8 @@
 - Added `openpyxl>=3.0` to `requirements.txt` so Excel reports can be processed.
 - Installed dependencies and ran tests.
 - Verified `python main.py process data/Juni_25/02.06 data/Liste.xlsx` updated the workbook.
-- `load_calls` wertet nun alle Arbeitsblätter eines Reports aus und summiert die Technikerstatistiken.
- tn7wvc-codex/update-load_calls-to-process-all-worksheets
-- Namensauflösung verbessert: Einträge wie `"Nachname, Vorname (Team)"` werden nun zu `"Vorname Nachname"` normalisiert und zusätzlich gegen den Vornamen abgeglichen.
-=======
-main
+ - `load_calls` wertet nun alle Arbeitsblätter eines Reports aus und summiert die Technikerstatistiken.
+ - Namensauflösung verbessert: Einträge wie `"Nachname, Vorname (Team)"` werden nun zu `"Vorname Nachname"` normalisiert und zusätzlich gegen den Vornamen abgeglichen.
 
 ## Next Steps
 - Address warnings about unknown technicians by updating the spreadsheet or code.
@@ -31,12 +28,27 @@ main
 - `AssignmentApp` dedupliziert die Liste bekannter Techniker beim Start.
 - Neue Option `--sheet` ermöglicht in `aggregate_warnings.py` und `assign_gui.py` die Auswahl eines anderen Tabellenblatts.
 - Test `test_gather_valid_names.py` ergänzt, alle Tests (`pytest`) laufen erfolgreich.
+ x6a1td-codex/fix-duplicate-technician-names-display
+=======
 moke7a-codex/fix-duplicate-technician-names-display
+main
 
 ## 2025-?? Update 3
 - `gather_valid_names` erkennt automatisch das Technik-Blatt und listet bei Fehlern alle verfügbaren Arbeitsblätter auf.
 - `assign_gui.py` und `aggregate_warnings.py` lassen `--sheet` optional und fangen fehlende Blätter ab.
 - `gui_app.py` zeigt bei fehlendem Tabellenblatt eine Fehlermeldung.
 - Zusätzlicher Test überprüft die automatische Blattwahl.
+ x6a1td-codex/fix-duplicate-technician-names-display
+
+## 2025-?? Update 4
+- `gather_valid_names` bevorzugt nun ausdrücklich das Blatt "Technikernamen" und greift nur bei Bedarf auf ein Blatt mit "technik" im Namen zurück.
+- Dokumentation bereinigt.
+- Alle Tests (`pytest`) laufen weiterhin erfolgreich.
+
+## 2025-?? Update 5
+- `gather_valid_names` sucht jetzt gezielt nach einem Blatt mit "Technikernamen" im Titel und meldet einen Fehler, wenn keines gefunden wird; Monatsreiter werden dadurch ignoriert.
+- Zusätzliche Tests prüfen die neue Blattsuche sowie den Fehlerfall ohne Technik-Blatt.
 =======
+=======
+main
 main
