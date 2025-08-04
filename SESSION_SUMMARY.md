@@ -48,3 +48,9 @@
 - Versehentlich eingecheckte Merge-Konflikt-Markierungen entfernt.
 - `assign_gui.py` und `aggregate_warnings.py` akzeptieren weiterhin optional `--sheet`.
 - Tests aufgeräumt und erneut erfolgreich ausgeführt.
+
+## 2025-?? Update 7
+- `load_calls` berücksichtigt jetzt die Spalte "Work Order Number" und zählt nur
+  Zeilen, deren Auftragsnummer mit "17" beginnt. Stundenbuchungen und andere
+  Einträge werden ignoriert, wodurch unrealistische Tageswerte vermieden werden.
+- Neuer Test stellt sicher, dass Nicht-Call-Nummern übersprungen werden.
