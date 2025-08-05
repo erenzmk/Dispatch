@@ -61,3 +61,8 @@
 - Damit wird ein Fehler behoben, bei dem die Verarbeitung scheiterte, wenn ein
   Monatsordner gewählt wurde.
 - Alle Tests (`pytest`) laufen weiterhin erfolgreich.
+
+## 2025-?? Update 9
+- `summarize_calls.py` fasst neue und alte Calls pro Techniker zusammen.
+- `report.csv` entfernt, um überflüssige Daten zu bereinigen.
+- Neuer Test `test_summarize_calls.py`; alle Tests (`pytest`) bestehen.
