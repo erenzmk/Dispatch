@@ -96,3 +96,9 @@
 ## 2025-?? Update 13
 - Merge-Konflikt-Markierungen in `SESSION_SUMMARY.md` entfernt und Datei formatiert.
 - Alle Tests (`pytest`) laufen weiterhin erfolgreich.
+
+## 2025-?? Update 14
+- GUI-bezogene Dateien `assign_gui.py` und `gui_app.py` entfernt.
+- CLI-Unterbefehl `warnings` sowie alle Verweise auf `aggregate_warnings` aus `main.py` gestrichen.
+- Tests bereinigt, die `assign_gui` oder `aggregate_warnings` nutzten.
+- README um Hinweise auf GUI und Warnmeldungen gekürzt.

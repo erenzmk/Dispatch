@@ -22,17 +22,11 @@ python main.py analyze data/Juli_25 data/Liste.xlsx --output report.csv
 ```
 Erstellt eine CSV-Datei mit Kategorien wie `no_calls` und `region_mismatch`.
 
-### Unbekannte Techniker zählen
-```bash
-python main.py warnings data/Juli_25 --liste data/Liste.xlsx
-```
-Durchsucht alle Berichte und fasst unbekannte Namen samt Häufigkeit zusammen.
-
 ### Alles in einem Schritt
 ```bash
 python main.py run-all data/Juli_25 data/Liste.xlsx --output report.csv
 ```
-Verarbeitet den Monat, erstellt die Analyse und zeigt unbekannte Techniker in einem einzelnen Durchlauf an.
+Verarbeitet den Monat und erstellt die Analyse in einem einzelnen Durchlauf.
 
 ## Generierte Dateien
 
@@ -56,9 +50,3 @@ $env:LOGLEVEL="DEBUG"
 python main.py process data/Juli_25/01.07 data/Liste.xlsx
 ```
 
-### Zuordnung unbekannter Namen
-Mit der kleinen Tk‑Oberfläche lassen sich unbekannte Namen interaktiv zuweisen:
-```bash
-python assign_gui.py  # nutzt standardmäßig data/ und Liste.xlsx
-```
-Das Fenster zeigt unbekannte Namen links; sie können per Drag & Drop einer bekannten Liste zugeordnet werden. Über **Export** werden die Zuordnungen ausgegeben.
