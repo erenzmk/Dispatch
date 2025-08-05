@@ -102,3 +102,8 @@
 - CLI-Unterbefehl `warnings` sowie alle Verweise auf `aggregate_warnings` aus `main.py` gestrichen.
 - Tests bereinigt, die `assign_gui` oder `aggregate_warnings` nutzten.
 - README um Hinweise auf GUI und Warnmeldungen gekürzt.
+
+## 2025-?? Update 15
+- Batchdatei `run_all.bat` erstellt, die Pfade optional abfragt und den Lauf protokolliert.
+- README ergänzt, um die Nutzung der Batchdatei zu beschreiben.
+- Arbeitsprotokoll aktualisiert.
