@@ -50,7 +50,10 @@ def process_report(file_path: Union[str, Path], technician_name: str) -> pd.Data
     df = df[df["Callnr"].str.startswith("17")]
 
     # Namen normalisieren und auf den angegebenen Techniker filtern
-    valid_names: set[str] = set(df["Techniker"].astype(str)) | {technician_name}
+    valid_names_raw: set[str] = set(df["Techniker"].astype(str)) | {technician_name}
+    valid_names = {
+        canonical_name(name.strip(), valid_names_raw) for name in valid_names_raw
+    }
 
     def _norm(name: str) -> str:
         return canonical_name(name.strip(), valid_names).strip().lower()

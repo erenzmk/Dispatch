@@ -15,6 +15,7 @@ from process_calls import process_report, vorheriger_werktag
         ("Ahmad, Daniyal (Keskin)", "daniyal"),
         ("AHMAD, DANIYAL (KESKIN)", " AhMaD, Daniyal (Keskin) "),
         ("Ahmad, Daniyal (Keskin)", "Daniyal Ahmad"),
+        ("Doe, John (Team)", "john"),
     ],
 )
 def test_process_report_filters_and_classifies(tmp_path, excel_name, query_name):
