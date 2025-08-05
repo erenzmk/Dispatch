@@ -6,6 +6,15 @@ import pandas as pd
 from dispatch.name_aliases import canonical_name
 
 
+def vorheriger_werktag(referenz: dt.date) -> dt.date:
+    """Gib den letzten Werktag vor ``referenz`` zurück."""
+
+    tag = referenz - dt.timedelta(days=1)
+    while tag.weekday() >= 5:  # 5 = Samstag, 6 = Sonntag
+        tag -= dt.timedelta(days=1)
+    return tag
+
+
 def process_report(file_path: Union[str, Path], technician_name: str) -> pd.DataFrame:
     """Lese einen Excel-Bericht ein und klassifiziere Calls."""
 
@@ -13,9 +22,22 @@ def process_report(file_path: Union[str, Path], technician_name: str) -> pd.Data
     if not file_path.exists():
         raise FileNotFoundError(f"Berichtsdatei nicht gefunden: {file_path}")
 
-    # Alle Reiter laden und zu einem DataFrame kombinieren
+    # Alle Reiter laden
     all_sheets = pd.read_excel(file_path, sheet_name=None)
-    df = pd.concat(all_sheets.values(), ignore_index=True)
+
+    report_date = None
+    call_frames = []
+    for sheet in all_sheets.values():
+        if {"Techniker", "Callnr", "Erstellt"}.issubset(sheet.columns):
+            call_frames.append(sheet)
+        if report_date is None and "Berichtstag" in sheet.columns:
+            value = sheet["Berichtstag"].dropna().iloc[0]
+            report_date = pd.to_datetime(value, dayfirst=True).date()
+
+    if not call_frames:
+        raise ValueError("Keine gültigen Datenblätter gefunden")
+
+    df = pd.concat(call_frames, ignore_index=True)
 
     # Prüfen, ob alle benötigten Spalten vorhanden sind
     expected_cols = ["Techniker", "Callnr", "Erstellt"]
@@ -40,9 +62,13 @@ def process_report(file_path: Union[str, Path], technician_name: str) -> pd.Data
     # Erstellungsdatum parsen (deutsches Format Tag.Monat.Jahr)
     df["Erstellt"] = pd.to_datetime(df["Erstellt"], dayfirst=True)
 
-    # Heutiges Datum bestimmen und Status setzen
-    today = dt.datetime.now().date()
-    df["Status"] = df["Erstellt"].dt.date.apply(lambda d: "neu" if d == today else "alt")
+    # Referenzdatum bestimmen und Status setzen
+    if report_date is None:
+        report_date = dt.date.today()
+    werk_vortag = vorheriger_werktag(report_date)
+    df["Status"] = df["Erstellt"].dt.date.apply(
+        lambda d: "neu" if d == werk_vortag else "alt"
+    )
 
     return df
 

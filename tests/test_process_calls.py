@@ -2,9 +2,10 @@ import datetime as dt
 import pandas as pd
 import pytest
 
-from process_calls import process_report
+from process_calls import process_report, vorheriger_werktag
 
 
+<<<<<< codex/normalize-name-comparison-in-process_calls.py
 @pytest.mark.parametrize(
     "excel_name, query_name",
     [
@@ -17,15 +18,21 @@ from process_calls import process_report
 def test_process_report_filters_and_classifies(tmp_path, excel_name, query_name):
     today = dt.date.today()
     old_date = today - dt.timedelta(days=2)
+=======
+def test_process_report_filters_and_classifies(tmp_path):
+    report_date = dt.date(2024, 3, 15)
+    prev_day = vorheriger_werktag(report_date)
+    old_date = prev_day - dt.timedelta(days=2)
+>>>>>> main
 
     data1 = pd.DataFrame(
         {
             "Techniker": [excel_name, excel_name, "Andere Person"],
             "Callnr": ["17500001", "18000001", "17500002"],
             "Erstellt": [
-                today.strftime("%d.%m.%Y"),
-                today.strftime("%d.%m.%Y"),
-                today.strftime("%d.%m.%Y"),
+                prev_day.strftime("%d.%m.%Y"),
+                prev_day.strftime("%d.%m.%Y"),
+                prev_day.strftime("%d.%m.%Y"),
             ],
         }
     )
@@ -35,15 +42,17 @@ def test_process_report_filters_and_classifies(tmp_path, excel_name, query_name)
             "Callnr": ["17500003", "17500004"],
             "Erstellt": [
                 old_date.strftime("%d.%m.%Y"),
-                today.strftime("%d.%m.%Y"),
+                prev_day.strftime("%d.%m.%Y"),
             ],
         }
     )
+    meta = pd.DataFrame({"Berichtstag": [report_date.strftime("%d.%m.%Y")]})
 
     file_path = tmp_path / "report.xlsx"
     with pd.ExcelWriter(file_path) as writer:
         data1.to_excel(writer, index=False, sheet_name="Sheet1")
         data2.to_excel(writer, index=False, sheet_name="Sheet2")
+        meta.to_excel(writer, index=False, sheet_name="Meta")
 
     df = process_report(file_path, query_name)
 
@@ -58,3 +67,31 @@ def test_process_report_filters_and_classifies(tmp_path, excel_name, query_name)
 def test_process_report_missing_file():
     with pytest.raises(FileNotFoundError):
         process_report("does_not_exist.xlsx", "Ahmad, Daniyal (Keskin)")
+
+
+def test_process_report_vergangener_berichtstag(tmp_path):
+    report_date = dt.date(2024, 3, 20)
+    prev_day = vorheriger_werktag(report_date)
+
+    data = pd.DataFrame(
+        {
+            "Techniker": ["Ahmad, Daniyal (Keskin)", "Ahmad, Daniyal (Keskin)"],
+            "Callnr": ["17500005", "17500006"],
+            "Erstellt": [
+                prev_day.strftime("%d.%m.%Y"),
+                (prev_day - dt.timedelta(days=1)).strftime("%d.%m.%Y"),
+            ],
+        }
+    )
+    meta = pd.DataFrame({"Berichtstag": [report_date.strftime("%d.%m.%Y")]})
+
+    file_path = tmp_path / "report_past.xlsx"
+    with pd.ExcelWriter(file_path) as writer:
+        data.to_excel(writer, index=False, sheet_name="Daten")
+        meta.to_excel(writer, index=False, sheet_name="Meta")
+
+    df = process_report(file_path, "Ahmad, Daniyal (Keskin)")
+
+    status_map = dict(zip(df["Callnr"], df["Status"]))
+    assert status_map["17500005"] == "neu"
+    assert status_map["17500006"] == "alt"
