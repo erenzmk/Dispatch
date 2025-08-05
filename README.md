@@ -1,57 +1,20 @@
 # Dispatch
 
-Dieses Repository automatisiert die Auswertung von täglichen Anrufberichten der Servicetechniker. Der Kern der Logik liegt im Paket `dispatch` und wird über das Modul `dispatch.main` bereitgestellt. Die Skripte lesen die Excel-Reporte der Früh- und Spätschicht, fassen die Werte je Techniker zusammen und schreiben die Ergebnisse in `Liste.xlsx`.
+Automatisiert die Auswertung von täglichen Anrufberichten der Servicetechniker und überträgt die Ergebnisse in `Liste.xlsx`.
 
-## Nutzung
+## Voraussetzungen
 
-### Einzelnen Tag verarbeiten
-```bash
-python -m dispatch.main process data/Juli_25/01.07 Liste.xlsx
-```
-Der Befehl erwartet den Ordner des Tages (z. B. `data/Juli_25/01.07`) und den Pfad zur Excel-Gesamtliste (`Liste.xlsx`).
+- Python 3.11 oder neuer
+- Pakete: pandas, openpyxl (`dispatch/requirements.txt`)
 
-### Kompletten Monat verarbeiten
-```bash
-python -m dispatch.main process-month data/Juli_25 Liste.xlsx
-```
-Iteriert über alle Unterordner in `data/Juli_25` und verarbeitet jeden Tag, für den passende `*7*.xlsx`‑ und `*19*.xlsx`‑Dateien existieren.
+## Kurzanleitung
 
-### Monat auswerten
-```bash
-python -m dispatch.main analyze data/Juli_25 Liste.xlsx --output report.csv
-```
-Erstellt eine CSV-Datei mit Kategorien wie `no_calls` und `region_mismatch`.
+1. Lege die Tagesberichte in `data/<Monat_Jahr>/<Tag>/` ab (z. B. `data/Juli_25/01.07`) mit Dateien `*7*.xlsx` und optional `*19*.xlsx`.
+2. Führe `run_all.bat` aus und beantworte die abgefragten Pfade.
+3. Die Ergebnisse werden in `Liste.xlsx` geschrieben und unter `logs/` protokolliert.
 
-### Alles in einem Schritt
-```bash
-python -m dispatch.main run-all data/Juli_25 Liste.xlsx --output report.csv
-```
-Verarbeitet den Monat und erstellt die Analyse in einem einzelnen Durchlauf.
+## Daten und Ergebnisse
 
-### Batchdatei verwenden
-Unter Windows kann stattdessen die Batchdatei `run_all.bat` genutzt werden. Sie fragt optional Pfade und Ausgabedatei ab
-und ruft anschließend denselben Befehl auf. Nach erfolgreichem Lauf wird ein Eintrag mit Zeitstempel in
-`logs/arbeitsprotokoll.md` ergänzt.
-
-## Generierte Dateien
-
-Dateien wie `analysis.csv` oder `techniker_export.csv` werden zur Laufzeit erstellt und nicht versioniert.
-
-## Fehlerbehebung
-
-### Leere Auswertungen
-Wenn keine Einträge für einen Techniker erscheinen, prüfe, ob der Tagesreport die Zeile mit `Employee ID` enthält. Fehlt sie, kann der Header nicht erkannt werden.
-
-### Fehlende Dateien
-Der Tagesordner muss eine Morgen-Datei (`*7*.xlsx`) und optional eine Abend-Datei (`*19*.xlsx`) enthalten. Andernfalls schlägt die Verarbeitung fehl.
-
-### Falsche Blattnamen
-In `Liste.xlsx` muss ein Arbeitsblatt nach dem Muster `<Monat>_<JJ>` existieren, z. B. `Juli_25`. Ein `KeyError` weist auf ein fehlendes oder falsch benanntes Blatt hin.
-
-### Ausführliche Protokolle
-Für detailliertere Ausgaben kann das Logging auf DEBUG gesetzt werden:
-```bash
-$env:LOGLEVEL="DEBUG"
-python -m dispatch.main process data/Juli_25/01.07 Liste.xlsx
-```
+- Die Ordnerstruktur `data/` enthält Monatsordner mit Tagesunterordnern.
+- Während der Verarbeitung entstehen Dateien wie `analysis.csv` oder `techniker_export.csv`, die nicht versioniert werden.
 
