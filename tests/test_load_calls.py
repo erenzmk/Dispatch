@@ -27,10 +27,11 @@ def test_load_calls_selects_correct_sheet(tmp_path):
     path = tmp_path / "report.xlsx"
     wb.save(path)
 
-    target_date, summary = load_calls(path)
+    target_date, summary, unknown = load_calls(path)
 
     assert target_date == dt.date(2025, 7, 1)
     assert summary == {"Alice": {"total": 1, "new": 1, "old": 0}}
+    assert unknown == []
 
 
 def test_load_calls_handles_header_variations(tmp_path):
@@ -48,10 +49,11 @@ def test_load_calls_handles_header_variations(tmp_path):
     path = tmp_path / "report.xlsx"
     wb.save(path)
 
-    target_date, summary = load_calls(path)
+    target_date, summary, unknown = load_calls(path)
 
     assert target_date == dt.date(2025, 7, 1)
     assert summary == {"Alice": {"total": 1, "new": 1, "old": 0}}
+    assert unknown == []
 
 
 def test_load_calls_aggregates_all_sheets(tmp_path):
@@ -70,13 +72,14 @@ def test_load_calls_aggregates_all_sheets(tmp_path):
     path = tmp_path / "report.xlsx"
     wb.save(path)
 
-    target_date, summary = load_calls(path)
+    target_date, summary, unknown = load_calls(path)
 
     assert target_date == dt.date(2025, 7, 1)
     assert summary == {
         "Alice": {"total": 1, "new": 1, "old": 0},
         "Bob": {"total": 1, "new": 0, "old": 1},
     }
+    assert unknown == []
 
 
 def test_load_calls_missing_required_columns(tmp_path):
@@ -139,10 +142,11 @@ def test_load_calls_warns_once_per_unknown(tmp_path, caplog):
     wb.save(path)
 
     with caplog.at_level("WARNING"):
-        load_calls(path, ["Alice"])
+        _, _, unknown = load_calls(path, ["Alice"])
 
     warnings = [r.message for r in caplog.records if "Unknown technician" in r.message]
     assert warnings == [f"Unknown technician 'Bob' in {path}"]
+    assert unknown == ["Bob"]
 
 
 def test_load_calls_logs_unknown_with_suggestion(tmp_path, caplog):
@@ -157,13 +161,14 @@ def test_load_calls_logs_unknown_with_suggestion(tmp_path, caplog):
     log_file = tmp_path / "unknown.log"
 
     with caplog.at_level("WARNING"):
-        load_calls(path, ["Alice"], unknown_log=log_file)
+        _, _, unknown = load_calls(path, ["Alice"], unknown_log=log_file)
 
     warning = next(r.message for r in caplog.records if "Unknown technician" in r.message)
     assert "Alicia" in warning and "Alice" in warning
 
     content = log_file.read_text(encoding="utf-8").strip().split("\n")[-1]
     assert "Alicia" in content and "Alice" in content
+    assert unknown == ["Alicia"]
 
 
 def test_load_calls_ignores_non_call_numbers(tmp_path):
@@ -182,7 +187,8 @@ def test_load_calls_ignores_non_call_numbers(tmp_path):
     path = tmp_path / "report.xlsx"
     wb.save(path)
 
-    target_date, summary = load_calls(path)
+    target_date, summary, unknown = load_calls(path)
 
     assert target_date == dt.date(2025, 7, 1)
     assert summary == {"Alice": {"total": 1, "new": 1, "old": 0}}
+    assert unknown == []

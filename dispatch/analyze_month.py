@@ -34,11 +34,11 @@ def analyze_month(month_dir: Path, liste: Path, output: Path) -> None:
     for day in sorted(p for p in month_dir.iterdir() if p.is_dir()):
         morning_files = list(day.glob("*7*.xlsx"))
         if morning_files:
-            _, morning = load_calls(morning_files[0], valid_names)
+            _, morning, _ = load_calls(morning_files[0], valid_names)
             found.update(morning)
         evening_files = list(day.glob("*19*.xlsx"))
         if evening_files:
-            _, evening = load_calls(evening_files[0], valid_names)
+            _, evening, _ = load_calls(evening_files[0], valid_names)
             found.update(evening)
 
     missing_calls = sorted(expected - found)

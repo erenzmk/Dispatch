@@ -29,7 +29,7 @@ def test_main_uses_year_from_parent(tmp_path: Path, monkeypatch: pytest.MonkeyPa
     wb.save(day_dir / "morning7.xlsx")
 
     def fake_load_calls(path, valid_names=None):
-        return dt.date(2026, 7, 1), {}
+        return dt.date(2026, 7, 1), {}, []
 
     called = {}
 

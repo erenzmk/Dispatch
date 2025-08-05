@@ -36,7 +36,7 @@ def test_process_month_multiple_days(
 
     def fake_load_calls(path, valid_names=None):
         day = int(Path(path).parent.name.split(".")[0])
-        return dt.date(2025, 7, day), {}
+        return dt.date(2025, 7, day), {}, []
 
     calls: list[dt.date] = []
 
@@ -65,7 +65,7 @@ def test_process_month_logging(
     create_liste(liste)
 
     def fake_load_calls(path, valid_names=None):
-        return dt.date(2025, 7, 1), {}
+        return dt.date(2025, 7, 1), {}, []
 
     def fake_update_liste(liste_path, month_sheet, target_date, morning_summary):
         pass

@@ -66,3 +66,9 @@
 - `summarize_calls.py` fasst neue und alte Calls pro Techniker zusammen.
 - `report.csv` entfernt, um überflüssige Daten zu bereinigen.
 - Neuer Test `test_summarize_calls.py`; alle Tests (`pytest`) bestehen.
+
+## 2025-?? Update 10
+- `load_calls` gibt unbekannte Techniker als Liste zurück.
+- `aggregate_warnings` wertet diese Liste direkt aus und verzichtet auf Log-Mitschnitte.
+- Tests angepasst und um eine Prüfung der Zählung unbekannter Techniker ergänzt.
+- Alle Tests (`pytest`) laufen erfolgreich: 34 passed.
