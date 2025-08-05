@@ -2,15 +2,17 @@
 - Added `openpyxl>=3.0` to `requirements.txt` so Excel reports can be processed.
 - Installed dependencies and ran tests.
 - Verified `python main.py process data/Juni_25/02.06 data/Liste.xlsx` updated the workbook.
- - `load_calls` wertet nun alle Arbeitsblätter eines Reports aus und summiert die Technikerstatistiken.
- - Namensauflösung verbessert: Einträge wie `"Nachname, Vorname (Team)"` werden nun zu `"Vorname Nachname"` normalisiert und zusätzlich gegen den Vornamen abgeglichen.
+  - `load_calls` wertet nun alle Arbeitsblätter eines Reports aus und summiert die Technikerstatistiken.
+  - Namensauflösung verbessert: Einträge wie `"Nachname, Vorname (Team)"` werden nun zu `"Vorname Nachname"` normalisiert
+    und zusätzlich gegen den Vornamen abgeglichen.
 
 ## Next Steps
 - Address warnings about unknown technicians by updating the spreadsheet or code.
 
 ## Aktueller Stand
 - `assign_gui.py` steht als Werkzeug bereit, um unbekannte Namen den bekannten Technikern zuzuordnen.
-- Nach der Zuordnung werden die Ergebnisse in `techniker_export.csv` sowie dem Arbeitsblatt "Zuordnungen" in `Liste.xlsx` gespeichert.
+- Nach der Zuordnung werden die Ergebnisse in `techniker_export.csv` sowie dem Arbeitsblatt "Zuordnungen" in `Liste.xlsx`
+  gespeichert.
 
 ## Offene Punkte
 - Aliasliste regelmäßig pflegen, damit künftige Berichte automatisch erkannt werden.
@@ -24,9 +26,11 @@
 - `process_month` meldet jetzt den Fortschritt und schreibt ein Log nach `logs/process_month.log`.
 
 ## 2025-?? Update 2
-- `gather_valid_names` liest nun das Blatt "Technikernamen", berücksichtigt zusätzlich die Spalte "PUOOS" und entfernt doppelte Namen.
+- `gather_valid_names` liest nun das Blatt "Technikernamen", berücksichtigt zusätzlich die Spalte "PUOOS"
+  und entfernt doppelte Namen.
 - `AssignmentApp` dedupliziert die Liste bekannter Techniker beim Start.
-- Neue Option `--sheet` ermöglicht in `aggregate_warnings.py` und `assign_gui.py` die Auswahl eines anderen Tabellenblatts.
+- Neue Option `--sheet` ermöglicht in `aggregate_warnings.py` und `assign_gui.py` die Auswahl
+  eines anderen Tabellenblatts.
 - Test `test_gather_valid_names.py` ergänzt, alle Tests (`pytest`) laufen erfolgreich.
 
 ## 2025-?? Update 3
@@ -36,12 +40,14 @@
 - Zusätzlicher Test überprüft die automatische Blattwahl.
 
 ## 2025-?? Update 4
-- `gather_valid_names` bevorzugt nun ausdrücklich das Blatt "Technikernamen" und greift nur bei Bedarf auf ein Blatt mit "technik" im Namen zurück.
+- `gather_valid_names` bevorzugt nun ausdrücklich das Blatt "Technikernamen" und greift nur bei Bedarf auf ein Blatt mit
+  "technik" im Namen zurück.
 - Dokumentation bereinigt.
 - Alle Tests (`pytest`) laufen weiterhin erfolgreich.
 
 ## 2025-?? Update 5
-- `gather_valid_names` sucht jetzt gezielt nach einem Blatt mit "Technikernamen" im Titel und meldet einen Fehler, wenn keines gefunden wird; Monatsreiter werden dadurch ignoriert.
+- `gather_valid_names` sucht jetzt gezielt nach einem Blatt mit "Technikernamen" im Titel und meldet einen Fehler,
+  wenn keines gefunden wird; Monatsreiter werden dadurch ignoriert.
 - Zusätzliche Tests prüfen die neue Blattsuche sowie den Fehlerfall ohne Technik-Blatt.
 
 ## 2025-?? Update 6
@@ -50,16 +56,13 @@
 - Tests aufgeräumt und erneut erfolgreich ausgeführt.
 
 ## 2025-?? Update 7
-- `load_calls` berücksichtigt jetzt die Spalte "Work Order Number" und zählt nur
-  Zeilen, deren Auftragsnummer mit "17" beginnt. Stundenbuchungen und andere
-  Einträge werden ignoriert, wodurch unrealistische Tageswerte vermieden werden.
+- `load_calls` berücksichtigt jetzt die Spalte "Work Order Number" und zählt nur Zeilen, deren Auftragsnummer mit "17"
+  beginnt. Stundenbuchungen und andere Einträge werden ignoriert, wodurch unrealistische Tageswerte vermieden werden.
 - Neuer Test stellt sicher, dass Nicht-Call-Nummern übersprungen werden.
 
 ## 2025-?? Update 8
-- `gui_app.py` verarbeitet nun wahlweise einen einzelnen Tagesordner oder alle
-  Unterordner eines Monatsordners.
-- Damit wird ein Fehler behoben, bei dem die Verarbeitung scheiterte, wenn ein
-  Monatsordner gewählt wurde.
+- `gui_app.py` verarbeitet nun wahlweise einen einzelnen Tagesordner oder alle Unterordner eines Monatsordners.
+- Damit wird ein Fehler behoben, bei dem die Verarbeitung scheiterte, wenn ein Monatsordner gewählt wurde.
 - Alle Tests (`pytest`) laufen weiterhin erfolgreich.
 
 ## 2025-?? Update 9
@@ -72,10 +75,12 @@
 - `aggregate_warnings` wertet diese Liste direkt aus und verzichtet auf Log-Mitschnitte.
 - Tests angepasst und um eine Prüfung der Zählung unbekannter Techniker ergänzt.
 - Alle Tests (`pytest`) laufen erfolgreich: 34 passed.
-- `process_calls.py` normalisiert Techniker-Namen (Trimmen, Kleinschreibung, `canonical_name` für Aliase) und filtert damit robuster.
+- `process_calls.py` normalisiert Techniker-Namen (Trimmen, Kleinschreibung, `canonical_name` für Aliase)
+  und filtert damit robuster.
 - Testfälle berücksichtigen jetzt leichte Namensabweichungen.
 - Alle Tests (`pytest`) laufen weiterhin erfolgreich.
-- `process_calls.py` liest nun den Berichtstag aus dem Excel-Bericht, berechnet den vorherigen Werktag und markiert Calls nur dann als `neu`, wenn `Erstellt` genau diesem Datum entspricht.
+- `process_calls.py` liest nun den Berichtstag aus dem Excel-Bericht, berechnet den vorherigen Werktag und markiert Calls nur dann
+  als `neu`, wenn `Erstellt` genau diesem Datum entspricht.
 - Zusätzlicher Testfall prüft das Verhalten bei einem Berichtstag in der Vergangenheit.
 
 ## 2025-?? Update 11
@@ -83,7 +88,11 @@
 - Neuer Test simuliert ein komplett leeres Arbeitsblatt.
 
 ## 2025-?? Update 12
-- `process_report` bereinigt die Technikerliste nun über `canonical_name` und
-  verwendet diese kanonischen Namen zur Normalisierung.
+- `process_report` bereinigt die Technikerliste nun über `canonical_name` und verwendet diese kanonischen Namen zur
+  Normalisierung.
 - Testfälle wurden erweitert, um zusätzliche Namensvarianten abzudecken.
+- Alle Tests (`pytest`) laufen weiterhin erfolgreich.
+
+## 2025-?? Update 13
+- Merge-Konflikt-Markierungen in `SESSION_SUMMARY.md` entfernt und Datei formatiert.
 - Alle Tests (`pytest`) laufen weiterhin erfolgreich.
