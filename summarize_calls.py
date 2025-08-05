@@ -60,6 +60,7 @@ def summarize_report(file_path: Path) -> pd.DataFrame:
     summary = (
         df_res.groupby(["technician", "status"]).size().unstack(fill_value=0)
     )
+    summary = summary.reindex(columns=["new", "old"], fill_value=0)
     summary["total"] = summary.sum(axis=1)
     summary = summary.reset_index()
     summary["date"] = file_date

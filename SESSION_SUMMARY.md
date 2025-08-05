@@ -66,3 +66,10 @@
 - `summarize_calls.py` fasst neue und alte Calls pro Techniker zusammen.
 - `report.csv` entfernt, um überflüssige Daten zu bereinigen.
 - Neuer Test `test_summarize_calls.py`; alle Tests (`pytest`) bestehen.
+
+## 2025-?? Update 10
+- `summarize_calls.py` erweitert das Ergebnis nun per `reindex` um die Spalten
+  "new" und "old", selbst wenn eine davon im Bericht fehlt.
+- Zusätzlicher Test verarbeitet Berichte mit ausschließlich neuen oder alten
+  Calls, ohne eine Ausnahme auszulösen.
+- Alle Tests (`pytest`) laufen weiterhin erfolgreich.

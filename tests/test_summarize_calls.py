@@ -1,5 +1,6 @@
 import pandas as pd
 import openpyxl
+import pytest
 from summarize_calls import summarize_report
 
 
@@ -40,3 +41,44 @@ def test_summarize_report(tmp_path):
     assert row["old"] == 1
     assert row["total"] == 2
     assert str(row["date"]) == "2025-07-01"
+
+
+@pytest.mark.parametrize(
+    "call_date, expected_status",
+    [
+        ("30-06-2025 09:04", "new"),
+        ("26-06-2025 15:03", "old"),
+    ],
+)
+def test_single_status(tmp_path, call_date, expected_status):
+    excel = tmp_path / "report.xlsx"
+    with pd.ExcelWriter(excel) as writer:
+        pd.DataFrame({"first": ["Daniyal"], "last": ["Ahmad"]}).to_excel(
+            writer, index=False, sheet_name="Techniker DK"
+        )
+        pd.DataFrame(columns=["first", "last"]).to_excel(
+            writer, index=False, sheet_name="Berlin dk"
+        )
+        pd.DataFrame(columns=["first", "last"]).to_excel(
+            writer, index=False, sheet_name="Berlin rest"
+        )
+        data = pd.DataFrame(
+            [["Daniyal Ahmad", "", "17500001", "", "", "", "", call_date]],
+            columns=list("ABCDEFGH"),
+        )
+        data.to_excel(
+            writer, index=False, sheet_name="West Central", startrow=20, header=False
+        )
+
+    wb = openpyxl.load_workbook(excel)
+    ws = wb["West Central"]
+    ws["A2"] = "01.07.25 07:01"
+    wb.save(excel)
+    wb.close()
+
+    result = summarize_report(excel)
+    assert len(result) == 1
+    row = result.iloc[0]
+    assert row[expected_status] == 1
+    other = "old" if expected_status == "new" else "new"
+    assert row[other] == 0
