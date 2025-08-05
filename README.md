@@ -1,30 +1,30 @@
 # Dispatch
 
-Dieses Repository automatisiert die Auswertung von täglichen Anrufberichten der Servicetechniker. Der Kern der Logik liegt im Paket `dispatch` und wird über die Befehle in `main.py` bereitgestellt. Die Skripte lesen die Excel-Reporte der Früh- und Spätschicht, fassen die Werte je Techniker zusammen und schreiben die Ergebnisse in `Liste.xlsx`.
+Dieses Repository automatisiert die Auswertung von täglichen Anrufberichten der Servicetechniker. Der Kern der Logik liegt im Paket `dispatch` und wird über das Modul `dispatch.main` bereitgestellt. Die Skripte lesen die Excel-Reporte der Früh- und Spätschicht, fassen die Werte je Techniker zusammen und schreiben die Ergebnisse in `Liste.xlsx`.
 
 ## Nutzung
 
 ### Einzelnen Tag verarbeiten
 ```bash
-python main.py process data/Juli_25/01.07 data/Liste.xlsx
+python -m dispatch.main process data/Juli_25/01.07 Liste.xlsx
 ```
-Der Befehl erwartet den Ordner des Tages (z. B. `data/Juli_25/01.07`) und den Pfad zur Excel-Gesamtliste (`data/Liste.xlsx`).
+Der Befehl erwartet den Ordner des Tages (z. B. `data/Juli_25/01.07`) und den Pfad zur Excel-Gesamtliste (`Liste.xlsx`).
 
 ### Kompletten Monat verarbeiten
 ```bash
-python main.py process-month data/Juli_25 data/Liste.xlsx
+python -m dispatch.main process-month data/Juli_25 Liste.xlsx
 ```
 Iteriert über alle Unterordner in `data/Juli_25` und verarbeitet jeden Tag, für den passende `*7*.xlsx`‑ und `*19*.xlsx`‑Dateien existieren.
 
 ### Monat auswerten
 ```bash
-python main.py analyze data/Juli_25 data/Liste.xlsx --output report.csv
+python -m dispatch.main analyze data/Juli_25 Liste.xlsx --output report.csv
 ```
 Erstellt eine CSV-Datei mit Kategorien wie `no_calls` und `region_mismatch`.
 
 ### Alles in einem Schritt
 ```bash
-python main.py run-all data/Juli_25 data/Liste.xlsx --output report.csv
+python -m dispatch.main run-all data/Juli_25 Liste.xlsx --output report.csv
 ```
 Verarbeitet den Monat und erstellt die Analyse in einem einzelnen Durchlauf.
 
@@ -52,6 +52,6 @@ In `Liste.xlsx` muss ein Arbeitsblatt nach dem Muster `<Monat>_<JJ>` existieren,
 Für detailliertere Ausgaben kann das Logging auf DEBUG gesetzt werden:
 ```bash
 $env:LOGLEVEL="DEBUG"
-python main.py process data/Juli_25/01.07 data/Liste.xlsx
+python -m dispatch.main process data/Juli_25/01.07 Liste.xlsx
 ```
 

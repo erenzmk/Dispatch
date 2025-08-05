@@ -1,11 +1,9 @@
 import datetime as dt
 from pathlib import Path
-import sys
 import pandas as pd
 import pytest
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from process_calls import process_report, vorheriger_werktag
+from dispatch.process_calls import process_report, vorheriger_werktag
 
 
 @pytest.mark.parametrize(

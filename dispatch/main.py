@@ -3,7 +3,7 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-from dispatch import analyze_month, process_reports
+from . import analyze_month, process_reports
 
 
 def main(argv: list[str] | None = None) -> None:

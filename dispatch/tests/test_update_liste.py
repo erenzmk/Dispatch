@@ -1,11 +1,9 @@
 import datetime as dt
 from pathlib import Path
-import sys
 
 from openpyxl import Workbook, load_workbook
 import pytest
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from dispatch.process_reports import update_liste
 
 

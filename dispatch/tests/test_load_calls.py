@@ -1,12 +1,10 @@
 import datetime as dt
 from pathlib import Path
-import sys
 import os
 
 import pytest
 from openpyxl import Workbook
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from dispatch.process_reports import load_calls
 
 
