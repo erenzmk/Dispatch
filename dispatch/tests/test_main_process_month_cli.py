@@ -1,10 +1,8 @@
-import sys
 from pathlib import Path
 
 import pytest
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from main import main as cli_main
+from dispatch.main import main as cli_main
 
 
 def test_cli_process_month(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:

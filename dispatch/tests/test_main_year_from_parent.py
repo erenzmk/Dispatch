@@ -5,7 +5,6 @@ import datetime as dt
 import pytest
 from openpyxl import Workbook
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from dispatch.process_reports import main
 
 

@@ -1,11 +1,9 @@
 import csv
 import datetime as dt
-import sys
 from pathlib import Path
 
 from openpyxl import Workbook
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from dispatch.analyze_month import analyze_month
 
 

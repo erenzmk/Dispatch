@@ -1,12 +1,10 @@
 import datetime as dt
-import sys
 from pathlib import Path
 import logging
 
 import pytest
 from openpyxl import Workbook
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from dispatch.process_reports import process_month
 
 

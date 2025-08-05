@@ -107,3 +107,9 @@
 - Batchdatei `run_all.bat` erstellt, die Pfade optional abfragt und den Lauf protokolliert.
 - README ergänzt, um die Nutzung der Batchdatei zu beschreiben.
 - Arbeitsprotokoll aktualisiert.
+
+## 2025-?? Update 16
+- `process_calls.py`, `summarize_calls.py` und `main.py` ins Paket `dispatch` verschoben.
+- `Liste.xlsx` liegt nun im Wurzelverzeichnis.
+- Pfade in `run_all.bat` und `README.md` entsprechend angepasst.
+- Tests in `dispatch/tests` verschoben und Importe bereinigt.

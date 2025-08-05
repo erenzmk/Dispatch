@@ -3,7 +3,7 @@ import datetime as dt
 from pathlib import Path
 from typing import Union
 import pandas as pd
-from dispatch.name_aliases import canonical_name
+from .name_aliases import canonical_name
 
 
 def vorheriger_werktag(referenz: dt.date) -> dt.date:

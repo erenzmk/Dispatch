@@ -1,6 +1,7 @@
 import pandas as pd
 import openpyxl
-from summarize_calls import summarize_report
+
+from dispatch.summarize_calls import summarize_report
 
 
 def test_summarize_report(tmp_path):
