@@ -94,4 +94,10 @@
 - Verweise auf GUI, Unterbefehle und Debug-Optionen entfernt.
 - `pytest` ausgeführt.
 - Änderungen in Git committet.
-06.08.2025  1:51:21,29 - run_all.bat ausgeführt mit "01.07" ""C:\Users\egencer\Documents\GitHub\Dispatch\Liste.xlsx"" "report.csv" 
+06.08.2025  1:51:21,29 - run_all.bat ausgeführt mit "01.07" ""C:\Users\egencer\Documents\GitHub\Dispatch\Liste.xlsx"" "report.csv"
+
+## 2025-08-05 (sehr spät)
+- Modul `aggregate_warnings.py` gelöscht und Eintrag in `__init__.py` entfernt.
+- Funktion `log_unknown_technician` samt Aufruf in `process_reports.py` entfernt.
+- Tests zu Warnungen gelöscht und Dokumentation angepasst.
+- `pytest -q` ausgeführt.

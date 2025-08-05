@@ -113,3 +113,7 @@
 - `Liste.xlsx` liegt nun im Wurzelverzeichnis.
 - Pfade in `run_all.bat` und `README.md` entsprechend angepasst.
 - Tests in `dispatch/tests` verschoben und Importe bereinigt.
+
+## 2025-?? Update 17
+- Modul `aggregate_warnings.py` entfernt und Verweise in `__init__.py` bereinigt.
+- Protokollierung unbekannter Techniker entfallen; `log_unknown_technician` und zugehörige Tests gelöscht.

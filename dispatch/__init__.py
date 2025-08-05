@@ -3,6 +3,5 @@
 __all__ = [
     "process_reports",
     "analyze_month",
-    "aggregate_warnings",
     "name_aliases",
 ]
