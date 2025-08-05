@@ -33,7 +33,6 @@ from pathlib import Path
 from typing import Dict, Iterable, Tuple
 import warnings
 from contextlib import closing
-from difflib import get_close_matches
 from .name_aliases import canonical_name
 
 
@@ -103,33 +102,6 @@ MONTH_MAP = {
 }
 
 
-def log_unknown_technician(
-    name: str, path: Path, valid_names: Iterable[str], unknown_log: Path | None
-) -> None:
-    """Log an unknown technician with fuzzy suggestions.
-
-    A warning is emitted und der Vorfall wird in ``unknown_log`` protokolliert.
-    ``valid_names`` dienen als Basis für mögliche Vorschläge.
-    """
-
-    valid_map = {v.lower(): v for v in valid_names}
-    matches = get_close_matches(name.lower(), list(valid_map.keys()), n=3, cutoff=0.6)
-    suggestions = ", ".join(valid_map[m] for m in matches)
-    if suggestions:
-        logger.warning(
-            "Unknown technician '%s' in %s (meintest du: %s)", name, path, suggestions
-        )
-    else:
-        logger.warning("Unknown technician '%s' in %s", name, path)
-
-    if unknown_log is not None:
-        unknown_log.parent.mkdir(parents=True, exist_ok=True)
-        with unknown_log.open("a", encoding="utf-8") as fh:
-            fh.write(
-                f"{dt.datetime.now().isoformat()}\t{path}\t{name}\t{suggestions}\n"
-            )
-
-
 def excel_to_date(value):
     """Convert an Excel serial or datetime to a :class:`datetime.date`."""
     if isinstance(value, dt.datetime):
@@ -149,7 +121,6 @@ def prev_business_day(day: dt.date) -> dt.date:
 def load_calls(
     path: Path,
     valid_names: Iterable[str] | None = None,
-    unknown_log: Path | None = Path("logs/unknown_technicians.log"),
 ) -> Tuple[dt.date, Dict[str, Dict[str, int]], list[str]]:
     """Load a call report and summarise per technician.
 
@@ -237,8 +208,6 @@ def load_calls(
             raise ValueError("Header row not found in report")
 
         unknown_list = sorted(unknown)
-        for name in unknown_list:
-            log_unknown_technician(name, path, valid_names or [], unknown_log)
         return target_date, summary, unknown_list
 
 
