@@ -94,3 +94,4 @@
 - Verweise auf GUI, Unterbefehle und Debug-Optionen entfernt.
 - `pytest` ausgeführt.
 - Änderungen in Git committet.
+06.08.2025  1:51:21,29 - run_all.bat ausgeführt mit "01.07" ""C:\Users\egencer\Documents\GitHub\Dispatch\Liste.xlsx"" "report.csv" 
