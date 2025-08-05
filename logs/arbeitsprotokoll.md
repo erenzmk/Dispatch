@@ -74,3 +74,7 @@
 - Spaltenzuordnung in `update_liste` korrigiert.
 - Tests angepasst und mit `pytest -q` ausgeführt.
 - CLI mit Beispieldatei getestet und temporäre Dateien entfernt.
+
+## 2025-08-12
+- Mergekonflikt in `tests/test_process_calls.py` aufgelöst und Parametrisierung kombiniert.
+- `pytest tests/test_process_calls.py` ausgeführt: 6 Tests bestanden.

@@ -1,11 +1,13 @@
 import datetime as dt
+from pathlib import Path
+import sys
 import pandas as pd
 import pytest
 
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from process_calls import process_report, vorheriger_werktag
 
 
-<<<<<< codex/normalize-name-comparison-in-process_calls.py
 @pytest.mark.parametrize(
     "excel_name, query_name",
     [
@@ -16,14 +18,9 @@ from process_calls import process_report, vorheriger_werktag
     ],
 )
 def test_process_report_filters_and_classifies(tmp_path, excel_name, query_name):
-    today = dt.date.today()
-    old_date = today - dt.timedelta(days=2)
-=======
-def test_process_report_filters_and_classifies(tmp_path):
     report_date = dt.date(2024, 3, 15)
     prev_day = vorheriger_werktag(report_date)
     old_date = prev_day - dt.timedelta(days=2)
->>>>>> main
 
     data1 = pd.DataFrame(
         {
