@@ -48,7 +48,7 @@ def test_main_no_evening_file_ok(tmp_path: Path, monkeypatch: pytest.MonkeyPatch
     monkeypatch.setattr(sys, "argv", ["process_reports.py", str(day_dir), str(liste)])
 
     def fake_load_calls(path, valid_names=None):
-        return dt.date(2025, 7, 1), {}
+        return dt.date(2025, 7, 1), {}, []
 
     def fake_update_liste(liste_path, month_sheet, target_date, morning_summary):
         pass

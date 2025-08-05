@@ -150,7 +150,7 @@ def load_calls(
     path: Path,
     valid_names: Iterable[str] | None = None,
     unknown_log: Path | None = Path("logs/unknown_technicians.log"),
-) -> Tuple[dt.date, Dict[str, Dict[str, int]]]:
+) -> Tuple[dt.date, Dict[str, Dict[str, int]], list[str]]:
     """Load a call report and summarise per technician.
 
     Parameters
@@ -236,9 +236,10 @@ def load_calls(
                 )
             raise ValueError("Header row not found in report")
 
-        for name in sorted(unknown):
+        unknown_list = sorted(unknown)
+        for name in unknown_list:
             log_unknown_technician(name, path, valid_names or [], unknown_log)
-        return target_date, summary
+        return target_date, summary, unknown_list
 
 
 def update_liste(
@@ -433,7 +434,7 @@ def main(argv: Iterable[str] | None = None) -> None:
         )
     morning = morning_files[0]
 
-    target_date, morning_summary = load_calls(morning, valid_names)
+    target_date, morning_summary, _ = load_calls(morning, valid_names)
     update_liste(args.liste, month_sheet, target_date, morning_summary)
 
 

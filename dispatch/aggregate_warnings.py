@@ -16,9 +16,7 @@ the number of occurrences in the provided reports.
 from __future__ import annotations
 
 import argparse
-import io
 import logging
-import re
 from collections import Counter
 from contextlib import closing
 from pathlib import Path
@@ -82,13 +80,10 @@ def aggregate_warnings(report_dir: Path, valid_names: list[str]) -> Counter[str]
     """Process all Excel files below *report_dir* and count unknown names."""
 
     counter: Counter[str] = Counter()
-    stream = io.StringIO()
-    handler = logging.StreamHandler(stream)
-    handler.setLevel(logging.WARNING)
 
     capture_logger = logger.getChild("process")
     capture_logger.propagate = False
-    capture_logger.addHandler(handler)
+    capture_logger.addHandler(logging.NullHandler())
 
     original_logger = process_reports.logger
     process_reports.logger = capture_logger
@@ -96,21 +91,15 @@ def aggregate_warnings(report_dir: Path, valid_names: list[str]) -> Counter[str]
         for file in sorted(report_dir.rglob("*.xlsx")):
             if file.name.lower().startswith("liste"):
                 continue  # skip the aggregated Liste workbook
-            stream.seek(0)
-            stream.truncate(0)
             try:
-                load_calls(file, valid_names)
+                _, _, unknowns = load_calls(file, valid_names)
             except ValueError as exc:
                 logger.error("%s: %s", file, exc)
                 continue
-            stream.seek(0)
-            for line in stream.read().splitlines():
-                match = re.search(r"'([^']+)'", line)
-                if match:
-                    counter[match.group(1)] += 1
+            for name in unknowns:
+                counter[name] += 1
     finally:
-        capture_logger.removeHandler(handler)
-        handler.close()
+        capture_logger.handlers.clear()
         process_reports.logger = original_logger
     return counter
 

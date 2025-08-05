@@ -40,3 +40,15 @@ def test_aggregate_warnings_does_not_touch_global_logging(tmp_path):
     assert list(root_logger.handlers) == root_handlers
     assert process_logger.level == process_level
     assert list(process_logger.handlers) == process_handlers
+
+
+def test_aggregate_warnings_counts_multiple_reports(tmp_path):
+    report_dir = tmp_path / "reports"
+    report_dir.mkdir()
+    _write_report(report_dir / "r1.xlsx", "Bob")
+    _write_report(report_dir / "r2.xlsx", "Charlie")
+    _write_report(report_dir / "r3.xlsx", "Bob")
+
+    counter = aggregate_warnings(report_dir, ["Alice"])
+
+    assert counter == {"Bob": 2, "Charlie": 1}
