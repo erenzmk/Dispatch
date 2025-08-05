@@ -3,7 +3,7 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-from dispatch import analyze_month, aggregate_warnings, process_reports
+from dispatch import analyze_month, process_reports
 
 
 def main(argv: list[str] | None = None) -> None:
@@ -23,13 +23,9 @@ def main(argv: list[str] | None = None) -> None:
     p_analyze.add_argument("liste", type=Path, help="Path to Liste.xlsx")
     p_analyze.add_argument("-o", "--output", type=Path, default=Path("analysis.csv"), help="Output CSV file")
 
-    p_warnings = sub.add_parser("warnings", help="Aggregate unknown technician warnings")
-    p_warnings.add_argument("report_dir", type=Path, help="Path to report directory")
-    p_warnings.add_argument("--liste", type=Path, default=Path("Liste.xlsx"), help="Path to Liste.xlsx")
-
     p_all = sub.add_parser(
         "run-all",
-        help="Process reports for a month, analyse them and show warnings in one step",
+        help="Process reports for a month and analyse them in one step",
     )
     p_all.add_argument("month_dir", type=Path, help="Directory containing day folders")
     p_all.add_argument("liste", type=Path, help="Path to Liste.xlsx")
@@ -49,12 +45,9 @@ def main(argv: list[str] | None = None) -> None:
         process_reports.process_month(args.month_dir, args.liste)
     elif args.command == "analyze":
         analyze_month.main([str(args.month_dir), str(args.liste), "-o", str(args.output)])
-    elif args.command == "warnings":
-        aggregate_warnings.main([str(args.report_dir), "--liste", str(args.liste)])
     elif args.command == "run-all":
         process_reports.process_month(args.month_dir, args.liste)
         analyze_month.main([str(args.month_dir), str(args.liste), "-o", str(args.output)])
-        aggregate_warnings.main([str(args.month_dir), "--liste", str(args.liste)])
 
 
 if __name__ == "__main__":
