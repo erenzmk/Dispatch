@@ -68,22 +68,16 @@
 - Neuer Test `test_summarize_calls.py`; alle Tests (`pytest`) bestehen.
 
 ## 2025-?? Update 10
-<<<<< codex/refactor-aggregate_warnings.py-for-structured-response
-- load_calls` gibt unbekannte Techniker als Liste zurück.
+- `load_calls` gibt unbekannte Techniker als Liste zurück.
 - `aggregate_warnings` wertet diese Liste direkt aus und verzichtet auf Log-Mitschnitte.
 - Tests angepasst und um eine Prüfung der Zählung unbekannter Techniker ergänzt.
 - Alle Tests (`pytest`) laufen erfolgreich: 34 passed.
-=======
-<<<<< codex/normalize-name-comparison-in-process_calls.py
-- `process_calls.py` normalisiert Techniker-Namen (Trimmen, Kleinschreibung,
-  `canonical_name` für Aliase) und filtert damit robuster.
+- `process_calls.py` normalisiert Techniker-Namen (Trimmen, Kleinschreibung, `canonical_name` für Aliase) und filtert damit robuster.
 - Testfälle berücksichtigen jetzt leichte Namensabweichungen.
 - Alle Tests (`pytest`) laufen weiterhin erfolgreich.
-=======
-- `process_calls.py` liest nun den Berichtstag aus dem Excel-Bericht,
-  berechnet den vorherigen Werktag und markiert Calls nur dann als `neu`,
-  wenn `Erstellt` genau diesem Datum entspricht.
-- Zusätzlicher Testfall prüft das Verhalten bei einem Berichtstag in der
-  Vergangenheit.
->>>>>> main
->>>>>> main
+- `process_calls.py` liest nun den Berichtstag aus dem Excel-Bericht, berechnet den vorherigen Werktag und markiert Calls nur dann als `neu`, wenn `Erstellt` genau diesem Datum entspricht.
+- Zusätzlicher Testfall prüft das Verhalten bei einem Berichtstag in der Vergangenheit.
+
+## 2025-?? Update 11
+- `gather_valid_names` gibt eine leere Liste zurück, wenn das Technikerblatt keine Zeilen enthält.
+- Neuer Test simuliert ein komplett leeres Arbeitsblatt.

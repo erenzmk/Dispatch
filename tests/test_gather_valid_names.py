@@ -46,3 +46,19 @@ def test_gather_valid_names_raises_when_missing(tmp_path):
     with pytest.raises(ValueError):
         gather_valid_names(tmp_path / "Liste.xlsx")
 
+
+def test_gather_valid_names_handles_empty_sheet(tmp_path, monkeypatch):
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Technikernamen"
+    wb.save(tmp_path / "Liste.xlsx")
+    wb.close()
+
+    from openpyxl.worksheet.worksheet import Worksheet
+    from openpyxl.worksheet._read_only import ReadOnlyWorksheet
+
+    monkeypatch.setattr(Worksheet, "max_row", property(lambda self: 0))
+    monkeypatch.setattr(ReadOnlyWorksheet, "max_row", property(lambda self: 0))
+
+    assert gather_valid_names(tmp_path / "Liste.xlsx") == []
+
