@@ -78,3 +78,8 @@
 ## 2025-08-12
 - Mergekonflikt in `tests/test_process_calls.py` aufgelöst und Parametrisierung kombiniert.
 - `pytest tests/test_process_calls.py` ausgeführt: 6 Tests bestanden.
+
+## 2025-08-05 (noch später)
+- Datei `dispatch/__pycache__/process_reports.cpython-313.pyc` aus dem Repository entfernt.
+- Verzeichnis `dispatch/__pycache__/` aus der Versionskontrolle entfernt.
+- `.gitignore` geprüft: `__pycache__/` und `*.pyc` bereits vorhanden.
