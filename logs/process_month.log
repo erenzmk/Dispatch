@@ -50,3 +50,74 @@
 2025-08-04 01:23:39,338 INFO Verarbeite 01.07
 2025-08-04 01:24:20,202 INFO Fertig 01.07
 2025-08-04 01:24:20,203 INFO Verarbeite 02.07
+2025-08-06 00:29:07,372 INFO Starte Verarbeitung für data\Juli_25
+2025-08-06 00:29:07,375 INFO Verarbeite 01.07
+2025-08-06 00:29:22,939 INFO Fertig 01.07
+2025-08-06 00:29:22,940 INFO Verarbeite 02.07
+2025-08-06 00:29:38,663 WARNING Unknown technician 'Al Mohammed, Omar (DATAPOYNT)' in data\Juli_25\02.07\02.07.25 0705.xlsx
+2025-08-06 00:29:38,665 WARNING Unknown technician 'Arslan, Safa (Oezler)' in data\Juli_25\02.07\02.07.25 0705.xlsx
+2025-08-06 00:29:38,666 WARNING Unknown technician 'Gross, Daniel (KFK)' in data\Juli_25\02.07\02.07.25 0705.xlsx
+2025-08-06 00:29:38,668 WARNING Unknown technician 'Hoffmann, Martin (Bluetech)' in data\Juli_25\02.07\02.07.25 0705.xlsx
+2025-08-06 00:29:38,670 WARNING Unknown technician 'LAHR, DIRK (IT-DL)' in data\Juli_25\02.07\02.07.25 0705.xlsx
+2025-08-06 00:29:38,672 WARNING Unknown technician 'Roeglin, Marc' in data\Juli_25\02.07\02.07.25 0705.xlsx
+2025-08-06 00:29:39,828 INFO Fertig 02.07
+2025-08-06 00:29:39,829 INFO Verarbeite 03.07
+2025-08-06 00:29:57,899 WARNING Unknown technician 'HEINZ, ERICH (BLUETECH)' in data\Juli_25\03.07\03.07.25 0720.xlsx
+2025-08-06 00:29:57,902 WARNING Unknown technician 'Vogel, Richard (KZEWSKI)' in data\Juli_25\03.07\03.07.25 0720.xlsx
+2025-08-06 00:29:59,169 INFO Fertig 03.07
+2025-08-06 00:29:59,170 INFO Verarbeite 04.07
+2025-08-06 00:30:16,365 WARNING Unknown technician 'EL HEFNY, HESHAM' in data\Juli_25\04.07\04.07.25 0718.xlsx
+2025-08-06 00:30:16,367 WARNING Unknown technician 'MUELLER, FLORIAN (BLUETECH)' in data\Juli_25\04.07\04.07.25 0718.xlsx
+2025-08-06 00:30:16,368 WARNING Unknown technician 'ULRICH, FRANK (Bluetech)' in data\Juli_25\04.07\04.07.25 0718.xlsx
+2025-08-06 00:30:16,370 WARNING Unknown technician 'WIESE, SILVIO' in data\Juli_25\04.07\04.07.25 0718.xlsx
+2025-08-06 00:30:18,041 INFO Fertig 04.07
+2025-08-06 00:30:18,045 INFO Verarbeite 07.07
+2025-08-06 00:30:40,025 WARNING Unknown technician 'Anders, Mirko' in data\Juli_25\07.07\07.07.25 0727.xlsx
+2025-08-06 00:30:40,027 WARNING Unknown technician 'Schmidt, Patrick (KFK)' in data\Juli_25\07.07\07.07.25 0727.xlsx
+2025-08-06 00:30:41,541 INFO Fertig 07.07
+2025-08-06 00:30:41,542 INFO Verarbeite 08.07
+2025-08-06 00:30:59,836 INFO Fertig 08.07
+2025-08-06 00:30:59,837 INFO Verarbeite 09.07
+2025-08-06 00:31:20,140 WARNING Unknown technician 'YILDIZ, MEHMET' in data\Juli_25\09.07\09.07.25 0718.xlsx
+2025-08-06 00:31:21,420 INFO Fertig 09.07
+2025-08-06 00:31:21,421 INFO Verarbeite 10.07
+2025-08-06 00:31:37,613 INFO Fertig 10.07
+2025-08-06 00:31:37,614 INFO Verarbeite 11.07
+2025-08-06 00:31:53,235 INFO Fertig 11.07
+2025-08-06 00:31:53,236 INFO Verarbeite 14.07
+2025-08-06 00:32:08,674 WARNING Unknown technician 'Keskin, Deniz (Keskin)' in data\Juli_25\14.07\14.07.25 0717.xlsx
+2025-08-06 00:32:08,676 WARNING Unknown technician 'Marina, Fation (Bluetech)' in data\Juli_25\14.07\14.07.25 0717.xlsx
+2025-08-06 00:32:09,719 INFO Fertig 14.07
+2025-08-06 00:32:09,720 INFO Verarbeite 15.07
+2025-08-06 00:32:29,807 INFO Fertig 15.07
+2025-08-06 00:32:29,808 INFO Verarbeite 16.07
+2025-08-06 00:32:51,087 WARNING Unknown technician 'Fries, Kevin (KFK)' in data\Juli_25\16.07\16.07.25 1001.xlsx
+2025-08-06 00:32:51,089 WARNING Unknown technician 'STURM ROMANA (HYD)' in data\Juli_25\16.07\16.07.25 1001.xlsx
+2025-08-06 00:32:52,232 INFO Fertig 16.07
+2025-08-06 00:32:52,232 INFO Verarbeite 17.07
+2025-08-06 00:33:19,801 INFO Fertig 17.07
+2025-08-06 00:33:19,802 INFO Verarbeite 18.07
+2025-08-06 00:33:47,727 WARNING Unknown technician 'Berger, Anita' in data\Juli_25\18.07\18.07.25 0716.xlsx
+2025-08-06 00:33:49,120 INFO Fertig 18.07
+2025-08-06 00:33:49,121 INFO Verarbeite 21.07
+2025-08-06 00:34:40,871 WARNING Unknown technician 'Ahed Shah, Syed (Keskin)' in data\Juli_25\21.07\21.07.25 0730.xlsx
+2025-08-06 00:34:40,875 WARNING Unknown technician 'Pilgir, Yigithan (Keskin)' in data\Juli_25\21.07\21.07.25 0730.xlsx
+2025-08-06 00:34:42,266 INFO Fertig 21.07
+2025-08-06 00:34:42,267 INFO Verarbeite 22.07
+2025-08-06 00:35:23,206 WARNING Unknown technician 'Dogan, Hueseyin (Keskin)' in data\Juli_25\22.07\22.07.25 0701.xlsx
+2025-08-06 00:35:23,210 WARNING Unknown technician 'Gross, Robert (KZEWSKI)' in data\Juli_25\22.07\22.07.25 0701.xlsx
+2025-08-06 00:35:24,804 INFO Fertig 22.07
+2025-08-06 00:35:24,805 INFO Verarbeite 23.07
+2025-08-06 00:36:14,894 INFO Fertig 23.07
+2025-08-06 00:36:14,895 INFO Verarbeite 24.07
+2025-08-06 00:36:48,673 INFO Fertig 24.07
+2025-08-06 00:36:48,675 INFO Verarbeite 25.07
+2025-08-06 00:37:26,196 INFO Fertig 25.07
+2025-08-06 00:37:26,197 INFO Verarbeite 28.07
+2025-08-06 00:37:57,953 WARNING Unknown technician 'Mattern, Martin (KFK)' in data\Juli_25\28.07\28.07.25 0726.xlsx
+2025-08-06 00:37:59,172 INFO Fertig 28.07
+2025-08-06 00:37:59,173 INFO Verarbeite 29.07
+2025-08-06 00:38:29,765 INFO Fertig 29.07
+2025-08-06 00:38:29,766 INFO Verarbeite 30.07
+2025-08-06 00:39:02,494 INFO Fertig 30.07
+2025-08-06 00:39:02,494 INFO Verarbeite 31.07
