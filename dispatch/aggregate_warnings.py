@@ -57,6 +57,8 @@ def gather_valid_names(liste: Path, sheet_name: str | None = None) -> list[str]:
                     f"Tabellenblatt {sheet_name!r} fehlt in {liste}; vorhanden: {', '.join(wb.sheetnames)}"
                 )
             ws = wb[sheet_name]
+        if ws.max_row < 1:
+            return []
 
         header = next(ws.iter_rows(min_row=1, max_row=1, values_only=True))
         wanted = [
