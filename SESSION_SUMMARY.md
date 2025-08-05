@@ -81,3 +81,9 @@
 ## 2025-?? Update 11
 - `gather_valid_names` gibt eine leere Liste zurück, wenn das Technikerblatt keine Zeilen enthält.
 - Neuer Test simuliert ein komplett leeres Arbeitsblatt.
+
+## 2025-?? Update 12
+- `process_report` bereinigt die Technikerliste nun über `canonical_name` und
+  verwendet diese kanonischen Namen zur Normalisierung.
+- Testfälle wurden erweitert, um zusätzliche Namensvarianten abzudecken.
+- Alle Tests (`pytest`) laufen weiterhin erfolgreich.
