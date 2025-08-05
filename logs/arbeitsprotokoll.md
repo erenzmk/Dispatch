@@ -87,3 +87,4 @@
 ## 2025-08-05 (spät)
 - Batchdatei `run_all.bat` erstellt, die Pfade abfragt und den Lauf protokolliert.
 - README um Hinweise zur Batchdatei ergänzt.
+06.08.2025  1:33:36,64 - run_all.bat ausgeführt mit "01.07" ""C:\Users\egencer\Documents\GitHub\Dispatch\data\Liste.xlsx"" ""C:\Users\egencer\Documents\GitHub\Dispatch\data\Liste.xlsx"" 
