@@ -5,17 +5,22 @@ import pytest
 from process_calls import process_report
 
 
-def test_process_report_filters_and_classifies(tmp_path):
+@pytest.mark.parametrize(
+    "excel_name, query_name",
+    [
+        ("Ahmad, Daniyal (Keskin)", "Ahmad, Daniyal (Keskin)"),
+        ("Ahmad, Daniyal (Keskin)", "daniyal"),
+        ("AHMAD, DANIYAL (KESKIN)", " AhMaD, Daniyal (Keskin) "),
+        ("Ahmad, Daniyal (Keskin)", "Daniyal Ahmad"),
+    ],
+)
+def test_process_report_filters_and_classifies(tmp_path, excel_name, query_name):
     today = dt.date.today()
     old_date = today - dt.timedelta(days=2)
 
     data1 = pd.DataFrame(
         {
-            "Techniker": [
-                "Ahmad, Daniyal (Keskin)",
-                "Ahmad, Daniyal (Keskin)",
-                "Andere Person",
-            ],
+            "Techniker": [excel_name, excel_name, "Andere Person"],
             "Callnr": ["17500001", "18000001", "17500002"],
             "Erstellt": [
                 today.strftime("%d.%m.%Y"),
@@ -26,7 +31,7 @@ def test_process_report_filters_and_classifies(tmp_path):
     )
     data2 = pd.DataFrame(
         {
-            "Techniker": ["Ahmad, Daniyal (Keskin)", "Ahmad, Daniyal (Keskin)"],
+            "Techniker": [excel_name, excel_name],
             "Callnr": ["17500003", "17500004"],
             "Erstellt": [
                 old_date.strftime("%d.%m.%Y"),
@@ -40,7 +45,7 @@ def test_process_report_filters_and_classifies(tmp_path):
         data1.to_excel(writer, index=False, sheet_name="Sheet1")
         data2.to_excel(writer, index=False, sheet_name="Sheet2")
 
-    df = process_report(file_path, "Ahmad, Daniyal (Keskin)")
+    df = process_report(file_path, query_name)
 
     assert set(df["Callnr"]) == {"17500001", "17500003", "17500004"}
 

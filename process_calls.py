@@ -3,6 +3,7 @@ import datetime as dt
 from pathlib import Path
 from typing import Union
 import pandas as pd
+from dispatch.name_aliases import canonical_name
 
 
 def process_report(file_path: Union[str, Path], technician_name: str) -> pd.DataFrame:
@@ -26,8 +27,15 @@ def process_report(file_path: Union[str, Path], technician_name: str) -> pd.Data
     df["Callnr"] = df["Callnr"].astype(str)
     df = df[df["Callnr"].str.startswith("17")]
 
-    # Auf den angegebenen Techniker filtern
-    df = df[df["Techniker"] == technician_name]
+    # Namen normalisieren und auf den angegebenen Techniker filtern
+    valid_names: set[str] = set(df["Techniker"].astype(str)) | {technician_name}
+
+    def _norm(name: str) -> str:
+        return canonical_name(name.strip(), valid_names).strip().lower()
+
+    df["__techniker_norm"] = df["Techniker"].astype(str).map(_norm)
+    target = _norm(technician_name)
+    df = df[df["__techniker_norm"] == target].drop(columns="__techniker_norm")
 
     # Erstellungsdatum parsen (deutsches Format Tag.Monat.Jahr)
     df["Erstellt"] = pd.to_datetime(df["Erstellt"], dayfirst=True)

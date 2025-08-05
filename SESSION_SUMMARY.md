@@ -66,3 +66,9 @@
 - `summarize_calls.py` fasst neue und alte Calls pro Techniker zusammen.
 - `report.csv` entfernt, um überflüssige Daten zu bereinigen.
 - Neuer Test `test_summarize_calls.py`; alle Tests (`pytest`) bestehen.
+
+## 2025-?? Update 10
+- `process_calls.py` normalisiert Techniker-Namen (Trimmen, Kleinschreibung,
+  `canonical_name` für Aliase) und filtert damit robuster.
+- Testfälle berücksichtigen jetzt leichte Namensabweichungen.
+- Alle Tests (`pytest`) laufen weiterhin erfolgreich.
