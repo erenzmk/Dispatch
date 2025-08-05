@@ -83,3 +83,7 @@
 - Datei `dispatch/__pycache__/process_reports.cpython-313.pyc` aus dem Repository entfernt.
 - Verzeichnis `dispatch/__pycache__/` aus der Versionskontrolle entfernt.
 - `.gitignore` geprüft: `__pycache__/` und `*.pyc` bereits vorhanden.
+
+## 2025-08-05 (spät)
+- Batchdatei `run_all.bat` erstellt, die Pfade abfragt und den Lauf protokolliert.
+- README um Hinweise zur Batchdatei ergänzt.

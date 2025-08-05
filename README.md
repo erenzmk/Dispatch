@@ -28,6 +28,11 @@ python main.py run-all data/Juli_25 data/Liste.xlsx --output report.csv
 ```
 Verarbeitet den Monat und erstellt die Analyse in einem einzelnen Durchlauf.
 
+### Batchdatei verwenden
+Unter Windows kann stattdessen die Batchdatei `run_all.bat` genutzt werden. Sie fragt optional Pfade und Ausgabedatei ab
+und ruft anschließend denselben Befehl auf. Nach erfolgreichem Lauf wird ein Eintrag mit Zeitstempel in
+`logs/arbeitsprotokoll.md` ergänzt.
+
 ## Generierte Dateien
 
 Dateien wie `analysis.csv` oder `techniker_export.csv` werden zur Laufzeit erstellt und nicht versioniert.
