@@ -103,3 +103,7 @@
 - `pytest -q` ausgeführt.
 06.08.2025  2:24:51,55 - run_all.bat ausgeführt mit "01.07" ""C:\Users\egencer\Documents\GitHub\Dispatch\Liste.xlsx"" ""C:\Users\egencer\Documents\GitHub\Dispatch\report.csv"" 
 06.08.2025  2:32:32,86 - run_all.bat ausgeführt mit "01" ""C:\Users\egencer\Documents\GitHub\Dispatch\Liste.xlsx"" ""C:\Users\egencer\Documents\GitHub\Dispatch\report.csv"" 
+
+## 2025-08-06 (Batchdatei automatisiert)
+- run_all.bat auf feste Pfade ohne Abfragen umgestellt.
+- Testlauf ausgeführt; Fehler wegen fehlender Daten, aber keine Eingabeaufforderungen.
