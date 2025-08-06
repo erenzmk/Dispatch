@@ -71,6 +71,7 @@ def main() -> None:
 
     summary = summarize_report(args.excel_file, args.liste_file)
     if args.output:
+        args.output.parent.mkdir(parents=True, exist_ok=True)
         pd.DataFrame(summary).to_csv(args.output, index=False)
         print(f"Ergebnis gespeichert in {args.output}")
     else:

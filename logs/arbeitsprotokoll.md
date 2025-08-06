@@ -152,3 +152,7 @@
 - CLI-Unterbefehl `summarize-id` mit Beispieldateien getestet und CSV-Inhalte verifiziert.
 - `pytest -q` ausgeführt: 34 Tests bestanden.
 - Temporäre Dateien entfernt.
+## 2025-08-06 (results-Verzeichnis und Ausgabeordner)
+- `run_all.bat` legt das Verzeichnis `results` an, falls es fehlt.
+- `dispatch/summarize_by_id.py` erzeugt den Ausgabeordner vor dem Schreiben der CSV.
+- `pytest -q` ausgeführt: alle 34 Tests bestanden.
