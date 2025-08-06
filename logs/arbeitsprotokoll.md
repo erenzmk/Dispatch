@@ -225,3 +225,10 @@
 - `main` und `update_liste` legen fehlende Monatsblätter automatisch mit Kopfzeile an.
 - Tests für das neue Verhalten ergänzt.
 - `pytest -q` ausgeführt: 36 Tests bestanden.
+
+## 2025-08-06 (GUI-Fehlerbehandlung)
+- subprocess-Aufrufe in `summarize_day` und `process_month` mit `try`/`except` abgesichert.
+- Fehler werden ins Arbeitsprotokoll geschrieben und als Popup angezeigt.
+- GUI zeigt nur bei Erfolg eine Abschlussmeldung.
+- `python -m py_compile run_all_gui.py` und `pytest -q` ausgeführt: 36 Tests bestanden.
+- Keine zusätzlichen Dateien entstanden.
