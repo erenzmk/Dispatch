@@ -186,3 +186,9 @@
 - `dispatch/requirements.txt` mit `--extra-index-url` erweitert und `PySimpleGUI`-Zeile direkt darunter verschoben.
 - `pip install -r dispatch/requirements.txt` ausgeführt.
 - `pytest -q` ausgeführt: 34 Tests bestanden.
+
+## 2025-08-06 (README: privater Index)
+- README-Voraussetzungen um Hinweis auf privaten PySimpleGUI-Index ergänzt.
+- Installationsbefehl auf `pip install --extra-index-url https://PySimpleGUI.net/install -r dispatch/requirements.txt` geändert.
+- `pip install --extra-index-url https://PySimpleGUI.net/install -r dispatch/requirements.txt` ausgeführt.
+- `pytest -q` ausgeführt: 34 Tests bestanden.
