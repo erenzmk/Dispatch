@@ -12,6 +12,9 @@ if not exist "logs" mkdir "logs"
 rem Monatsdaten verarbeiten und analysieren
 python -m dispatch.main run-all "%MONTH%" "%LIST%" --output "%OUTPUT%"
 
+rem sicherstellen, dass das Results-Verzeichnis existiert
+if not exist "results" mkdir "results"
+
 rem Jeden Tagesreport mit "7" im Dateinamen nach Techniker-ID zusammenfassen
 for /R "%MONTH%" %%F in (*7*.xlsx) do (
     for %%D in ("%%~dpF.") do (
