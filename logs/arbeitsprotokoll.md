@@ -158,3 +158,6 @@
 - `pytest -q` ausgeführt: alle 34 Tests bestanden.
 2025-08-06 02:46:01 - Report "data/reports/2025-06/02/02.06.25 0700.xlsx" -> "results/02_02.06.25 0700_summary.csv"
 2025-08-06 02:46:02 - Report "data/reports/2025-06/02/02.06.25 1900.xlsx" -> "results/02_02.06.25 1900_summary.csv"
+## 2025-08-06 (GUI als Einstiegsskript)
+- `run_all.bat` nach `archive/` verschoben.
+- README auf Start mit `python run_all_gui.py` angepasst.
