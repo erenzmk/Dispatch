@@ -241,3 +241,8 @@
 - `load_id_map` sucht nun nach der Kopfzeile statt nur Zeile 1 zu verwenden.
 - Zusätzlichen Test für Tabellen mit Titelzeile hinzugefügt.
 - `pytest -q` ausgeführt: alle Tests bestanden.
+
+## 2025-08-06 (Tabellenblatt-Bestätigung)
+- `main` fragt jetzt nach Bestätigung oder Auswahl eines vorhandenen Blatts, bevor ein neues angelegt wird.
+- Tests angepasst und um Auswahl eines bestehenden Blatts ergänzt.
+- `pytest -q` ausgeführt: 38 Tests bestanden.
