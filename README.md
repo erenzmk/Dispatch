@@ -13,6 +13,16 @@ Automatisiert die Auswertung von täglichen Anrufberichten der Servicetechniker 
 2. Führe `run_all.bat` aus und beantworte die abgefragten Pfade.
 3. Die Ergebnisse werden in `Liste.xlsx` geschrieben und unter `logs/` protokolliert.
 
+## Auswertung nach Techniker-ID
+
+Ein einzelner Tagesbericht lässt sich mit `summarize-id` nach Techniker-IDs zusammenfassen:
+
+```bash
+python -m dispatch.main summarize-id data/report.xlsx data/Liste.xlsx --output results/2025-08-06.csv
+```
+
+Die Ausgabedatei landet im Verzeichnis `results/`.
+
 Optional kann der Tagesordner mit `python -m dispatch.create_day_dir` automatisch erstellt werden.
 
 ## Daten und Ergebnisse
