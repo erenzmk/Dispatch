@@ -147,3 +147,8 @@
 - Datei `results/2025-08-06.csv` gelöscht.
 - `.gitignore` um `results/*.csv` erweitert.
 - `pytest -q` ausgeführt: alle Tests bestanden.
+## 2025-08-06 (CLI summarize-id Test)
+- Neue Testdatei `dispatch/tests/test_main_summarize_id.py` erstellt.
+- CLI-Unterbefehl `summarize-id` mit Beispieldateien getestet und CSV-Inhalte verifiziert.
+- `pytest -q` ausgeführt: 34 Tests bestanden.
+- Temporäre Dateien entfernt.
