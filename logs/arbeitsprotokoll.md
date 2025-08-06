@@ -161,3 +161,9 @@
 ## 2025-08-06 (GUI als Einstiegsskript)
 - `run_all.bat` nach `archive/` verschoben.
 - README auf Start mit `python run_all_gui.py` angepasst.
+
+## 2025-08-06 (PySimpleGUI)
+- `PySimpleGUI` zu `dispatch/requirements.txt` hinzugefügt.
+- README-Voraussetzungen um Paket und Installationshinweis ergänzt.
+- `pip install -r dispatch/requirements.txt` ausgeführt.
+- `pytest -q` ausgeführt: 34 Tests bestanden.

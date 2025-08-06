@@ -5,7 +5,8 @@ Automatisiert die Auswertung von täglichen Anrufberichten der Servicetechniker 
 ## Voraussetzungen
 
 - Python 3.11 oder neuer
-- Pakete: pandas, openpyxl (`dispatch/requirements.txt`)
+- Pakete: pandas, openpyxl, PySimpleGUI (`dispatch/requirements.txt`)
+- Installation: `pip install -r dispatch/requirements.txt`
 
 ## Kurzanleitung
 
