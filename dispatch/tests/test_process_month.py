@@ -20,9 +20,9 @@ def test_process_month_multiple_days(
     monkeypatch: pytest.MonkeyPatch,
     caplog: pytest.LogCaptureFixture,
 ) -> None:
-    month_dir = tmp_path / "Juli_25"
-    day1 = month_dir / "01.07"
-    day2 = month_dir / "02.07"
+    month_dir = tmp_path / "2025-07"
+    day1 = month_dir / "01"
+    day2 = month_dir / "02"
 
     for d in (day1, day2):
         d.mkdir(parents=True)
@@ -33,7 +33,7 @@ def test_process_month_multiple_days(
     create_liste(liste)
 
     def fake_load_calls(path, valid_names=None):
-        day = int(Path(path).parent.name.split(".")[0])
+        day = int(Path(path).parent.name)
         return dt.date(2025, 7, day), {}, []
 
     calls: list[dt.date] = []
@@ -53,8 +53,8 @@ def test_process_month_multiple_days(
 def test_process_month_logging(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    month_dir = tmp_path / "Juli_25"
-    day1 = month_dir / "01.07"
+    month_dir = tmp_path / "2025-07"
+    day1 = month_dir / "01"
     day1.mkdir(parents=True)
     wb = Workbook()
     wb.save(day1 / "m7.xlsx")
@@ -75,5 +75,5 @@ def test_process_month_logging(
     process_month(month_dir, liste, log_file)
 
     content = log_file.read_text(encoding="utf-8")
-    assert "Verarbeite 01.07" in content
+    assert "Verarbeite 01" in content
     assert "Monatsverarbeitung abgeschlossen" in content

@@ -1,7 +1,7 @@
 @echo off
 setlocal
 
-set "DEFAULT_MONTH=data\Juli_25"
+set "DEFAULT_MONTH=data\reports\2025-07"
 set /p "MONTH=Monatsordner [%DEFAULT_MONTH%]: "
 if "%MONTH%"=="" set "MONTH=%DEFAULT_MONTH%"
 
