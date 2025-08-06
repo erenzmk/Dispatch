@@ -110,6 +110,7 @@ def run_gui() -> None:
             else:
                 day_dir = month_dir / date.strftime("%d")
                 summarize_day(day_dir, liste)
+                _log(f'run_all_gui.py ausgeführt mit "{day_dir}" "{liste}"')
             sg.popup("Fertig.")
             month_mode = False
             window["-MODE-"].update("Modus: Tag")
