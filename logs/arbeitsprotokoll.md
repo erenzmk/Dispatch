@@ -232,3 +232,7 @@
 - GUI zeigt nur bei Erfolg eine Abschlussmeldung.
 - `python -m py_compile run_all_gui.py` und `pytest -q` ausgeführt: 36 Tests bestanden.
 - Keine zusätzlichen Dateien entstanden.
+2025-08-06 14:33:31 - dispatch.main process mit "data\reports\2025-07\01" "Liste.xlsx"
+2025-08-06 14:33:34 - Report "data\reports\2025-07\01\19 Uhr.xlsx" -> "results\01_19 Uhr_summary.csv"
+2025-08-06 14:33:36 - Report "data\reports\2025-07\01\7 Uhr.xlsx" -> "results\01_7 Uhr_summary.csv"
+2025-08-06 14:33:36 - run_all_gui.py ausgeführt mit "data\reports\2025-07\01" "Liste.xlsx"
