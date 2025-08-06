@@ -78,8 +78,8 @@ def safe_load_workbook(filename: Path | str, *args, **kwargs):
             warnings.filterwarnings("ignore", message=msg, category=UserWarning)
         return load_workbook(path, *args, **kwargs)
 
-
-HEADER_MARKER = "Employee ID"
+# Markierungen, die auf Kopfzeilen hinweisen können (für wiederholte Zeilen)
+HEADER_MARKERS = ["Employee ID", "Mitarbeiter-ID"]
 PREV_DAY_MAP = {
     0: "Montag",
     1: "Dienstag",
@@ -141,7 +141,8 @@ def load_calls(
         def _norm(value: str) -> str:
             return value.strip().lower()
 
-        marker_norm = _norm(HEADER_MARKER)
+        header_markers_norm = [_norm(m) for m in HEADER_MARKERS]
+        required_headers = [_norm("Employee Name"), _norm("Open Date Time")]
         summary: Dict[str, Dict[str, int]] = {}
         unknown: set[str] = set()
         target_date: dt.date | None = None
@@ -159,9 +160,10 @@ def load_calls(
             for idx, row in enumerate(
                 sheet.iter_rows(min_row=1, max_row=20, values_only=True), 1
             ):
-                if row and any(
-                    _norm(cell) == marker_norm for cell in row if isinstance(cell, str)
-                ):
+                if not row:
+                    continue
+                normalized = [_norm(cell) for cell in row if isinstance(cell, str)]
+                if all(req in normalized for req in required_headers):
                     header_row = list(row)
                     header_row_idx = idx
                     break
@@ -187,11 +189,15 @@ def load_calls(
                 prev_day = prev_business_day(target_date)
 
             for row in sheet.iter_rows(min_row=header_row_idx + 1, values_only=True):
-                if row and any(
-                    _norm(cell) == marker_norm for cell in row if isinstance(cell, str)
+                if not row:
+                    continue
+                normalized = [_norm(cell) for cell in row if isinstance(cell, str)]
+                if (
+                    any(val in header_markers_norm for val in normalized)
+                    or all(req in normalized for req in required_headers)
                 ):
                     continue
-                if not row or row[name_idx] in (None, ""):
+                if row[name_idx] in (None, ""):
                     continue
                 if work_idx is not None:
                     wo_val = row[work_idx]
