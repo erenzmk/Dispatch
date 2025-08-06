@@ -167,3 +167,10 @@
 - README-Voraussetzungen um Paket und Installationshinweis ergänzt.
 - `pip install -r dispatch/requirements.txt` ausgeführt.
 - `pytest -q` ausgeführt: 34 Tests bestanden.
+
+## 2025-08-06 (PySimpleGUI 4.x Fix)
+- PySimpleGUI-Version in `dispatch/requirements.txt` auf `~=4.60` beschränkt.
+- README um Hinweis auf PySimpleGUI 4.x und Installationsbefehl mit privatem Index erweitert.
+- Hinweis zur fehlenden 5.x-Unterstützung in `run_all_gui.py` ergänzt.
+- `pip install --extra-index-url https://PySimpleGUI.net/install -r dispatch/requirements.txt` ausgeführt: Paket 4.x nicht gefunden.
+- `pytest -q` ausgeführt: 34 Tests bestanden.

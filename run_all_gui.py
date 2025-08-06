@@ -6,6 +6,9 @@ Dieses Skript bietet eine GUI zur Auswahl eines Tages oder eines gesamten
 Monats und führt anschließend die bekannten Auswertungen durch. Die
 Funktionen können auch ohne GUI verwendet werden, was das Testen in
 Headless-Umgebungen erleichtert.
+
+Hinweis: Die GUI basiert auf PySimpleGUI 4.x; eine Umstellung auf 5.x wurde
+noch nicht vorgenommen.
 """
 
 from datetime import datetime
