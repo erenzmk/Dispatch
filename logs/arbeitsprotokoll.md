@@ -131,3 +131,8 @@
 - `run_all.bat` durchsucht nun nur Dateien mit `7` im Namen (`*7*.xlsx`).
 - Kommentar im Skript angepasst.
 - `pytest` ausgeführt: alle Tests bestanden.
+
+## 2025-08-06 (run_all-Logging)
+- `run_all.bat` legt das Verzeichnis `logs` bei Bedarf an.
+- Nach jeder `summarize-id`-Ausführung werden Report- und Ergebnisdateien protokolliert.
+- `pytest -q` ausgeführt: 33 Tests bestanden.
