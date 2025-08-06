@@ -205,3 +205,9 @@
 2025-08-06 13:45:44 - Report "data\reports\2025-07\01\19 Uhr.xlsx" -> "results\01_19 Uhr_summary.csv"
 2025-08-06 13:45:46 - Report "data\reports\2025-07\01\7 Uhr.xlsx" -> "results\01_7 Uhr_summary.csv"
 2025-08-06 13:45:46 - run_all_gui.py ausgeführt mit "data\reports\2025-07\01" "Liste.xlsx"
+
+## 2025-08-06 (safe_load_workbook in summarize_by_id)
+- Direkten Import von `load_workbook` entfernt und `safe_load_workbook` aus `process_reports` eingebunden.
+- Aufruf in `summarize_by_id.py` angepasst.
+- `pip install -r dispatch/requirements.txt` ausgeführt.
+- `pytest -q` ausgeführt: 34 Tests bestanden.

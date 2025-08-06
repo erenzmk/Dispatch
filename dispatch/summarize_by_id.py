@@ -8,7 +8,8 @@ from pathlib import Path
 from typing import List, Dict
 
 import pandas as pd
-from openpyxl import load_workbook
+
+from .process_reports import safe_load_workbook
 
 from .technicians import load_id_map
 
@@ -18,7 +19,7 @@ def summarize_report(excel_file: Path, liste_file: Path) -> List[Dict[str, objec
     id_map = load_id_map(liste_file)
     valid_ids = set(id_map)
 
-    wb = load_workbook(excel_file, read_only=True, data_only=True)
+    wb = safe_load_workbook(excel_file, read_only=True, data_only=True)
     ws = wb.worksheets[0]
     file_date_raw = ws["A2"].value
     file_date = pd.to_datetime(file_date_raw, dayfirst=True).date()
