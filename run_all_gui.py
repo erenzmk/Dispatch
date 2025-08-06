@@ -99,6 +99,7 @@ def run_gui() -> None:
     layout = [
         [sg.Text("Reports-Verzeichnis"), sg.Input("data/reports", key="-ROOT-"), sg.FolderBrowse("Wählen")],
         [sg.Text("Technikerliste"), sg.Input("Liste.xlsx", key="-LISTE-"), sg.FileBrowse("Wählen")],
+        [sg.Text("Ausgabedatei"), sg.Input(key="-OUTPUT-"), sg.FileSaveAs("Wählen")],
         [
             sg.Text("Datum"),
             sg.Input(key="-DATE-"),
@@ -127,8 +128,13 @@ def run_gui() -> None:
                 continue
             date = datetime.strptime(date_str, "%Y-%m-%d").date()
             month_dir = root / date.strftime("%Y-%m")
+            output_str = values.get("-OUTPUT-")
+            if output_str:
+                output = Path(output_str)
+            else:
+                output = Path(f"report_{date.strftime('%Y-%m')}.csv")
             if month_mode:
-                process_month(month_dir, liste, Path("report.csv"))
+                process_month(month_dir, liste, output)
             else:
                 day_dir = month_dir / date.strftime("%d")
                 summarize_day(day_dir, liste)
