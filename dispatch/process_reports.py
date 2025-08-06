@@ -191,6 +191,7 @@ def load_calls(
                 tech = canonical_name(tech_raw, valid_names or [])
                 if valid_names and tech not in valid_names:
                     unknown.add(tech_raw)
+                    continue
 
                 open_date = excel_to_date(row[open_idx])
                 data = summary.setdefault(tech, {"total": 0, "new": 0, "old": 0})
@@ -283,17 +284,9 @@ def update_liste(
             ws.cell(row=row, column=start_col + 9).value = day_data["old"]
             ws.cell(row=row, column=start_col + 10).value = day_data["new"]
 
-        for tech in remaining:
-            row = ws.max_row + 1
-            ws.cell(row=row, column=1).value = tech
-            day_data = morning[tech]
-            date_cell = ws.cell(row=row, column=start_col + 1)
-            if date_cell.value is None:
-                date_cell.value = day
-            ws.cell(row=row, column=start_col + 2).value = PREV_DAY_MAP[day.weekday()]
-            ws.cell(row=row, column=start_col + 8).value = day_data["total"]
-            ws.cell(row=row, column=start_col + 9).value = day_data["old"]
-            ws.cell(row=row, column=start_col + 10).value = day_data["new"]
+        if remaining:
+            for tech in sorted(remaining):
+                logger.warning("Techniker %s nicht in Liste, Eintrag ignoriert.", tech)
 
         wb.save(liste)
     finally:
