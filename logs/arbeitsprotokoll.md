@@ -181,3 +181,8 @@
 - Hinweis in `run_all_gui.py` an PySimpleGUI 5.x angepasst.
 - `pip install -r dispatch/requirements.txt` ausgeführt.
 - `pytest -q` ausgeführt: 34 Tests bestanden.
+
+## 2025-08-06 (privater PySimpleGUI-Index)
+- `dispatch/requirements.txt` mit `--extra-index-url` erweitert und `PySimpleGUI`-Zeile direkt darunter verschoben.
+- `pip install -r dispatch/requirements.txt` ausgeführt.
+- `pytest -q` ausgeführt: 34 Tests bestanden.
