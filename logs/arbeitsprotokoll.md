@@ -107,3 +107,8 @@
 ## 2025-08-06 (Batchdatei automatisiert)
 - run_all.bat auf feste Pfade ohne Abfragen umgestellt.
 - Testlauf ausgeführt; Fehler wegen fehlender Daten, aber keine Eingabeaufforderungen.
+
+## 2025-08-06 (Techniker-ID-Mapping)
+- Modul `technicians.py` mit Funktion `load_id_map` erstellt.
+- Tests hinzugefügt und mit `pytest -q` ausgeführt.
+- Keine zusätzlichen Dateien angefallen.
