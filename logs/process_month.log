@@ -214,3 +214,281 @@ PermissionError: [Errno 13] Permission denied: 'Liste.xlsx'
 2025-08-06 10:39:42,878 INFO Verarbeite 07
 2025-08-06 10:41:09,968 INFO Fertig 07
 2025-08-06 10:41:09,969 INFO Verarbeite 08
+2025-08-06 17:46:19,999 INFO Starte Verarbeitung für data\reports\2025-07
+2025-08-06 17:46:20,002 INFO Verarbeite 01
+2025-08-06 17:46:20,157 ERROR Fehler bei der Verarbeitung von data\reports\2025-07\01
+Traceback (most recent call last):
+  File "C:\Users\egencer\Documents\GitHub\Dispatch\dispatch\process_reports.py", line 361, in process_month
+    main([str(day_dir), str(liste)])
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\egencer\Documents\GitHub\Dispatch\dispatch\process_reports.py", line 433, in main
+    target_date, morning_summary, _ = load_calls(morning, valid_names)
+                                      ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\egencer\Documents\GitHub\Dispatch\dispatch\process_reports.py", line 232, in load_calls
+    raise ValueError("Header row not found in report")
+ValueError: Header row not found in report
+2025-08-06 17:46:20,161 INFO Verarbeite 02
+2025-08-06 17:46:20,280 ERROR Fehler bei der Verarbeitung von data\reports\2025-07\02
+Traceback (most recent call last):
+  File "C:\Users\egencer\Documents\GitHub\Dispatch\dispatch\process_reports.py", line 361, in process_month
+    main([str(day_dir), str(liste)])
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\egencer\Documents\GitHub\Dispatch\dispatch\process_reports.py", line 433, in main
+    target_date, morning_summary, _ = load_calls(morning, valid_names)
+                                      ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\egencer\Documents\GitHub\Dispatch\dispatch\process_reports.py", line 232, in load_calls
+    raise ValueError("Header row not found in report")
+ValueError: Header row not found in report
+2025-08-06 17:46:20,281 INFO Verarbeite 03
+2025-08-06 17:46:20,391 ERROR Fehler bei der Verarbeitung von data\reports\2025-07\03
+Traceback (most recent call last):
+  File "C:\Users\egencer\Documents\GitHub\Dispatch\dispatch\process_reports.py", line 361, in process_month
+    main([str(day_dir), str(liste)])
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\egencer\Documents\GitHub\Dispatch\dispatch\process_reports.py", line 433, in main
+    target_date, morning_summary, _ = load_calls(morning, valid_names)
+                                      ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\egencer\Documents\GitHub\Dispatch\dispatch\process_reports.py", line 232, in load_calls
+    raise ValueError("Header row not found in report")
+ValueError: Header row not found in report
+2025-08-06 17:46:20,392 INFO Verarbeite 04
+2025-08-06 17:46:20,545 ERROR Fehler bei der Verarbeitung von data\reports\2025-07\04
+Traceback (most recent call last):
+  File "C:\Users\egencer\Documents\GitHub\Dispatch\dispatch\process_reports.py", line 361, in process_month
+    main([str(day_dir), str(liste)])
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\egencer\Documents\GitHub\Dispatch\dispatch\process_reports.py", line 433, in main
+    target_date, morning_summary, _ = load_calls(morning, valid_names)
+                                      ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\egencer\Documents\GitHub\Dispatch\dispatch\process_reports.py", line 232, in load_calls
+    raise ValueError("Header row not found in report")
+ValueError: Header row not found in report
+2025-08-06 17:46:20,546 INFO Verarbeite 07
+2025-08-06 17:46:20,674 ERROR Fehler bei der Verarbeitung von data\reports\2025-07\07
+Traceback (most recent call last):
+  File "C:\Users\egencer\Documents\GitHub\Dispatch\dispatch\process_reports.py", line 361, in process_month
+    main([str(day_dir), str(liste)])
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\egencer\Documents\GitHub\Dispatch\dispatch\process_reports.py", line 433, in main
+    target_date, morning_summary, _ = load_calls(morning, valid_names)
+                                      ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\egencer\Documents\GitHub\Dispatch\dispatch\process_reports.py", line 232, in load_calls
+    raise ValueError("Header row not found in report")
+ValueError: Header row not found in report
+2025-08-06 17:46:20,676 INFO Verarbeite 08
+2025-08-06 17:46:20,776 ERROR Fehler bei der Verarbeitung von data\reports\2025-07\08
+Traceback (most recent call last):
+  File "C:\Users\egencer\Documents\GitHub\Dispatch\dispatch\process_reports.py", line 361, in process_month
+    main([str(day_dir), str(liste)])
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\egencer\Documents\GitHub\Dispatch\dispatch\process_reports.py", line 433, in main
+    target_date, morning_summary, _ = load_calls(morning, valid_names)
+                                      ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\egencer\Documents\GitHub\Dispatch\dispatch\process_reports.py", line 232, in load_calls
+    raise ValueError("Header row not found in report")
+ValueError: Header row not found in report
+2025-08-06 17:46:20,779 INFO Verarbeite 09
+2025-08-06 17:46:20,911 ERROR Fehler bei der Verarbeitung von data\reports\2025-07\09
+Traceback (most recent call last):
+  File "C:\Users\egencer\Documents\GitHub\Dispatch\dispatch\process_reports.py", line 361, in process_month
+    main([str(day_dir), str(liste)])
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\egencer\Documents\GitHub\Dispatch\dispatch\process_reports.py", line 433, in main
+    target_date, morning_summary, _ = load_calls(morning, valid_names)
+                                      ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\egencer\Documents\GitHub\Dispatch\dispatch\process_reports.py", line 232, in load_calls
+    raise ValueError("Header row not found in report")
+ValueError: Header row not found in report
+2025-08-06 17:46:20,913 INFO Verarbeite 10
+2025-08-06 17:46:21,031 ERROR Fehler bei der Verarbeitung von data\reports\2025-07\10
+Traceback (most recent call last):
+  File "C:\Users\egencer\Documents\GitHub\Dispatch\dispatch\process_reports.py", line 361, in process_month
+    main([str(day_dir), str(liste)])
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\egencer\Documents\GitHub\Dispatch\dispatch\process_reports.py", line 433, in main
+    target_date, morning_summary, _ = load_calls(morning, valid_names)
+                                      ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\egencer\Documents\GitHub\Dispatch\dispatch\process_reports.py", line 232, in load_calls
+    raise ValueError("Header row not found in report")
+ValueError: Header row not found in report
+2025-08-06 17:46:21,032 INFO Verarbeite 11
+2025-08-06 17:46:21,245 ERROR Fehler bei der Verarbeitung von data\reports\2025-07\11
+Traceback (most recent call last):
+  File "C:\Users\egencer\Documents\GitHub\Dispatch\dispatch\process_reports.py", line 361, in process_month
+    main([str(day_dir), str(liste)])
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\egencer\Documents\GitHub\Dispatch\dispatch\process_reports.py", line 433, in main
+    target_date, morning_summary, _ = load_calls(morning, valid_names)
+                                      ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\egencer\Documents\GitHub\Dispatch\dispatch\process_reports.py", line 232, in load_calls
+    raise ValueError("Header row not found in report")
+ValueError: Header row not found in report
+2025-08-06 17:46:21,247 INFO Verarbeite 14
+2025-08-06 17:46:21,437 ERROR Fehler bei der Verarbeitung von data\reports\2025-07\14
+Traceback (most recent call last):
+  File "C:\Users\egencer\Documents\GitHub\Dispatch\dispatch\process_reports.py", line 361, in process_month
+    main([str(day_dir), str(liste)])
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\egencer\Documents\GitHub\Dispatch\dispatch\process_reports.py", line 433, in main
+    target_date, morning_summary, _ = load_calls(morning, valid_names)
+                                      ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\egencer\Documents\GitHub\Dispatch\dispatch\process_reports.py", line 232, in load_calls
+    raise ValueError("Header row not found in report")
+ValueError: Header row not found in report
+2025-08-06 17:46:21,439 INFO Verarbeite 15
+2025-08-06 17:46:21,651 ERROR Fehler bei der Verarbeitung von data\reports\2025-07\15
+Traceback (most recent call last):
+  File "C:\Users\egencer\Documents\GitHub\Dispatch\dispatch\process_reports.py", line 361, in process_month
+    main([str(day_dir), str(liste)])
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\egencer\Documents\GitHub\Dispatch\dispatch\process_reports.py", line 433, in main
+    target_date, morning_summary, _ = load_calls(morning, valid_names)
+                                      ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\egencer\Documents\GitHub\Dispatch\dispatch\process_reports.py", line 232, in load_calls
+    raise ValueError("Header row not found in report")
+ValueError: Header row not found in report
+2025-08-06 17:46:21,654 INFO Verarbeite 16
+2025-08-06 17:46:21,827 ERROR Fehler bei der Verarbeitung von data\reports\2025-07\16
+Traceback (most recent call last):
+  File "C:\Users\egencer\Documents\GitHub\Dispatch\dispatch\process_reports.py", line 361, in process_month
+    main([str(day_dir), str(liste)])
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\egencer\Documents\GitHub\Dispatch\dispatch\process_reports.py", line 433, in main
+    target_date, morning_summary, _ = load_calls(morning, valid_names)
+                                      ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\egencer\Documents\GitHub\Dispatch\dispatch\process_reports.py", line 232, in load_calls
+    raise ValueError("Header row not found in report")
+ValueError: Header row not found in report
+2025-08-06 17:46:21,829 INFO Verarbeite 17
+2025-08-06 17:46:21,974 ERROR Fehler bei der Verarbeitung von data\reports\2025-07\17
+Traceback (most recent call last):
+  File "C:\Users\egencer\Documents\GitHub\Dispatch\dispatch\process_reports.py", line 361, in process_month
+    main([str(day_dir), str(liste)])
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\egencer\Documents\GitHub\Dispatch\dispatch\process_reports.py", line 433, in main
+    target_date, morning_summary, _ = load_calls(morning, valid_names)
+                                      ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\egencer\Documents\GitHub\Dispatch\dispatch\process_reports.py", line 232, in load_calls
+    raise ValueError("Header row not found in report")
+ValueError: Header row not found in report
+2025-08-06 17:46:21,975 INFO Verarbeite 18
+2025-08-06 17:46:22,115 ERROR Fehler bei der Verarbeitung von data\reports\2025-07\18
+Traceback (most recent call last):
+  File "C:\Users\egencer\Documents\GitHub\Dispatch\dispatch\process_reports.py", line 361, in process_month
+    main([str(day_dir), str(liste)])
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\egencer\Documents\GitHub\Dispatch\dispatch\process_reports.py", line 433, in main
+    target_date, morning_summary, _ = load_calls(morning, valid_names)
+                                      ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\egencer\Documents\GitHub\Dispatch\dispatch\process_reports.py", line 232, in load_calls
+    raise ValueError("Header row not found in report")
+ValueError: Header row not found in report
+2025-08-06 17:46:22,116 INFO Verarbeite 21
+2025-08-06 17:46:22,288 ERROR Fehler bei der Verarbeitung von data\reports\2025-07\21
+Traceback (most recent call last):
+  File "C:\Users\egencer\Documents\GitHub\Dispatch\dispatch\process_reports.py", line 361, in process_month
+    main([str(day_dir), str(liste)])
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\egencer\Documents\GitHub\Dispatch\dispatch\process_reports.py", line 433, in main
+    target_date, morning_summary, _ = load_calls(morning, valid_names)
+                                      ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\egencer\Documents\GitHub\Dispatch\dispatch\process_reports.py", line 232, in load_calls
+    raise ValueError("Header row not found in report")
+ValueError: Header row not found in report
+2025-08-06 17:46:22,290 INFO Verarbeite 22
+2025-08-06 17:46:22,452 ERROR Fehler bei der Verarbeitung von data\reports\2025-07\22
+Traceback (most recent call last):
+  File "C:\Users\egencer\Documents\GitHub\Dispatch\dispatch\process_reports.py", line 361, in process_month
+    main([str(day_dir), str(liste)])
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\egencer\Documents\GitHub\Dispatch\dispatch\process_reports.py", line 433, in main
+    target_date, morning_summary, _ = load_calls(morning, valid_names)
+                                      ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\egencer\Documents\GitHub\Dispatch\dispatch\process_reports.py", line 232, in load_calls
+    raise ValueError("Header row not found in report")
+ValueError: Header row not found in report
+2025-08-06 17:46:22,453 INFO Verarbeite 23
+2025-08-06 17:46:22,558 ERROR Fehler bei der Verarbeitung von data\reports\2025-07\23
+Traceback (most recent call last):
+  File "C:\Users\egencer\Documents\GitHub\Dispatch\dispatch\process_reports.py", line 361, in process_month
+    main([str(day_dir), str(liste)])
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\egencer\Documents\GitHub\Dispatch\dispatch\process_reports.py", line 433, in main
+    target_date, morning_summary, _ = load_calls(morning, valid_names)
+                                      ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\egencer\Documents\GitHub\Dispatch\dispatch\process_reports.py", line 232, in load_calls
+    raise ValueError("Header row not found in report")
+ValueError: Header row not found in report
+2025-08-06 17:46:22,560 INFO Verarbeite 24
+2025-08-06 17:46:22,667 ERROR Fehler bei der Verarbeitung von data\reports\2025-07\24
+Traceback (most recent call last):
+  File "C:\Users\egencer\Documents\GitHub\Dispatch\dispatch\process_reports.py", line 361, in process_month
+    main([str(day_dir), str(liste)])
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\egencer\Documents\GitHub\Dispatch\dispatch\process_reports.py", line 433, in main
+    target_date, morning_summary, _ = load_calls(morning, valid_names)
+                                      ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\egencer\Documents\GitHub\Dispatch\dispatch\process_reports.py", line 232, in load_calls
+    raise ValueError("Header row not found in report")
+ValueError: Header row not found in report
+2025-08-06 17:46:22,668 INFO Verarbeite 25
+2025-08-06 17:46:22,799 ERROR Fehler bei der Verarbeitung von data\reports\2025-07\25
+Traceback (most recent call last):
+  File "C:\Users\egencer\Documents\GitHub\Dispatch\dispatch\process_reports.py", line 361, in process_month
+    main([str(day_dir), str(liste)])
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\egencer\Documents\GitHub\Dispatch\dispatch\process_reports.py", line 433, in main
+    target_date, morning_summary, _ = load_calls(morning, valid_names)
+                                      ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\egencer\Documents\GitHub\Dispatch\dispatch\process_reports.py", line 232, in load_calls
+    raise ValueError("Header row not found in report")
+ValueError: Header row not found in report
+2025-08-06 17:46:22,801 INFO Verarbeite 28
+2025-08-06 17:46:22,900 ERROR Fehler bei der Verarbeitung von data\reports\2025-07\28
+Traceback (most recent call last):
+  File "C:\Users\egencer\Documents\GitHub\Dispatch\dispatch\process_reports.py", line 361, in process_month
+    main([str(day_dir), str(liste)])
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\egencer\Documents\GitHub\Dispatch\dispatch\process_reports.py", line 433, in main
+    target_date, morning_summary, _ = load_calls(morning, valid_names)
+                                      ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\egencer\Documents\GitHub\Dispatch\dispatch\process_reports.py", line 232, in load_calls
+    raise ValueError("Header row not found in report")
+ValueError: Header row not found in report
+2025-08-06 17:46:22,901 INFO Verarbeite 29
+2025-08-06 17:46:23,015 ERROR Fehler bei der Verarbeitung von data\reports\2025-07\29
+Traceback (most recent call last):
+  File "C:\Users\egencer\Documents\GitHub\Dispatch\dispatch\process_reports.py", line 361, in process_month
+    main([str(day_dir), str(liste)])
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\egencer\Documents\GitHub\Dispatch\dispatch\process_reports.py", line 433, in main
+    target_date, morning_summary, _ = load_calls(morning, valid_names)
+                                      ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\egencer\Documents\GitHub\Dispatch\dispatch\process_reports.py", line 232, in load_calls
+    raise ValueError("Header row not found in report")
+ValueError: Header row not found in report
+2025-08-06 17:46:23,016 INFO Verarbeite 30
+2025-08-06 17:46:23,122 ERROR Fehler bei der Verarbeitung von data\reports\2025-07\30
+Traceback (most recent call last):
+  File "C:\Users\egencer\Documents\GitHub\Dispatch\dispatch\process_reports.py", line 361, in process_month
+    main([str(day_dir), str(liste)])
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\egencer\Documents\GitHub\Dispatch\dispatch\process_reports.py", line 433, in main
+    target_date, morning_summary, _ = load_calls(morning, valid_names)
+                                      ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\egencer\Documents\GitHub\Dispatch\dispatch\process_reports.py", line 232, in load_calls
+    raise ValueError("Header row not found in report")
+ValueError: Header row not found in report
+2025-08-06 17:46:23,123 INFO Verarbeite 31
+2025-08-06 17:46:23,235 ERROR Fehler bei der Verarbeitung von data\reports\2025-07\31
+Traceback (most recent call last):
+  File "C:\Users\egencer\Documents\GitHub\Dispatch\dispatch\process_reports.py", line 361, in process_month
+    main([str(day_dir), str(liste)])
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\egencer\Documents\GitHub\Dispatch\dispatch\process_reports.py", line 433, in main
+    target_date, morning_summary, _ = load_calls(morning, valid_names)
+                                      ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\egencer\Documents\GitHub\Dispatch\dispatch\process_reports.py", line 232, in load_calls
+    raise ValueError("Header row not found in report")
+ValueError: Header row not found in report
+2025-08-06 17:46:23,237 INFO Monatsverarbeitung abgeschlossen
