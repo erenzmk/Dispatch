@@ -1,5 +1,6 @@
 import pandas as pd
 import openpyxl
+import pytest
 
 from dispatch.summarize_calls import summarize_report
 
@@ -41,3 +42,32 @@ def test_summarize_report(tmp_path):
     assert row["old"] == 1
     assert row["total"] == 2
     assert str(row["date"]) == "2025-07-01"
+
+
+def test_summarize_report_warns_on_empty(tmp_path):
+    excel = tmp_path / "report_empty.xlsx"
+    with pd.ExcelWriter(excel) as writer:
+        pd.DataFrame({"first": ["Daniyal"], "last": ["Ahmad"]}).to_excel(
+            writer, index=False, sheet_name="Techniker DK"
+        )
+        pd.DataFrame(columns=["first", "last"]).to_excel(
+            writer, index=False, sheet_name="Berlin dk"
+        )
+        pd.DataFrame(columns=["first", "last"]).to_excel(
+            writer, index=False, sheet_name="Berlin rest"
+        )
+        data = pd.DataFrame(
+            [["Daniyal Ahmad", "", "18000001", "", "", "", "", "30-06-2025 09:04"]],
+            columns=list("ABCDEFGH"),
+        )
+        data.to_excel(writer, index=False, sheet_name="West Central", startrow=20, header=False)
+
+    wb = openpyxl.load_workbook(excel)
+    ws = wb["West Central"]
+    ws["A2"] = "01.07.25 07:01"
+    wb.save(excel)
+    wb.close()
+
+    with pytest.warns(UserWarning):
+        result = summarize_report(excel)
+    assert result.empty

@@ -246,3 +246,9 @@
 - `main` fragt jetzt nach Bestätigung oder Auswahl eines vorhandenen Blatts, bevor ein neues angelegt wird.
 - Tests angepasst und um Auswahl eines bestehenden Blatts ergänzt.
 - `pytest -q` ausgeführt: 38 Tests bestanden.
+
+## 2025-08-06 (Warnung bei leeren Ergebnissen)
+- `summarize_report` prüft nun, ob Filter alle Zeilen ausschließen und warnt mit Beispielen.
+- Optionaler Parameter `call_prefixes` erlaubt Anpassung der Call-Nummer-Präfixe.
+- Zusätzlicher Test für leere Ergebnisse erstellt.
+- `pytest -q` ausgeführt: 39 Tests bestanden.
