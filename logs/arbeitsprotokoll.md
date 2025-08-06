@@ -174,3 +174,10 @@
 - Hinweis zur fehlenden 5.x-Unterstützung in `run_all_gui.py` ergänzt.
 - `pip install --extra-index-url https://PySimpleGUI.net/install -r dispatch/requirements.txt` ausgeführt: Paket 4.x nicht gefunden.
 - `pytest -q` ausgeführt: 34 Tests bestanden.
+
+## 2025-08-06 (PySimpleGUI 5.x)
+- PySimpleGUI-Anforderung auf Version 5.x umgestellt.
+- README-Voraussetzungen und Installationsbefehl aktualisiert.
+- Hinweis in `run_all_gui.py` an PySimpleGUI 5.x angepasst.
+- `pip install -r dispatch/requirements.txt` ausgeführt.
+- `pytest -q` ausgeführt: 34 Tests bestanden.
