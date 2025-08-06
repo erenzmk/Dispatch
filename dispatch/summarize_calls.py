@@ -1,4 +1,5 @@
 import argparse
+import warnings
 from pathlib import Path
 from typing import Iterable
 import pandas as pd
@@ -20,8 +21,18 @@ def load_technicians(xls: pd.ExcelFile, mapping_sheets: Iterable[str]) -> set[st
     return names
 
 
-def summarize_report(file_path: Path) -> pd.DataFrame:
-    """Bericht einlesen und Calls pro Techniker zusammenfassen."""
+DEFAULT_CALL_PREFIXES = ("17",)
+
+
+def summarize_report(
+    file_path: Path, call_prefixes: Iterable[str] = DEFAULT_CALL_PREFIXES
+) -> pd.DataFrame:
+    """Bericht einlesen und Calls pro Techniker zusammenfassen.
+
+    Args:
+        file_path: Pfad zur Excel-Datei.
+        call_prefixes: akzeptierte Präfixe der Call-Nummern.
+    """
     xls = pd.ExcelFile(file_path)
     technicians = load_technicians(xls, MAPPING_SHEETS)
     if not technicians:
@@ -34,7 +45,8 @@ def summarize_report(file_path: Path) -> pd.DataFrame:
     tmp = pd.read_excel(xls, sheet_name=data_sheets[0], header=None)
     file_date = pd.to_datetime(tmp.iloc[1, 0], dayfirst=True).date()
 
-    records = []
+    records: list[dict[str, str]] = []
+    skipped_prefix: list[str] = []
     for sheet in data_sheets:
         df = pd.read_excel(xls, sheet_name=sheet)
         for _, row in df.iterrows():
@@ -42,7 +54,10 @@ def summarize_report(file_path: Path) -> pd.DataFrame:
             if name not in technicians:
                 continue
             call = str(row.iloc[2]).strip()
-            if not call.startswith("17"):
+            if call_prefixes and not any(
+                call.startswith(pref) for pref in call_prefixes
+            ):
+                skipped_prefix.append(call)
                 continue
             h_val = row.iloc[7]
             if pd.isnull(h_val):
@@ -54,6 +69,16 @@ def summarize_report(file_path: Path) -> pd.DataFrame:
             records.append({"technician": name, "status": status})
 
     if not records:
+        if skipped_prefix:
+            beispiel = ", ".join(skipped_prefix[:3])
+            warnings.warn(
+                "Keine Zeilen nach Anwendung der Filter gefunden. "
+                f"Beispiel verworfene Call-Nummern: {beispiel}. "
+                f"Aktuelle Präfixe: {tuple(call_prefixes)}",
+                stacklevel=1,
+            )
+        else:
+            warnings.warn("Keine passenden Zeilen gefunden.", stacklevel=1)
         return pd.DataFrame(columns=["technician", "date", "new", "old", "total"])
 
     df_res = pd.DataFrame(records)
