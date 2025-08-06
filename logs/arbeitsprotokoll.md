@@ -197,3 +197,7 @@
 - In `run_all_gui.py` wird nach dem Import von PySimpleGUI geprüft, ob `sg` eine Funktion `theme` besitzt.
 - Falls nicht, wird eine verständliche Fehlermeldung mit Hinweis auf den privaten Index ausgegeben und das Programm beendet.
 - `python -m py_compile run_all_gui.py` und `pytest -q` ausgeführt: 34 Tests bestanden.
+
+## 2025-08-06 (Platzhalterpaket)
+- requirements.txt, README und run_all_gui.py angepasst.
+- Fehler wurde durch ein Platzhalterpaket ausgelöst; künftig wird der private Index genutzt.
