@@ -3,7 +3,9 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-from . import analyze_month, process_reports
+import pandas as pd
+
+from . import analyze_month, process_reports, summarize_by_id
 
 
 def main(argv: list[str] | None = None) -> None:
@@ -37,6 +39,14 @@ def main(argv: list[str] | None = None) -> None:
         help="Output CSV file for analysis",
     )
 
+    p_sum_id = sub.add_parser(
+        "summarize-id",
+        help="Summarize a report by technician ID",
+    )
+    p_sum_id.add_argument("excel_file", type=Path, help="Path to the Excel report")
+    p_sum_id.add_argument("liste", type=Path, help="Path to Liste.xlsx")
+    p_sum_id.add_argument("-o", "--output", type=Path, help="Output CSV file")
+
     args = parser.parse_args(argv)
 
     if args.command == "process":
@@ -48,6 +58,13 @@ def main(argv: list[str] | None = None) -> None:
     elif args.command == "run-all":
         process_reports.process_month(args.month_dir, args.liste)
         analyze_month.main([str(args.month_dir), str(args.liste), "-o", str(args.output)])
+    elif args.command == "summarize-id":
+        summary = summarize_by_id.summarize_report(args.excel_file, args.liste)
+        df = pd.DataFrame(summary)
+        if args.output:
+            df.to_csv(args.output, index=False)
+        else:
+            print(df.to_string(index=False))
 
 
 if __name__ == "__main__":
