@@ -32,6 +32,88 @@ def test_load_calls_selects_correct_sheet(tmp_path):
     assert unknown == []
 
 
+def test_load_calls_filters_irrelevant_sheets(tmp_path):
+    wb = Workbook()
+    ws1 = wb.active
+    ws1.title = "Meta"
+    ws1["A5"], ws1["B5"], ws1["C5"] = (
+        "Employee ID",
+        "Employee Name",
+        "Open Date Time",
+    )
+    ws1["A6"], ws1["B6"], ws1["C6"] = 1, "Bob", dt.datetime(2025, 6, 30)
+
+    ws2 = wb.create_sheet("Report")
+    ws2["A2"] = dt.datetime(2025, 7, 1)
+    ws2["A5"], ws2["B5"], ws2["C5"] = (
+        "Employee ID",
+        "Employee Name",
+        "Open Date Time",
+    )
+    ws2["A6"], ws2["B6"], ws2["C6"] = 1, "Alice", dt.datetime(2025, 6, 30)
+
+    path = tmp_path / "report.xlsx"
+    wb.save(path)
+
+    target_date, summary, unknown = load_calls(path)
+
+    assert target_date == dt.date(2025, 7, 1)
+    assert summary == {"Alice": {"total": 1, "new": 1, "old": 0}}
+    assert unknown == []
+
+
+def test_load_calls_skips_duplicate_work_orders(tmp_path):
+    wb = Workbook()
+    ws1 = wb.active
+    ws1.title = "Report1"
+    ws1["A2"] = dt.datetime(2025, 7, 1)
+    ws1["A5"], ws1["B5"], ws1["C5"], ws1["D5"] = (
+        "Employee ID",
+        "Employee Name",
+        "Work Order Number",
+        "Open Date Time",
+    )
+    ws1["A6"], ws1["B6"], ws1["C6"], ws1["D6"] = (
+        1,
+        "Alice",
+        "17500001",
+        dt.datetime(2025, 6, 30),
+    )
+
+    ws2 = wb.create_sheet("Report2")
+    ws2["A2"] = dt.datetime(2025, 7, 1)
+    ws2["A5"], ws2["B5"], ws2["C5"], ws2["D5"] = (
+        "Employee ID",
+        "Employee Name",
+        "Work Order Number",
+        "Open Date Time",
+    )
+    ws2["A6"], ws2["B6"], ws2["C6"], ws2["D6"] = (
+        2,
+        "Bob",
+        "17500001",
+        dt.datetime(2025, 6, 29),
+    )
+    ws2["A7"], ws2["B7"], ws2["C7"], ws2["D7"] = (
+        3,
+        "Bob",
+        "17500002",
+        dt.datetime(2025, 6, 29),
+    )
+
+    path = tmp_path / "report.xlsx"
+    wb.save(path)
+
+    target_date, summary, unknown = load_calls(path)
+
+    assert target_date == dt.date(2025, 7, 1)
+    assert summary == {
+        "Alice": {"total": 1, "new": 1, "old": 0},
+        "Bob": {"total": 1, "new": 0, "old": 1},
+    }
+    assert unknown == []
+
+
 def test_load_calls_handles_header_variations(tmp_path):
     wb = Workbook()
     ws = wb.active

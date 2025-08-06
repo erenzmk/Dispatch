@@ -29,6 +29,7 @@ from __future__ import annotations
 import argparse
 import datetime as dt
 import logging
+import re
 from pathlib import Path
 from typing import Dict, Iterable, Tuple
 import warnings
@@ -48,6 +49,10 @@ OPENPYXL_WARNINGS = [
     "Workbook contains no default style, apply openpyxl's default",
     "Data Validation extension is not supported and will be removed",
 ]
+
+# Only worksheets whose title matches one of these patterns are considered
+# relevant for call extraction.
+RELEVANT_SHEET_PATTERNS = [re.compile("report", re.IGNORECASE)]
 
 
 def safe_load_workbook(filename: Path | str, *args, **kwargs):
@@ -142,8 +147,13 @@ def load_calls(
         target_date: dt.date | None = None
         prev_day: dt.date | None = None
         missing_required: list[str] | None = None
+        seen_work_orders: set[str] = set()
 
         for sheet in wb.worksheets:
+            # Skip worksheets that do not match the expected naming pattern.
+            if not any(p.search(sheet.title) for p in RELEVANT_SHEET_PATTERNS):
+                continue
+
             header_row = None
             header_row_idx = None
             for idx, row in enumerate(
@@ -184,9 +194,16 @@ def load_calls(
                 if not row or row[name_idx] in (None, ""):
                     continue
                 if work_idx is not None:
-                    wo = row[work_idx]
-                    if not wo or not str(wo).startswith("17"):
+                    wo_val = row[work_idx]
+                    if not wo_val:
                         continue
+                    if isinstance(wo_val, (int, float)):
+                        wo_str = str(int(wo_val))
+                    else:
+                        wo_str = str(wo_val).strip()
+                    if not wo_str.startswith("17") or wo_str in seen_work_orders:
+                        continue
+                    seen_work_orders.add(wo_str)
                 tech_raw = str(row[name_idx]).strip()
                 tech = canonical_name(tech_raw, valid_names or [])
                 if valid_names and tech not in valid_names:

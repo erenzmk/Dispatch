@@ -133,3 +133,9 @@
 - `run_all.bat` filtert Tagesreports nun auf Dateien mit `7` im Namen.
 - Kommentar im Skript angepasst.
 - `pytest` erfolgreich ausgeführt.
+
+## 2025-08-06 Update 21
+- `load_calls` verarbeitet nur noch Arbeitsblätter mit passenden Namen.
+- Mehrfache `Work Order Number` werden einmalig gezählt, um Duplikate zu vermeiden.
+- Zusätzliche Tests prüfen Filter- und Duplikaterkennung.
+- `pytest` erfolgreich ausgeführt.
