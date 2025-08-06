@@ -121,3 +121,9 @@
 ## 2025-08-06 (Ergebnisdatei)
 - Erfolgreich Datei `results/2025-08-06.csv` mit Spalten ID, Techniker, Neu, Alt, Summe erstellt.
 - Temporäre Dateien nach `to_delete/` verschoben.
+
+## 2025-08-06 (Tests für summarize_by_id)
+- Kleine Excel-Testdateien für neue, alte und unbekannte IDs angelegt.
+- Neue Testdatei `dispatch/tests/test_summarize_by_id.py` erstellt.
+- `pytest` ausgeführt: alle 33 Tests bestanden.
+
