@@ -383,9 +383,21 @@ def main(argv: Iterable[str] | None = None) -> None:
     # Read existing technician names to aid fuzzy matching
     name_wb = safe_load_workbook(args.liste)
     if month_sheet not in name_wb.sheetnames:
-        ws_names = name_wb.create_sheet(title=month_sheet)
-        ws_names.cell(row=1, column=1, value="Techniker")
-        name_wb.save(args.liste)
+        print(f"Arbeitsblatt '{month_sheet}' existiert nicht.")
+        print("Verfügbare Blätter:", ", ".join(name_wb.sheetnames))
+        choice = input(
+            "Neues Blatt anlegen? (j/n) oder Namen eines vorhandenen Blatts eingeben: "
+        ).strip()
+        if choice.lower() in {"j", "ja", "y"}:
+            ws_names = name_wb.create_sheet(title=month_sheet)
+            ws_names.cell(row=1, column=1, value="Techniker")
+            name_wb.save(args.liste)
+        elif choice in name_wb.sheetnames:
+            ws_names = name_wb[choice]
+            month_sheet = choice
+        else:
+            name_wb.close()
+            raise ValueError("Kein gültiges Blatt gewählt; Abbruch.")
     else:
         ws_names = name_wb[month_sheet]
     valid_names = [
