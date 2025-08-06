@@ -2,10 +2,11 @@ from __future__ import annotations
 
 import argparse
 import csv
+import datetime as dt
 from pathlib import Path
 from typing import Iterable
 
-from .process_reports import load_calls, safe_load_workbook
+from .process_reports import load_calls, safe_load_workbook, MONTH_MAP
 
 
 def _read_names_from_liste(liste: Path, sheet: str) -> list[str]:
@@ -26,7 +27,9 @@ def _read_names_from_liste(liste: Path, sheet: str) -> list[str]:
 
 def analyze_month(month_dir: Path, liste: Path, output: Path) -> None:
     """Analyse all day folders inside *month_dir* and write summary to CSV."""
-    month_sheet = month_dir.name
+    # ``month_dir`` folgt dem Schema ``YYYY-MM``.
+    month_dt = dt.datetime.strptime(month_dir.name, "%Y-%m")
+    month_sheet = f"{MONTH_MAP[month_dt.month]}_{month_dt.strftime('%y')}"
     valid_names = _read_names_from_liste(liste, month_sheet)
     expected = set(valid_names)
     found: set[str] = set()
@@ -55,7 +58,11 @@ def analyze_month(month_dir: Path, liste: Path, output: Path) -> None:
 
 def main(argv: Iterable[str] | None = None) -> None:
     parser = argparse.ArgumentParser(description="Analyse monthly reports")
-    parser.add_argument("month_dir", type=Path, help="Directory containing day folders")
+    parser.add_argument(
+        "month_dir",
+        type=Path,
+        help="Directory containing day folders (e.g. reports/2025-07)",
+    )
     parser.add_argument("liste", type=Path, help="Path to Liste.xlsx")
     parser.add_argument(
         "-o",
