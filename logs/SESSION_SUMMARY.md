@@ -123,3 +123,8 @@
 - Skripte und Tests erwarten nun diese Struktur.
 - Hilfsskript `dispatch/create_day_dir.py` erstellt Tagesordner automatisch.
 - README und `run_all.bat` mit Beispielpfad aktualisiert.
+
+## 2025-08-06 Update 19
+- Unterbefehl `summarize-id` in `dispatch/main.py` hinzugefügt.
+- `run_all.bat` führt nun `summarize-id` für jeden Tagesreport aus und dokumentiert Pfade und Parameter.
+- `pytest` erfolgreich ausgeführt.
