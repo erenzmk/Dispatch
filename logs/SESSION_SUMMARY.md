@@ -128,3 +128,8 @@
 - Unterbefehl `summarize-id` in `dispatch/main.py` hinzugefügt.
 - `run_all.bat` führt nun `summarize-id` für jeden Tagesreport aus und dokumentiert Pfade und Parameter.
 - `pytest` erfolgreich ausgeführt.
+
+## 2025-08-06 Update 20
+- `run_all.bat` filtert Tagesreports nun auf Dateien mit `7` im Namen.
+- Kommentar im Skript angepasst.
+- `pytest` erfolgreich ausgeführt.

@@ -127,3 +127,7 @@
 - Neue Testdatei `dispatch/tests/test_summarize_by_id.py` erstellt.
 - `pytest` ausgeführt: alle 33 Tests bestanden.
 
+## 2025-08-06 (run_all-Filter)
+- `run_all.bat` durchsucht nun nur Dateien mit `7` im Namen (`*7*.xlsx`).
+- Kommentar im Skript angepasst.
+- `pytest` ausgeführt: alle Tests bestanden.
