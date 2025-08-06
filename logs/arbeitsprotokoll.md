@@ -112,3 +112,8 @@
 - Modul `technicians.py` mit Funktion `load_id_map` erstellt.
 - Tests hinzugefügt und mit `pytest -q` ausgeführt.
 - Keine zusätzlichen Dateien angefallen.
+## 2025-08-06 (summarize_by_id)
+- Skript `summarize_by_id.py` erstellt, das Berichte nach Techniker-IDs auswertet.
+- Test `test_summarize_by_id.py` hinzugefügt.
+- `pytest -q` ausgeführt: alle 33 Tests bestanden.
+- CLI mit Beispieldateien getestet und temporäre Dateien entfernt.
