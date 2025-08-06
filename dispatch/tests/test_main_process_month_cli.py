@@ -6,7 +6,7 @@ from dispatch.main import main as cli_main
 
 
 def test_cli_process_month(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
-    month_dir = tmp_path / "Juli_25"
+    month_dir = tmp_path / "2025-07"
     liste = tmp_path / "Liste.xlsx"
 
     called: dict[str, Path] = {}

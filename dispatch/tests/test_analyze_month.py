@@ -24,22 +24,22 @@ def _create_report(path: Path, names: list[str]) -> None:
 
 
 def test_analyze_month_detects_missing_and_extra(tmp_path):
-    month_dir = tmp_path / "Foo_25"
+    month_dir = tmp_path / "2025-07"
     month_dir.mkdir()
 
-    day1 = month_dir / "01.07"
+    day1 = month_dir / "01"
     day1.mkdir()
     _create_report(day1 / "m7.xlsx", ["Alice"])
     _create_report(day1 / "e19.xlsx", ["Alice"])
 
-    day2 = month_dir / "02.07"
+    day2 = month_dir / "02"
     day2.mkdir()
     _create_report(day2 / "m7.xlsx", ["Charlie"])
     _create_report(day2 / "e19.xlsx", [])
 
     wb = Workbook()
     ws = wb.active
-    ws.title = "Foo_25"
+    ws.title = "Juli_25"
     ws["A1"] = "name"
     ws["A2"] = "Alice"
     ws["A3"] = "Bob"
