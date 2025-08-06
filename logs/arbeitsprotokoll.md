@@ -215,3 +215,8 @@
 - `summarize_day` ruft jetzt vor der Zusammenfassung `dispatch.main process` mit `day_dir` und `liste` auf.
 - Arbeitsprotokoll erweitert und Code getestet.
 - `pytest -q` ausgeführt: alle Tests bestanden.
+
+## 2025-08-06 (run_gui Ausgabepfad)
+- GUI um Eingabefeld für den Ausgabepfad ergänzt.
+- `process_month` verwendet den gewählten Pfad oder einen Standardnamen mit Monat.
+- `python -m py_compile run_all_gui.py` und `pytest -q` ausgeführt: 34 Tests bestanden.
