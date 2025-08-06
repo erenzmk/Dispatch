@@ -19,3 +19,16 @@ def test_load_id_map(tmp_path: Path):
     wb.close()
 
     assert load_id_map(file) == {"1": "Alice", "2": "Bob"}
+
+
+def test_load_id_map_with_title_row(tmp_path: Path):
+    wb = Workbook()
+    ws = wb.active
+    ws.append(["Techniker DK"])  # Titelzeile
+    ws.append(["ID", "Techniker"])
+    ws.append(["42", "Tester"])
+    file = tmp_path / "Liste.xlsx"
+    wb.save(file)
+    wb.close()
+
+    assert load_id_map(file) == {"42": "Tester"}

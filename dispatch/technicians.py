@@ -13,16 +13,29 @@ def load_id_map(liste_path: Path) -> dict[str, str]:
     wb = load_workbook(liste_path, read_only=True, data_only=True)
     ws = wb.worksheets[0]
 
-    headers = {cell.value: idx for idx, cell in enumerate(ws[1], start=1)}
-    id_col = headers.get("ID")
-    tech_col = headers.get("Techniker")
-    result: dict[str, str] = {}
+    header_row = None
+    headers: dict[str, int] = {}
+    for idx, row in enumerate(ws.iter_rows(values_only=True), start=1):
+        headers = {
+            str(cell): col_idx
+            for col_idx, cell in enumerate(row, start=1)
+            if isinstance(cell, str)
+        }
+        if "ID" in headers and "Techniker" in headers:
+            header_row = idx
+            break
 
-    if id_col is None or tech_col is None:
+    result: dict[str, str] = {}
+    if header_row is None:
         wb.close()
         return result
 
-    for row in ws.iter_rows(min_row=2, values_only=True):
+    id_col = headers["ID"]
+    tech_col = headers["Techniker"]
+
+    for row in ws.iter_rows(min_row=header_row + 1, values_only=True):
+        if len(row) < max(id_col, tech_col):
+            continue
         id_value = row[id_col - 1]
         tech_value = row[tech_col - 1]
         if id_value is None or tech_value is None:
