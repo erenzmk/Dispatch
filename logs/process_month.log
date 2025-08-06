@@ -173,3 +173,32 @@
 2025-08-06 02:59:55,352 INFO Verarbeite 31
 2025-08-06 03:00:59,610 INFO Fertig 31
 2025-08-06 03:00:59,611 INFO Monatsverarbeitung abgeschlossen
+2025-08-06 04:13:59,258 INFO Starte Verarbeitung für data\reports\2025-07
+2025-08-06 04:13:59,263 INFO Verarbeite 01
+2025-08-06 04:15:36,531 INFO Fertig 01
+2025-08-06 04:15:36,532 INFO Verarbeite 02
+2025-08-06 04:17:19,001 INFO Fertig 02
+2025-08-06 04:17:19,003 INFO Verarbeite 03
+2025-08-06 04:19:20,205 ERROR Fehler bei der Verarbeitung von data\reports\2025-07\03
+Traceback (most recent call last):
+  File "C:\Users\egencer\Documents\GitHub\Dispatch\dispatch\process_reports.py", line 343, in process_month
+    main([str(day_dir), str(liste)])
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\egencer\Documents\GitHub\Dispatch\dispatch\process_reports.py", line 401, in main
+    update_liste(args.liste, month_sheet, target_date, morning_summary)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\egencer\Documents\GitHub\Dispatch\dispatch\process_reports.py", line 296, in update_liste
+    wb.save(liste)
+    ~~~~~~~^^^^^^^
+  File "C:\Users\egencer\AppData\Local\Programs\Python\Python313\Lib\site-packages\openpyxl\workbook\workbook.py", line 386, in save
+    save_workbook(self, filename)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "C:\Users\egencer\AppData\Local\Programs\Python\Python313\Lib\site-packages\openpyxl\writer\excel.py", line 291, in save_workbook
+    archive = ZipFile(filename, 'w', ZIP_DEFLATED, allowZip64=True)
+  File "C:\Users\egencer\AppData\Local\Programs\Python\Python313\Lib\zipfile\__init__.py", line 1367, in __init__
+    self.fp = io.open(file, filemode)
+              ~~~~~~~^^^^^^^^^^^^^^^^
+PermissionError: [Errno 13] Permission denied: 'Liste.xlsx'
+2025-08-06 04:19:20,412 INFO Verarbeite 04
+2025-08-06 04:21:22,197 INFO Fertig 04
+2025-08-06 04:21:22,199 INFO Verarbeite 07
