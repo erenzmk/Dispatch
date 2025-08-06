@@ -117,3 +117,7 @@
 - Test `test_summarize_by_id.py` hinzugefügt.
 - `pytest -q` ausgeführt: alle 33 Tests bestanden.
 - CLI mit Beispieldateien getestet und temporäre Dateien entfernt.
+
+## 2025-08-06 (Ergebnisdatei)
+- Erfolgreich Datei `results/2025-08-06.csv` mit Spalten ID, Techniker, Neu, Alt, Summe erstellt.
+- Temporäre Dateien nach `to_delete/` verschoben.
