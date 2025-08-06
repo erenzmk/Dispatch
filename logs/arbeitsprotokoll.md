@@ -245,3 +245,8 @@
 2025-08-06 14:43:44 - Report "data\reports\2025-07\01\19 Uhr.xlsx" -> "results\01_19 Uhr_summary.csv"
 2025-08-06 14:43:46 - Report "data\reports\2025-07\01\7 Uhr.xlsx" -> "results\01_7 Uhr_summary.csv"
 2025-08-06 14:43:46 - run_all_gui.py ausgeführt mit "data\reports\2025-07\01" "Liste.xlsx"
+
+## 2025-08-06 (später)
+- `load_calls` verwirft nun unbekannte Techniker statt sie zu zählen.
+- `update_liste` fügt neue Namen nicht mehr hinzu, sondern protokolliert sie.
+- Tests angepasst und mit `pytest -q` ausgeführt: 39 Tests bestanden.

@@ -53,5 +53,4 @@ def test_analyze_month_detects_missing_and_extra(tmp_path):
         rows = list(csv.reader(fh))
 
     assert rows[0] == ["category", "technician"]
-    assert ["no_calls", "Bob"] in rows[1:]
-    assert ["region_mismatch", "Charlie"] in rows[1:]
+    assert rows[1:] == [["no_calls", "Bob"]]

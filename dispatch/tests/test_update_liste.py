@@ -76,6 +76,5 @@ def test_update_liste_creates_missing_sheet(tmp_path: Path):
     assert "Juli_25" in wb2.sheetnames
     ws = wb2["Juli_25"]
     assert ws.cell(row=1, column=1).value == "Techniker"
-    assert ws.cell(row=2, column=1).value == "Alice"
-    assert ws.cell(row=2, column=9).value == 2
+    assert ws.max_row == 1
     wb2.close()
