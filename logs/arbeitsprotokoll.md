@@ -101,3 +101,4 @@
 - Funktion `log_unknown_technician` samt Aufruf in `process_reports.py` entfernt.
 - Tests zu Warnungen gelöscht und Dokumentation angepasst.
 - `pytest -q` ausgeführt.
+06.08.2025  2:24:51,55 - run_all.bat ausgeführt mit "01.07" ""C:\Users\egencer\Documents\GitHub\Dispatch\Liste.xlsx"" ""C:\Users\egencer\Documents\GitHub\Dispatch\report.csv"" 
