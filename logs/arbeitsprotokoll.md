@@ -250,3 +250,9 @@
 - `load_calls` verwirft nun unbekannte Techniker statt sie zu zählen.
 - `update_liste` fügt neue Namen nicht mehr hinzu, sondern protokolliert sie.
 - Tests angepasst und mit `pytest -q` ausgeführt: 39 Tests bestanden.
+
+## 2025-08-06 (Filter und Duplikate)
+- `load_calls` verarbeitet nur noch Blätter mit `Report` im Namen.
+- Mehrfache `Work Order Number` werden ignoriert, sodass jeder Auftrag nur einmal zählt.
+- Zwei neue Tests prüfen Filter- und Duplikaterkennung.
+- `pytest -q` ausgeführt: 41 Tests bestanden.

@@ -10,6 +10,7 @@ from dispatch.analyze_month import analyze_month
 def _create_report(path: Path, names: list[str]) -> None:
     wb = Workbook()
     ws = wb.active
+    ws.title = "Report"
     ws["A2"] = dt.datetime(2025, 7, 1)
     ws["A5"] = "Employee ID"
     ws["B5"] = "Employee Name"
