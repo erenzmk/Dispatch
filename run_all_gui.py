@@ -13,6 +13,7 @@ Hinweis: Die GUI basiert auf PySimpleGUI 5.x.
 from datetime import datetime
 from pathlib import Path
 import subprocess
+import sys
 
 # Verzeichnisse für Logs und Ergebnisse
 LOG_DIR = Path("logs")
@@ -73,6 +74,13 @@ def process_month(month_dir: Path, liste: Path, output: Path) -> None:
 def run_gui() -> None:
     """Startet die grafische Oberfläche."""
     import PySimpleGUI as sg
+    if not hasattr(sg, "theme"):
+        print(
+            "PySimpleGUI unterstützt 'theme' nicht. "
+            "Bitte Version 5.x über den privaten Index installieren:\n"
+            "pip install --extra-index-url https://PySimpleGUI.net/install PySimpleGUI"
+        )
+        sys.exit(1)
 
     sg.theme("SystemDefault")
 
