@@ -256,3 +256,4 @@
 - Mehrfache `Work Order Number` werden ignoriert, sodass jeder Auftrag nur einmal zählt.
 - Zwei neue Tests prüfen Filter- und Duplikaterkennung.
 - `pytest -q` ausgeführt: 41 Tests bestanden.
+2025-08-06 15:28:51 - Fehler bei dispatch.main process mit "data\reports\2025-07\01" "Liste.xlsx": Command '['python', '-m', 'dispatch.main', 'process', 'data\\reports\\2025-07\\01', 'Liste.xlsx']' returned non-zero exit status 1.
