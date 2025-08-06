@@ -32,6 +32,18 @@ def _log(message: str) -> None:
 def summarize_day(day_dir: Path, liste: Path) -> None:
     """Fasst alle Reports eines Tages nach Techniker-ID zusammen."""
     RESULTS_DIR.mkdir(exist_ok=True)
+    subprocess.run(
+        [
+            "python",
+            "-m",
+            "dispatch.main",
+            "process",
+            str(day_dir),
+            str(liste),
+        ],
+        check=True,
+    )
+    _log(f'dispatch.main process mit "{day_dir}" "{liste}"')
     for excel in sorted(day_dir.glob("*.xlsx")):
         output = RESULTS_DIR / f"{day_dir.name}_{excel.stem}_summary.csv"
         subprocess.run(

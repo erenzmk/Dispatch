@@ -211,3 +211,7 @@
 - Aufruf in `summarize_by_id.py` angepasst.
 - `pip install -r dispatch/requirements.txt` ausgeführt.
 - `pytest -q` ausgeführt: 34 Tests bestanden.
+## 2025-08-06 (process vor summarize-id)
+- `summarize_day` ruft jetzt vor der Zusammenfassung `dispatch.main process` mit `day_dir` und `liste` auf.
+- Arbeitsprotokoll erweitert und Code getestet.
+- `pytest -q` ausgeführt: alle Tests bestanden.
