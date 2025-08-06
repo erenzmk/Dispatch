@@ -9,8 +9,8 @@ set "OUTPUT=report.csv"
 rem Monatsdaten verarbeiten und analysieren
 python -m dispatch.main run-all "%MONTH%" "%LIST%" --output "%OUTPUT%"
 
-rem Jeden Tagesreport nach Techniker-ID zusammenfassen
-for /R "%MONTH%" %%F in (*.xlsx) do (
+rem Jeden Tagesreport mit "7" im Dateinamen nach Techniker-ID zusammenfassen
+for /R "%MONTH%" %%F in (*7*.xlsx) do (
     for %%D in ("%%~dpF.") do (
         rem %%~nD: Tagesordner, %%~nF: Reportname
         python -m dispatch.main summarize-id "%%F" "%LIST%" --output "results\%%~nD_%%~nF_summary.csv"
