@@ -2,7 +2,7 @@ import sys
 from pathlib import Path
 
 import pytest
-from openpyxl import Workbook
+from openpyxl import Workbook, load_workbook
 import datetime as dt
 
 from dispatch.process_reports import main
@@ -57,3 +57,27 @@ def test_main_no_evening_file_ok(tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 
     # Should not raise even if evening file is missing
     main()
+
+
+def test_main_creates_missing_sheet(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    liste = tmp_path / "Liste.xlsx"
+    wb = Workbook()
+    wb.save(liste)
+
+    day_dir = tmp_path / "2025-07" / "01"
+    day_dir.mkdir(parents=True)
+    wb = Workbook()
+    wb.save(day_dir / "morning7.xlsx")
+
+    monkeypatch.setattr(sys, "argv", ["process_reports.py", str(day_dir), str(liste)])
+
+    def fake_load_calls(path, valid_names=None):
+        return dt.date(2025, 7, 1), {"Alice": {"total": 1, "new": 1, "old": 0}}, []
+
+    monkeypatch.setattr("dispatch.process_reports.load_calls", fake_load_calls)
+
+    main()
+
+    wb2 = load_workbook(liste)
+    assert "Juli_25" in wb2.sheetnames
+    wb2.close()

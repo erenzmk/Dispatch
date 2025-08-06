@@ -228,8 +228,10 @@ def update_liste(
     wb = safe_load_workbook(liste)
     try:
         if month_sheet not in wb.sheetnames:
-            raise KeyError(f"Worksheet {month_sheet} does not exist in {liste}")
-        ws = wb[month_sheet]
+            ws = wb.create_sheet(title=month_sheet)
+            ws.cell(row=1, column=1, value="Techniker")
+        else:
+            ws = wb[month_sheet]
 
         # Canonicalise technician names already present in the sheet
         names_in_sheet: list[str] = []
@@ -379,10 +381,13 @@ def main(argv: Iterable[str] | None = None) -> None:
     month_sheet = f"{MONTH_MAP[day.month]}_{day.strftime('%y')}"
 
     # Read existing technician names to aid fuzzy matching
-    name_wb = safe_load_workbook(args.liste, read_only=True)
+    name_wb = safe_load_workbook(args.liste)
     if month_sheet not in name_wb.sheetnames:
-        raise KeyError(f"Worksheet {month_sheet} does not exist in {args.liste}")
-    ws_names = name_wb[month_sheet]
+        ws_names = name_wb.create_sheet(title=month_sheet)
+        ws_names.cell(row=1, column=1, value="Techniker")
+        name_wb.save(args.liste)
+    else:
+        ws_names = name_wb[month_sheet]
     valid_names = [
         str(ws_names.cell(row=r, column=1).value).strip()
         for r in range(2, ws_names.max_row + 1)
