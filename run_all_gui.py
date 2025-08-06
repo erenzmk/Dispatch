@@ -29,58 +29,93 @@ def _log(message: str) -> None:
         fh.write(f"{timestamp} - {message}\n")
 
 
-def summarize_day(day_dir: Path, liste: Path) -> None:
+def _popup_error(message: str) -> None:
+    """Zeigt eine Fehlermeldung in der GUI an, falls möglich."""
+    try:
+        import PySimpleGUI as sg  # type: ignore
+    except Exception:
+        return
+    sg.popup_error(message)
+
+
+def summarize_day(day_dir: Path, liste: Path) -> bool:
     """Fasst alle Reports eines Tages nach Techniker-ID zusammen."""
     RESULTS_DIR.mkdir(exist_ok=True)
-    subprocess.run(
-        [
-            "python",
-            "-m",
-            "dispatch.main",
-            "process",
-            str(day_dir),
-            str(liste),
-        ],
-        check=True,
-    )
-    _log(f'dispatch.main process mit "{day_dir}" "{liste}"')
-    for excel in sorted(day_dir.glob("*.xlsx")):
-        output = RESULTS_DIR / f"{day_dir.name}_{excel.stem}_summary.csv"
+    try:
         subprocess.run(
             [
                 "python",
                 "-m",
                 "dispatch.main",
-                "summarize-id",
-                str(excel),
+                "process",
+                str(day_dir),
+                str(liste),
+            ],
+            check=True,
+        )
+    except subprocess.CalledProcessError as exc:
+        _log(f'Fehler bei dispatch.main process mit "{day_dir}" "{liste}": {exc}')
+        _popup_error(f"Fehler bei der Tagesverarbeitung:\n{exc}")
+        return False
+    else:
+        _log(f'dispatch.main process mit "{day_dir}" "{liste}"')
+
+    success = True
+    for excel in sorted(day_dir.glob("*.xlsx")):
+        output = RESULTS_DIR / f"{day_dir.name}_{excel.stem}_summary.csv"
+        try:
+            subprocess.run(
+                [
+                    "python",
+                    "-m",
+                    "dispatch.main",
+                    "summarize-id",
+                    str(excel),
+                    str(liste),
+                    "--output",
+                    str(output),
+                ],
+                check=True,
+            )
+        except subprocess.CalledProcessError as exc:
+            _log(f'Fehler bei Report "{excel}" -> "{output}": {exc}')
+            _popup_error(f"Fehler bei Report {excel}:\n{exc}")
+            success = False
+        else:
+            _log(f'Report "{excel}" -> "{output}"')
+    return success
+
+
+def process_month(month_dir: Path, liste: Path, output: Path) -> bool:
+    """Verarbeitet einen kompletten Monat und erstellt Tageszusammenfassungen."""
+    LOG_DIR.mkdir(exist_ok=True)
+    try:
+        subprocess.run(
+            [
+                "python",
+                "-m",
+                "dispatch.main",
+                "run-all",
+                str(month_dir),
                 str(liste),
                 "--output",
                 str(output),
             ],
             check=True,
         )
-        _log(f'Report "{excel}" -> "{output}"')
+    except subprocess.CalledProcessError as exc:
+        _log(
+            f'Fehler bei run-all mit "{month_dir}" "{liste}" "{output}": {exc}'
+        )
+        _popup_error(f"Fehler bei der Monatsverarbeitung:\n{exc}")
+        return False
 
-
-def process_month(month_dir: Path, liste: Path, output: Path) -> None:
-    """Verarbeitet einen kompletten Monat und erstellt Tageszusammenfassungen."""
-    LOG_DIR.mkdir(exist_ok=True)
-    subprocess.run(
-        [
-            "python",
-            "-m",
-            "dispatch.main",
-            "run-all",
-            str(month_dir),
-            str(liste),
-            "--output",
-            str(output),
-        ],
-        check=True,
-    )
+    success = True
     for day_dir in sorted(p for p in month_dir.iterdir() if p.is_dir()):
-        summarize_day(day_dir, liste)
-    _log(f'run_all_gui.py ausgeführt mit "{month_dir}" "{liste}" "{output}"')
+        success &= summarize_day(day_dir, liste)
+    if success:
+        _log(f'run_all_gui.py ausgeführt mit "{month_dir}" "{liste}" "{output}"')
+    return success
 
 
 def run_gui() -> None:
@@ -134,12 +169,14 @@ def run_gui() -> None:
             else:
                 output = Path(f"report_{date.strftime('%Y-%m')}.csv")
             if month_mode:
-                process_month(month_dir, liste, output)
+                ok = process_month(month_dir, liste, output)
             else:
                 day_dir = month_dir / date.strftime("%d")
-                summarize_day(day_dir, liste)
-                _log(f'run_all_gui.py ausgeführt mit "{day_dir}" "{liste}"')
-            sg.popup("Fertig.")
+                ok = summarize_day(day_dir, liste)
+                if ok:
+                    _log(f'run_all_gui.py ausgeführt mit "{day_dir}" "{liste}"')
+            if ok:
+                sg.popup("Fertig.")
             month_mode = False
             window["-MODE-"].update("Modus: Tag")
 
