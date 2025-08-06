@@ -241,3 +241,7 @@
 - `load_id_map` sucht nun nach der Kopfzeile statt nur Zeile 1 zu verwenden.
 - Zusätzlichen Test für Tabellen mit Titelzeile hinzugefügt.
 - `pytest -q` ausgeführt: alle Tests bestanden.
+2025-08-06 14:43:42 - dispatch.main process mit "data\reports\2025-07\01" "Liste.xlsx"
+2025-08-06 14:43:44 - Report "data\reports\2025-07\01\19 Uhr.xlsx" -> "results\01_19 Uhr_summary.csv"
+2025-08-06 14:43:46 - Report "data\reports\2025-07\01\7 Uhr.xlsx" -> "results\01_7 Uhr_summary.csv"
+2025-08-06 14:43:46 - run_all_gui.py ausgeführt mit "data\reports\2025-07\01" "Liste.xlsx"
