@@ -220,3 +220,8 @@
 - GUI um Eingabefeld für den Ausgabepfad ergänzt.
 - `process_month` verwendet den gewählten Pfad oder einen Standardnamen mit Monat.
 - `python -m py_compile run_all_gui.py` und `pytest -q` ausgeführt: 34 Tests bestanden.
+
+## 2025-08-06 (Monatsblatt-Prüfung)
+- `main` und `update_liste` legen fehlende Monatsblätter automatisch mit Kopfzeile an.
+- Tests für das neue Verhalten ergänzt.
+- `pytest -q` ausgeführt: 36 Tests bestanden.

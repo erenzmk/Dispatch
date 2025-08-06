@@ -61,3 +61,21 @@ def test_update_liste_multiple_runs(tmp_path: Path):
     ws2 = wb2["Juli_25"]
     assert ws2.cell(row=2, column=9).value == 1
     wb2.close()
+
+
+def test_update_liste_creates_missing_sheet(tmp_path: Path):
+    file = tmp_path / "liste.xlsx"
+    wb = Workbook()
+    wb.save(file)
+
+    morning = {"Alice": {"total": 2, "new": 1, "old": 1}}
+
+    update_liste(file, "Juli_25", dt.date(2025, 7, 1), morning)
+
+    wb2 = load_workbook(file)
+    assert "Juli_25" in wb2.sheetnames
+    ws = wb2["Juli_25"]
+    assert ws.cell(row=1, column=1).value == "Techniker"
+    assert ws.cell(row=2, column=1).value == "Alice"
+    assert ws.cell(row=2, column=9).value == 2
+    wb2.close()
