@@ -136,3 +136,9 @@
 - `run_all.bat` legt das Verzeichnis `logs` bei Bedarf an.
 - Nach jeder `summarize-id`-Ausführung werden Report- und Ergebnisdateien protokolliert.
 - `pytest -q` ausgeführt: 33 Tests bestanden.
+
+## 2025-08-06 (README: summarize-id)
+- README um Abschnitt zur Nutzung von `python -m dispatch.main summarize-id` ergänzt.
+- Beispielaufruf mit Ausgabe nach `results/` dokumentiert.
+- `pytest -q` ausgeführt: alle Tests bestanden.
+- CLI `summarize-id` mit Beispieldatei ausgeführt und erzeugte Datei entfernt.
