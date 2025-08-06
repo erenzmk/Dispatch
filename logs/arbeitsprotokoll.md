@@ -142,3 +142,8 @@
 - Beispielaufruf mit Ausgabe nach `results/` dokumentiert.
 - `pytest -q` ausgeführt: alle Tests bestanden.
 - CLI `summarize-id` mit Beispieldatei ausgeführt und erzeugte Datei entfernt.
+
+## 2025-08-06 (Ergebnisdatei entfernt)
+- Datei `results/2025-08-06.csv` gelöscht.
+- `.gitignore` um `results/*.csv` erweitert.
+- `pytest -q` ausgeführt: alle Tests bestanden.
