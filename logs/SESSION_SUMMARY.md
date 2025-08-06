@@ -117,3 +117,9 @@
 ## 2025-?? Update 17
 - Modul `aggregate_warnings.py` entfernt und Verweise in `__init__.py` bereinigt.
 - Protokollierung unbekannter Techniker entfallen; `log_unknown_technician` und zugehörige Tests gelöscht.
+
+## 2025-?? Update 18
+- Datenverzeichnis auf `data/reports/YYYY-MM/TT` umgestellt.
+- Skripte und Tests erwarten nun diese Struktur.
+- Hilfsskript `dispatch/create_day_dir.py` erstellt Tagesordner automatisch.
+- README und `run_all.bat` mit Beispielpfad aktualisiert.

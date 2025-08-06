@@ -2,7 +2,7 @@
 Automate dispatch call summaries.
 
 This script processes daily technician call reports. For each day directory
-(e.g. ``Juli_25/01.07``) it expects a morning file named with ``7`` and an
+(e.g. ``reports/2025-07/01``) it expects a morning file named with ``7`` and an
 evening file named with ``19``. The morning report counts each technician's
 total calls and how many are "new" (``Open Date Time`` equals the previous
 business day) versus "old". The evening report lists the still-open calls so the
@@ -354,7 +354,7 @@ def main(argv: Iterable[str] | None = None) -> None:
     parser.add_argument(
         "day_dir",
         type=Path,
-        help="Directory containing daily reports (e.g. Juli_25/01.07)",
+        help="Directory containing daily reports (e.g. reports/2025-07/01)",
     )
     parser.add_argument("liste", type=Path, help="Path to Liste.xlsx")
     parser.add_argument(
@@ -364,24 +364,18 @@ def main(argv: Iterable[str] | None = None) -> None:
     )
     args = parser.parse_args(list(argv) if argv is not None else None)
 
-    # Determine year from parent directory (e.g. ``Juli_25`` -> 2025)
-    # or fall back to the current system year.
+    # Der Monat und das Jahr ergeben sich aus dem übergeordneten Ordner
+    # ``YYYY-MM``. Fehlt diese Information, wird das aktuelle Jahr verwendet.
     parent = args.day_dir.parent.name
-    year_part = None
-    if "_" in parent:
-        suffix = parent.rsplit("_", 1)[-1]
-        if suffix.isdigit():
-            year_part = int(suffix)
-            if year_part < 100:
-                year_part += 2000
-    if year_part is None:
-        year_part = dt.date.today().year
+    try:
+        year_month = dt.datetime.strptime(parent, "%Y-%m")
+    except ValueError:
+        year_month = dt.datetime(dt.date.today().year, dt.date.today().month, 1)
 
     if args.date:
         day = args.date
     else:
-        day_str = f"{args.day_dir.name}.{year_part}"
-        day = dt.datetime.strptime(day_str, "%d.%m.%Y").date()
+        day = dt.date(year_month.year, year_month.month, int(args.day_dir.name))
     month_sheet = f"{MONTH_MAP[day.month]}_{day.strftime('%y')}"
 
     # Read existing technician names to aid fuzzy matching

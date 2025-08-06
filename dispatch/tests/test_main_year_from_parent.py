@@ -16,8 +16,8 @@ def create_liste(path: Path, sheet: str) -> None:
 
 
 def test_main_uses_year_from_parent(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    base_dir = tmp_path / "Juli_26"
-    day_dir = base_dir / "01.07"
+    base_dir = tmp_path / "2026-07"
+    day_dir = base_dir / "01"
     day_dir.mkdir(parents=True)
 
     liste = tmp_path / "Liste.xlsx"
