@@ -19,8 +19,8 @@ def test_main_missing_morning_file(tmp_path: Path, monkeypatch: pytest.MonkeyPat
     liste = tmp_path / "Liste.xlsx"
     create_liste(liste)
 
-    day_dir = tmp_path / "01.07"
-    day_dir.mkdir()
+    day_dir = tmp_path / "2025-07" / "01"
+    day_dir.mkdir(parents=True)
 
     # create an evening file to ensure only morning is missing
     wb = Workbook()
@@ -37,8 +37,8 @@ def test_main_no_evening_file_ok(tmp_path: Path, monkeypatch: pytest.MonkeyPatch
     liste = tmp_path / "Liste.xlsx"
     create_liste(liste)
 
-    day_dir = tmp_path / "01.07"
-    day_dir.mkdir()
+    day_dir = tmp_path / "2025-07" / "01"
+    day_dir.mkdir(parents=True)
 
     # create a morning file but no evening file
     wb = Workbook()
