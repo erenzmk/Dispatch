@@ -201,3 +201,7 @@
 ## 2025-08-06 (Platzhalterpaket)
 - requirements.txt, README und run_all_gui.py angepasst.
 - Fehler wurde durch ein Platzhalterpaket ausgelöst; künftig wird der private Index genutzt.
+2025-08-06 13:45:23 - run_all_gui.py ausgeführt mit "data\reports\2025-06\01" "Liste.xlsx"
+2025-08-06 13:45:44 - Report "data\reports\2025-07\01\19 Uhr.xlsx" -> "results\01_19 Uhr_summary.csv"
+2025-08-06 13:45:46 - Report "data\reports\2025-07\01\7 Uhr.xlsx" -> "results\01_7 Uhr_summary.csv"
+2025-08-06 13:45:46 - run_all_gui.py ausgeführt mit "data\reports\2025-07\01" "Liste.xlsx"
