@@ -256,3 +256,10 @@
 - Mehrfache `Work Order Number` werden ignoriert, sodass jeder Auftrag nur einmal zählt.
 - Zwei neue Tests prüfen Filter- und Duplikaterkennung.
 - `pytest -q` ausgeführt: 41 Tests bestanden.
+
+## 2025-08-06 (Kopfzeilenerkennung)
+- `load_calls` erkennt Kopfzeilen über "Employee Name" und "Open Date Time".
+- Konstante `HEADER_MARKERS` erweitert, Berichte ohne "Employee ID" werden verarbeitet.
+- Test `test_load_calls_without_employee_id` ergänzt.
+- `pytest -q` ausgeführt: alle Tests bestanden.
+- Keine zusätzlichen Dateien entstanden.

@@ -114,6 +114,26 @@ def test_load_calls_skips_duplicate_work_orders(tmp_path):
     assert unknown == []
 
 
+def test_load_calls_without_employee_id(tmp_path):
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Report"
+    ws["A2"] = dt.datetime(2025, 7, 1)
+    ws["A5"] = "Employee Name"
+    ws["B5"] = "Open Date Time"
+    ws["A6"] = "Alice"
+    ws["B6"] = dt.datetime(2025, 6, 30)
+
+    path = tmp_path / "report.xlsx"
+    wb.save(path)
+
+    target_date, summary, unknown = load_calls(path)
+
+    assert target_date == dt.date(2025, 7, 1)
+    assert summary == {"Alice": {"total": 1, "new": 1, "old": 0}}
+    assert unknown == []
+
+
 def test_load_calls_handles_header_variations(tmp_path):
     wb = Workbook()
     ws = wb.active
@@ -168,7 +188,7 @@ def test_load_calls_missing_required_columns(tmp_path):
     ws.title = "Report"
     ws["A2"] = dt.datetime(2025, 7, 1)
     ws["A5"] = "Employee ID"
-    ws["B5"] = "Employee Name"  # missing Open Date Time
+    ws["B5"] = "Employee Name"  # "Open Date Time" fehlt komplett
     ws["A6"] = 1
     ws["B6"] = "Alice"
 
@@ -177,7 +197,7 @@ def test_load_calls_missing_required_columns(tmp_path):
 
     with pytest.raises(ValueError) as exc:
         load_calls(path)
-    assert "Open Date Time" in str(exc.value)
+    assert "Header row not found" in str(exc.value)
 
 @pytest.mark.skipif(
     not Path("/proc/self/fd").exists(),
