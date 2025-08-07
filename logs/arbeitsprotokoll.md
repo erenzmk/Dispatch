@@ -285,3 +285,9 @@
 - Fallback nutzt erste `.xlsx`-Datei und listet vorhandene Dateien auf.
 - Tests für alternative Dateinamen und Fallback ergänzt.
 - `pytest -q` ausgeführt: 46 Tests bestanden.
+
+## 2025-08-07 (Subprozess-Fehlerausgabe)
+- subprocess.run-Aufrufe in run_all_gui.py erfassen nun Ausgabe und Fehler.
+- Bei Fehlermeldungen werden stdout und stderr ins Protokoll geschrieben.
+- Test `test_process_month_logs_subprocess_failure` hinzugefügt.
+- `pytest -q` ausgeführt: 47 Tests bestanden.
