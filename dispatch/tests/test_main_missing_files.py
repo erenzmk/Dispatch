@@ -5,7 +5,7 @@ import pytest
 from openpyxl import Workbook, load_workbook
 import datetime as dt
 
-from dispatch.process_reports import main
+from dispatch.process_reports import DEFAULT_MORNING_PATTERN, main
 
 
 def create_liste(path: Path) -> None:
@@ -23,8 +23,13 @@ def test_main_no_excel_files(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) ->
     day_dir.mkdir(parents=True)
 
     monkeypatch.setattr(sys, "argv", ["process_reports.py", str(day_dir), str(liste)])
-    with pytest.raises(FileNotFoundError):
+    with pytest.raises(FileNotFoundError) as excinfo:
         main()
+    expected = (
+        f"Keine Datei nach Muster '{DEFAULT_MORNING_PATTERN}' in {day_dir} "
+        "gefunden. Gefundene Dateien: (keine)"
+    )
+    assert str(excinfo.value) == expected
 
 
 def test_main_missing_morning_file_uses_fallback(
