@@ -58,6 +58,9 @@ RELEVANT_SHEET_PATTERNS = [
     for pattern in ["report", "west central", "detailed"]
 ]
 
+# Standardmuster für den Morgenreport
+DEFAULT_MORNING_PATTERN = "*7*.xlsx"
+
 
 def safe_load_workbook(filename: Path | str, *args, **kwargs):
     """Load a workbook while suppressing known openpyxl warnings.
@@ -357,8 +360,30 @@ def _init_month_logger(log_file: Path | None) -> None:
         logger.addHandler(file_handler)
 
 
+def find_morning_file(day_dir: Path, pattern: str) -> tuple[Path | None, list[Path], bool]:
+    """Finde die Datei für den Morgenreport.
+
+    Gibt einen Tupel aus gewählter Datei, allen gefundenen `.xlsx`-Dateien
+    sowie einem Flag zurück, das angibt, ob das Muster `pattern` getroffen
+    wurde.
+    """
+
+    matched = sorted(day_dir.glob(pattern))
+    if matched:
+        return matched[0], matched, True
+
+    candidates = sorted(day_dir.glob("*.xlsx"))
+    if candidates:
+        return candidates[0], candidates, False
+
+    return None, [], False
+
+
 def process_month(
-    month_dir: Path, liste: Path, log_file: Path | None = Path("logs/process_month.log")
+    month_dir: Path,
+    liste: Path,
+    log_file: Path | None = Path("logs/process_month.log"),
+    morning_pattern: str = DEFAULT_MORNING_PATTERN,
 ) -> None:
     """Process all day report directories within ``month_dir``.
 
@@ -371,13 +396,19 @@ def process_month(
     logger.info("Starte Verarbeitung für %s", month_dir)
 
     for day_dir in sorted(p for p in month_dir.iterdir() if p.is_dir()):
-        morning = list(day_dir.glob("*7*.xlsx"))
-        if not morning:
-            logger.debug("Kein Morgenreport in %s, überspringe", day_dir)
+        if not any(day_dir.glob("*.xlsx")):
+            logger.debug("Keine Excel-Dateien in %s, überspringe", day_dir)
             continue
         logger.info("Verarbeite %s", day_dir.name)
         try:
-            main([str(day_dir), str(liste)])
+            main(
+                [
+                    str(day_dir),
+                    str(liste),
+                    "--morning-pattern",
+                    morning_pattern,
+                ]
+            )
         except Exception:  # pragma: no cover - Fehler protokollieren
             logger.exception("Fehler bei der Verarbeitung von %s", day_dir)
         else:
@@ -398,6 +429,11 @@ def main(argv: Iterable[str] | None = None) -> None:
         "--date",
         type=lambda s: dt.datetime.strptime(s, "%d.%m.%Y").date(),
         help="Datum, das in die Liste eingetragen werden soll (dd.mm.yyyy)",
+    )
+    parser.add_argument(
+        "--morning-pattern",
+        default=DEFAULT_MORNING_PATTERN,
+        help="Globbing-Muster für den Morgenreport",
     )
     args = parser.parse_args(list(argv) if argv is not None else None)
 
@@ -442,12 +478,20 @@ def main(argv: Iterable[str] | None = None) -> None:
     ]
     name_wb.close()
 
-    morning_files = list(args.day_dir.glob("*7*.xlsx"))
-    if not morning_files:
+    morning, candidates, matched = find_morning_file(
+        args.day_dir, args.morning_pattern
+    )
+    if morning is None:
         raise FileNotFoundError(
-            f"Morning report (*7*.xlsx) not found in {args.day_dir}"
+            f"Keine Excel-Dateien in {args.day_dir} gefunden"
         )
-    morning = morning_files[0]
+    if not matched:
+        names = ", ".join(c.name for c in candidates)
+        print(
+            f"Kein Morgenreport nach Muster '{args.morning_pattern}' gefunden."
+        )
+        print(f"Verfügbare Dateien: {names}")
+        print(f"Verwende {morning.name} als Fallback.")
 
     target_date, morning_summary, _ = load_calls(morning, valid_names)
     update_liste(args.liste, month_sheet, target_date, morning_summary)

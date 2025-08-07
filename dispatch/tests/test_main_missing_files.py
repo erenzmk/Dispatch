@@ -15,7 +15,21 @@ def create_liste(path: Path) -> None:
     wb.save(path)
 
 
-def test_main_missing_morning_file(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_main_no_excel_files(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    liste = tmp_path / "Liste.xlsx"
+    create_liste(liste)
+
+    day_dir = tmp_path / "2025-07" / "01"
+    day_dir.mkdir(parents=True)
+
+    monkeypatch.setattr(sys, "argv", ["process_reports.py", str(day_dir), str(liste)])
+    with pytest.raises(FileNotFoundError):
+        main()
+
+
+def test_main_missing_morning_file_uses_fallback(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
     liste = tmp_path / "Liste.xlsx"
     create_liste(liste)
 
@@ -24,13 +38,26 @@ def test_main_missing_morning_file(tmp_path: Path, monkeypatch: pytest.MonkeyPat
 
     # create an evening file to ensure only morning is missing
     wb = Workbook()
-    wb.save(day_dir / "evening19.xlsx")
+    fallback = day_dir / "evening19.xlsx"
+    wb.save(fallback)
 
     monkeypatch.setattr(sys, "argv", ["process_reports.py", str(day_dir), str(liste)])
-    with pytest.raises(FileNotFoundError) as excinfo:
-        main()
-    assert "Morning report" in str(excinfo.value)
-    assert str(day_dir) in str(excinfo.value)
+
+    called = {}
+
+    def fake_load_calls(path, valid_names=None):
+        called["used"] = Path(path)
+        return dt.date(2025, 7, 1), {}, []
+
+    def fake_update_liste(liste_path, month_sheet, target_date, morning_summary):
+        pass
+
+    monkeypatch.setattr("dispatch.process_reports.load_calls", fake_load_calls)
+    monkeypatch.setattr("dispatch.process_reports.update_liste", fake_update_liste)
+
+    main()
+
+    assert called["used"] == fallback
 
 
 def test_main_no_evening_file_ok(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -56,6 +83,40 @@ def test_main_no_evening_file_ok(tmp_path: Path, monkeypatch: pytest.MonkeyPatch
     monkeypatch.setattr("dispatch.process_reports.update_liste", fake_update_liste)
 
     # Should not raise even if evening file is missing
+    main()
+
+
+def test_main_custom_morning_pattern(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    liste = tmp_path / "Liste.xlsx"
+    create_liste(liste)
+
+    day_dir = tmp_path / "2025-07" / "01"
+    day_dir.mkdir(parents=True)
+
+    wb = Workbook()
+    wb.save(day_dir / "report_morning.xlsx")
+
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            "process_reports.py",
+            str(day_dir),
+            str(liste),
+            "--morning-pattern",
+            "*morning.xlsx",
+        ],
+    )
+
+    def fake_load_calls(path, valid_names=None):
+        return dt.date(2025, 7, 1), {}, []
+
+    def fake_update_liste(liste_path, month_sheet, target_date, morning_summary):
+        pass
+
+    monkeypatch.setattr("dispatch.process_reports.load_calls", fake_load_calls)
+    monkeypatch.setattr("dispatch.process_reports.update_liste", fake_update_liste)
+
     main()
 
 
