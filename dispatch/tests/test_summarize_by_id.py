@@ -1,6 +1,7 @@
 import pandas as pd
 from openpyxl import load_workbook, Workbook
 
+from dispatch.process_reports import extract_calls_by_id
 from dispatch.summarize_by_id import summarize_report
 
 
@@ -34,6 +35,49 @@ def test_summarize_report_by_id(tmp_path):
 
     result = summarize_report(report, liste)
     assert sorted(result, key=lambda r: r["id"]) == [
-        {"id": "1", "name": "Alice", "new": 1, "old": 1, "total": 2},
-        {"id": "2", "name": "Bob", "new": 1, "old": 0, "total": 1},
+        {
+            "id": "1",
+            "name": "Alice",
+            "new": 1,
+            "old": 1,
+            "total": 2,
+            "calls": ["17500001", "17500002"],
+        },
+        {
+            "id": "2",
+            "name": "Bob",
+            "new": 1,
+            "old": 0,
+            "total": 1,
+            "calls": ["17500003"],
+        },
     ]
+
+
+def test_extract_calls_by_id(tmp_path):
+    liste = tmp_path / "Liste.xlsx"
+    wb = Workbook()
+    ws = wb.active
+    ws.append(["ID", "Techniker"])
+    ws.append(["1", "Alice"])
+    ws.append(["2", "Bob"])
+    wb.save(liste)
+    wb.close()
+
+    report = tmp_path / "report.xlsx"
+    data = pd.DataFrame(
+        [
+            ["1", "", "17500001"],
+            ["1", "", "17500002"],
+            ["2", "", "17500003"],
+        ],
+        columns=list("ABC"),
+    )
+    with pd.ExcelWriter(report) as writer:
+        data.to_excel(writer, index=False, header=False)
+
+    result = extract_calls_by_id(report, ["1", "2"])
+    assert result == {
+        "1": ["17500001", "17500002"],
+        "2": ["17500003"],
+    }

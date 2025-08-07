@@ -1,3 +1,4 @@
+import ast
 import subprocess
 from pathlib import Path
 
@@ -50,11 +51,26 @@ def test_cli_summarize_id(tmp_path: Path) -> None:
 
     df = pd.read_csv(out_csv)
     df["id"] = df["id"].astype(str)
+    df["calls"] = df["calls"].apply(ast.literal_eval)
     df = df.sort_values("id").reset_index(drop=True)
     expected = pd.DataFrame(
         [
-            {"id": "1", "name": "Alice", "new": 1, "old": 1, "total": 2},
-            {"id": "2", "name": "Bob", "new": 1, "old": 0, "total": 1},
+            {
+                "id": "1",
+                "name": "Alice",
+                "new": 1,
+                "old": 1,
+                "total": 2,
+                "calls": ["17500001", "17500002"],
+            },
+            {
+                "id": "2",
+                "name": "Bob",
+                "new": 1,
+                "old": 0,
+                "total": 1,
+                "calls": ["17500003"],
+            },
         ]
     )
     pd.testing.assert_frame_equal(df, expected)

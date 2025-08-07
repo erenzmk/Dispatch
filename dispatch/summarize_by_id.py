@@ -9,7 +9,7 @@ from typing import List, Dict
 
 import pandas as pd
 
-from .process_reports import safe_load_workbook
+from .process_reports import extract_calls_by_id, safe_load_workbook
 
 from .technicians import load_id_map
 
@@ -45,6 +45,8 @@ def summarize_report(excel_file: Path, liste_file: Path) -> List[Dict[str, objec
 
     wb.close()
 
+    calls_by_id = extract_calls_by_id(excel_file, counts.keys())
+
     results: List[Dict[str, object]] = []
     for id_str, counter in counts.items():
         new = counter.get("new", 0)
@@ -56,6 +58,7 @@ def summarize_report(excel_file: Path, liste_file: Path) -> List[Dict[str, objec
                 "new": new,
                 "old": old,
                 "total": new + old,
+                "calls": calls_by_id.get(id_str, []),
             }
         )
     return results

@@ -257,6 +257,43 @@ def load_calls(
         return target_date, summary, unknown_list
 
 
+def extract_calls_by_id(report_path: Path, ids: Iterable[str]) -> dict[str, list[str]]:
+    """Lese alle Call-Nummern je Techniker-ID aus einem Report.
+
+    Parameters
+    ----------
+    report_path:
+        Pfad zur Excel-Datei des Reports.
+    ids:
+        Iterable mit Techniker-IDs, für die die Call-Nummern extrahiert werden
+        sollen.
+    """
+
+    id_set = {str(i).strip() for i in ids}
+    calls_by_id: dict[str, list[str]] = {i: [] for i in id_set}
+
+    with closing(safe_load_workbook(report_path, read_only=True, data_only=True)) as wb:
+        ws = wb.worksheets[0]
+        for row in ws.iter_rows(min_row=1, max_col=3, values_only=True):
+            id_val = row[0] if len(row) > 0 else None
+            call_val = row[2] if len(row) > 2 else None
+
+            if id_val is None or call_val is None:
+                continue
+
+            id_str = str(id_val).strip()
+            if id_str not in id_set:
+                continue
+
+            call_str = str(call_val).strip()
+            if not call_str.startswith("17"):
+                continue
+
+            calls_by_id.setdefault(id_str, []).append(call_str)
+
+    return {k: v for k, v in calls_by_id.items() if v}
+
+
 def update_liste(
     liste: Path,
     month_sheet: str,

@@ -15,6 +15,8 @@ from pathlib import Path
 import subprocess
 import sys
 
+from dispatch import summarize_by_id
+
 # Verzeichnisse für Logs und Ergebnisse
 LOG_DIR = Path("logs")
 RESULTS_DIR = Path("results")
@@ -38,8 +40,17 @@ def _popup_error(message: str) -> None:
     sg.popup_error(message)
 
 
-def summarize_day(day_dir: Path, liste: Path) -> bool:
-    """Fasst alle Reports eines Tages nach Techniker-ID zusammen."""
+def summarize_day(
+    day_dir: Path,
+    liste: Path,
+    call_log: dict[str, dict[str, list[str]]] | None = None,
+) -> bool:
+    """Fasst alle Reports eines Tages nach Techniker-ID zusammen.
+
+    Optional kann ein ``call_log`` übergeben werden, in dem die extrahierten
+    Call-Listen je Report abgelegt werden.
+    """
+
     RESULTS_DIR.mkdir(exist_ok=True)
     try:
         subprocess.run(
@@ -93,11 +104,30 @@ def summarize_day(day_dir: Path, liste: Path) -> bool:
             success = False
         else:
             _log(f'Report "{excel}" -> "{output}"')
+            try:
+                summary = summarize_by_id.summarize_report(excel, liste)
+            except Exception as exc:
+                _log(f'Fehler beim Auslesen der Calls aus "{excel}": {exc}')
+            else:
+                calls = {row["id"]: row.get("calls", []) for row in summary}
+                _log(f'Call-Listen für "{excel}": {calls}')
+                if call_log is not None:
+                    call_log[excel.name] = calls
     return success
 
 
-def process_month(month_dir: Path, liste: Path, output: Path) -> bool:
-    """Verarbeitet einen kompletten Monat und erstellt Tageszusammenfassungen."""
+def process_month(
+    month_dir: Path,
+    liste: Path,
+    output: Path,
+    call_log: dict[str, dict[str, dict[str, list[str]]]] | None = None,
+) -> bool:
+    """Verarbeitet einen kompletten Monat und erstellt Tageszusammenfassungen.
+
+    Wird ``call_log`` übergeben, werden die Call-Listen der einzelnen Tage
+    darin gesammelt.
+    """
+
     LOG_DIR.mkdir(exist_ok=True)
     try:
         subprocess.run(
@@ -125,7 +155,13 @@ def process_month(month_dir: Path, liste: Path, output: Path) -> bool:
 
     success = True
     for day_dir in sorted(p for p in month_dir.iterdir() if p.is_dir()):
-        success &= summarize_day(day_dir, liste)
+        day_calls: dict[str, dict[str, list[str]]] | None = None
+        if call_log is not None:
+            day_calls = {}
+        day_success = summarize_day(day_dir, liste, day_calls)
+        if call_log is not None:
+            call_log[day_dir.name] = day_calls or {}
+        success &= day_success
     if success:
         _log(f'run_all_gui.py ausgeführt mit "{month_dir}" "{liste}" "{output}"')
     return success

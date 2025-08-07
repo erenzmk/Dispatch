@@ -312,3 +312,10 @@ FileNotFoundError: Keine Excel-Dateien in C:\Users\egencer\Documents\GitHub\Disp
 2025-08-07 14:29:50 - Report "data\reports\2025-07\01\19 Uhr.xlsx" -> "results\01_19 Uhr_summary.csv"
 2025-08-07 14:29:52 - Report "data\reports\2025-07\01\7 Uhr.xlsx" -> "results\01_7 Uhr_summary.csv"
 2025-08-07 14:29:52 - run_all_gui.py ausgeführt mit "data\reports\2025-07\01" "Liste.xlsx"
+
+## 2025-08-07 (Call-Listen)
+
+- Funktion `extract_calls_by_id` in `process_reports.py` implementiert.
+- `summarize_by_id.summarize_report` ruft nun diese Funktion auf und gibt die Call-Listen zurück.
+- `run_all_gui.summarize_day` und `process_month` protokollieren die Call-Listen optional.
+- Test `test_summarize_by_id.py` um Call-Listen erweitert und neuer Test für `extract_calls_by_id` hinzugefügt.
