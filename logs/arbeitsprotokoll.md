@@ -291,3 +291,20 @@
 - Bei Fehlermeldungen werden stdout und stderr ins Protokoll geschrieben.
 - Test `test_process_month_logs_subprocess_failure` hinzugefügt.
 - `pytest -q` ausgeführt: 47 Tests bestanden.
+2025-08-07 13:11:50 - Fehler bei dispatch.main process mit "C:\Users\egencer\Documents\GitHub\Dispatch\data\reports\2025-07\01\2025-07\01" "C:\Users\egencer\Documents\GitHub\Dispatch\Liste.xlsx": Command '['python', '-m', 'dispatch.main', 'process', 'C:\\Users\\egencer\\Documents\\GitHub\\Dispatch\\data\\reports\\2025-07\\01\\2025-07\\01', 'C:\\Users\\egencer\\Documents\\GitHub\\Dispatch\\Liste.xlsx']' returned non-zero exit status 1.
+STDOUT: 
+STDERR: Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "C:\Users\egencer\Documents\GitHub\Dispatch\dispatch\main.py", line 71, in <module>
+    main()
+    ~~~~^^
+  File "C:\Users\egencer\Documents\GitHub\Dispatch\dispatch\main.py", line 53, in main
+    process_reports.main([str(args.day_dir), str(args.liste)])
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\egencer\Documents\GitHub\Dispatch\dispatch\process_reports.py", line 485, in main
+    raise FileNotFoundError(
+        f"Keine Excel-Dateien in {args.day_dir} gefunden"
+    )
+FileNotFoundError: Keine Excel-Dateien in C:\Users\egencer\Documents\GitHub\Dispatch\data\reports\2025-07\01\2025-07\01 gefunden
+
