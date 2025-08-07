@@ -14,7 +14,6 @@
 - CLI mit Beispieldatei getestet und temporäre Dateien entfernt.
 - CLI-Aufruf mit fehlender Datei getestet, erwartete Fehlermeldung erhalten.
 
--rc0bup-codex/resolve-merge-conflicts-and-fix-errors
 ## 2025-08-04
 - Mergekonflikte geprüft und beseitigt.
 - Abhängigkeiten installiert und Tests erneut ausgeführt.
@@ -62,7 +61,6 @@
 - Versuch, `process_month` mit Here-Doc auszuführen, scheiterte wegen PowerShell-Syntax.
 - Hinweis: in PowerShell `python -c` oder Here-String verwenden.
 - `process_month` lässt sich direkt mit relativen Pfaden im Repo aufrufen:
-  `python -c "from pathlib import Path; from dispatch.process_reports import process_month; process_month(Path('data/Juli_25'), Path('data/Liste.xlsx'))"`
 - Keine Nutzung von `C:/Temp` notwendig; alle Pfade bleiben im Repo.
 
 ## 2025-08-11
@@ -87,22 +85,18 @@
 ## 2025-08-05 (spät)
 - Batchdatei `run_all.bat` erstellt, die Pfade abfragt und den Lauf protokolliert.
 - README um Hinweise zur Batchdatei ergänzt.
-06.08.2025  1:33:36,64 - run_all.bat ausgeführt mit "01.07" ""C:\Users\egencer\Documents\GitHub\Dispatch\data\Liste.xlsx"" ""C:\Users\egencer\Documents\GitHub\Dispatch\data\Liste.xlsx"" 
 
 ## 2025-08-05 (noch später)
 - README auf wesentliche Abschnitte reduziert.
 - Verweise auf GUI, Unterbefehle und Debug-Optionen entfernt.
 - `pytest` ausgeführt.
 - Änderungen in Git committet.
-06.08.2025  1:51:21,29 - run_all.bat ausgeführt mit "01.07" ""C:\Users\egencer\Documents\GitHub\Dispatch\Liste.xlsx"" "report.csv"
 
 ## 2025-08-05 (sehr spät)
 - Modul `aggregate_warnings.py` gelöscht und Eintrag in `__init__.py` entfernt.
 - Funktion `log_unknown_technician` samt Aufruf in `process_reports.py` entfernt.
 - Tests zu Warnungen gelöscht und Dokumentation angepasst.
 - `pytest -q` ausgeführt.
-06.08.2025  2:24:51,55 - run_all.bat ausgeführt mit "01.07" ""C:\Users\egencer\Documents\GitHub\Dispatch\Liste.xlsx"" ""C:\Users\egencer\Documents\GitHub\Dispatch\report.csv"" 
-06.08.2025  2:32:32,86 - run_all.bat ausgeführt mit "01" ""C:\Users\egencer\Documents\GitHub\Dispatch\Liste.xlsx"" ""C:\Users\egencer\Documents\GitHub\Dispatch\report.csv"" 
 
 ## 2025-08-06 (Batchdatei automatisiert)
 - run_all.bat auf feste Pfade ohne Abfragen umgestellt.
@@ -156,8 +150,6 @@
 - `run_all.bat` legt das Verzeichnis `results` an, falls es fehlt.
 - `dispatch/summarize_by_id.py` erzeugt den Ausgabeordner vor dem Schreiben der CSV.
 - `pytest -q` ausgeführt: alle 34 Tests bestanden.
-2025-08-06 02:46:01 - Report "data/reports/2025-06/02/02.06.25 0700.xlsx" -> "results/02_02.06.25 0700_summary.csv"
-2025-08-06 02:46:02 - Report "data/reports/2025-06/02/02.06.25 1900.xlsx" -> "results/02_02.06.25 1900_summary.csv"
 ## 2025-08-06 (GUI als Einstiegsskript)
 - `run_all.bat` nach `archive/` verschoben.
 - README auf Start mit `python run_all_gui.py` angepasst.
@@ -201,10 +193,6 @@
 ## 2025-08-06 (Platzhalterpaket)
 - requirements.txt, README und run_all_gui.py angepasst.
 - Fehler wurde durch ein Platzhalterpaket ausgelöst; künftig wird der private Index genutzt.
-2025-08-06 13:45:23 - run_all_gui.py ausgeführt mit "data\reports\2025-06\01" "Liste.xlsx"
-2025-08-06 13:45:44 - Report "data\reports\2025-07\01\19 Uhr.xlsx" -> "results\01_19 Uhr_summary.csv"
-2025-08-06 13:45:46 - Report "data\reports\2025-07\01\7 Uhr.xlsx" -> "results\01_7 Uhr_summary.csv"
-2025-08-06 13:45:46 - run_all_gui.py ausgeführt mit "data\reports\2025-07\01" "Liste.xlsx"
 
 ## 2025-08-06 (safe_load_workbook in summarize_by_id)
 - Direkten Import von `load_workbook` entfernt und `safe_load_workbook` aus `process_reports` eingebunden.
@@ -232,19 +220,11 @@
 - GUI zeigt nur bei Erfolg eine Abschlussmeldung.
 - `python -m py_compile run_all_gui.py` und `pytest -q` ausgeführt: 36 Tests bestanden.
 - Keine zusätzlichen Dateien entstanden.
-2025-08-06 14:33:31 - dispatch.main process mit "data\reports\2025-07\01" "Liste.xlsx"
-2025-08-06 14:33:34 - Report "data\reports\2025-07\01\19 Uhr.xlsx" -> "results\01_19 Uhr_summary.csv"
-2025-08-06 14:33:36 - Report "data\reports\2025-07\01\7 Uhr.xlsx" -> "results\01_7 Uhr_summary.csv"
-2025-08-06 14:33:36 - run_all_gui.py ausgeführt mit "data\reports\2025-07\01" "Liste.xlsx"
 
 ## 2025-08-06 (Techniker-ID-Mapping überspringt Titelzeile)
 - `load_id_map` sucht nun nach der Kopfzeile statt nur Zeile 1 zu verwenden.
 - Zusätzlichen Test für Tabellen mit Titelzeile hinzugefügt.
 - `pytest -q` ausgeführt: alle Tests bestanden.
-2025-08-06 14:43:42 - dispatch.main process mit "data\reports\2025-07\01" "Liste.xlsx"
-2025-08-06 14:43:44 - Report "data\reports\2025-07\01\19 Uhr.xlsx" -> "results\01_19 Uhr_summary.csv"
-2025-08-06 14:43:46 - Report "data\reports\2025-07\01\7 Uhr.xlsx" -> "results\01_7 Uhr_summary.csv"
-2025-08-06 14:43:46 - run_all_gui.py ausgeführt mit "data\reports\2025-07\01" "Liste.xlsx"
 
 ## 2025-08-06 (später)
 - `load_calls` verwirft nun unbekannte Techniker statt sie zu zählen.
@@ -256,18 +236,12 @@
 - Mehrfache `Work Order Number` werden ignoriert, sodass jeder Auftrag nur einmal zählt.
 - Zwei neue Tests prüfen Filter- und Duplikaterkennung.
 - `pytest -q` ausgeführt: 41 Tests bestanden.
-2025-08-06 15:28:51 - Fehler bei dispatch.main process mit "data\reports\2025-07\01" "Liste.xlsx": Command '['python', '-m', 'dispatch.main', 'process', 'data\\reports\\2025-07\\01', 'Liste.xlsx']' returned non-zero exit status 1.
-2025-08-06 17:46:23 - Fehler bei run-all mit "data\reports\2025-07" "Liste.xlsx" "C:\Users\egencer\Documents\GitHub\Dispatch\results\01_7 Uhr_summary.csv": Command '['python', '-m', 'dispatch.main', 'run-all', 'data\\reports\\2025-07', 'Liste.xlsx', '--output', 'C:\\Users\\egencer\\Documents\\GitHub\\Dispatch\\results\\01_7 Uhr_summary.csv']' returned non-zero exit status 1.
 
 ## 2025-08-06 (Blattnamen)
 - `RELEVANT_SHEET_PATTERNS` um "West Central" und "Detailed" erweitert.
 - `load_calls` verarbeitet bei leerer Filterliste alle Blätter.
 - Testfall für ein Blatt "West Central" ergänzt.
 - `pytest -q` ausgeführt: 43 Tests bestanden.
-2025-08-07 12:19:37 - dispatch.main process mit "data\reports\2025-07\01" "Liste.xlsx"
-2025-08-07 12:19:40 - Report "data\reports\2025-07\01\19 Uhr.xlsx" -> "results\01_19 Uhr_summary.csv"
-2025-08-07 12:19:41 - Report "data\reports\2025-07\01\7 Uhr.xlsx" -> "results\01_7 Uhr_summary.csv"
-2025-08-07 12:19:41 - run_all_gui.py ausgeführt mit "data\reports\2025-07\01" "Liste.xlsx"
 
 ## 2025-08-07 (relevante Blätter)
 - `load_calls` meldet nun fehlende passende Arbeitsblätter und nennt gesuchte Muster sowie vorhandene Blattnamen.
@@ -278,7 +252,6 @@
 - Alle Excel-Dateien unter `data/reports` aus dem Repository gelöscht.
 - `.gitignore` erweitert, damit keine echten Reports mehr eingecheckt werden.
 - `pytest -q` ausgeführt: 44 Tests bestanden.
-2025-08-07 12:39:09 - Fehler bei dispatch.main process mit "data\reports\2025-07\01" "Liste.xlsx": Command '['python', '-m', 'dispatch.main', 'process', 'data\\reports\\2025-07\\01', 'Liste.xlsx']' returned non-zero exit status 1.
 
 ## 2025-08-07 (Morgenreport-Muster)
 - Morgenreport-Muster über `DEFAULT_MORNING_PATTERN` und Option `--morning-pattern` konfigurierbar.
@@ -291,27 +264,7 @@
 - Bei Fehlermeldungen werden stdout und stderr ins Protokoll geschrieben.
 - Test `test_process_month_logs_subprocess_failure` hinzugefügt.
 - `pytest -q` ausgeführt: 47 Tests bestanden.
-2025-08-07 13:11:50 - Fehler bei dispatch.main process mit "C:\Users\egencer\Documents\GitHub\Dispatch\data\reports\2025-07\01\2025-07\01" "C:\Users\egencer\Documents\GitHub\Dispatch\Liste.xlsx": Command '['python', '-m', 'dispatch.main', 'process', 'C:\\Users\\egencer\\Documents\\GitHub\\Dispatch\\data\\reports\\2025-07\\01\\2025-07\\01', 'C:\\Users\\egencer\\Documents\\GitHub\\Dispatch\\Liste.xlsx']' returned non-zero exit status 1.
-STDOUT: 
-STDERR: Traceback (most recent call last):
-  File "<frozen runpy>", line 198, in _run_module_as_main
-  File "<frozen runpy>", line 88, in _run_code
-  File "C:\Users\egencer\Documents\GitHub\Dispatch\dispatch\main.py", line 71, in <module>
-    main()
-    ~~~~^^
-  File "C:\Users\egencer\Documents\GitHub\Dispatch\dispatch\main.py", line 53, in main
-    process_reports.main([str(args.day_dir), str(args.liste)])
-    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\egencer\Documents\GitHub\Dispatch\dispatch\process_reports.py", line 485, in main
-    raise FileNotFoundError(
-        f"Keine Excel-Dateien in {args.day_dir} gefunden"
-    )
-FileNotFoundError: Keine Excel-Dateien in C:\Users\egencer\Documents\GitHub\Dispatch\data\reports\2025-07\01\2025-07\01 gefunden
 
-2025-08-07 14:29:48 - dispatch.main process mit "data\reports\2025-07\01" "Liste.xlsx"
-2025-08-07 14:29:50 - Report "data\reports\2025-07\01\19 Uhr.xlsx" -> "results\01_19 Uhr_summary.csv"
-2025-08-07 14:29:52 - Report "data\reports\2025-07\01\7 Uhr.xlsx" -> "results\01_7 Uhr_summary.csv"
-2025-08-07 14:29:52 - run_all_gui.py ausgeführt mit "data\reports\2025-07\01" "Liste.xlsx"
 
 ## 2025-08-07 (Call-Listen)
 
@@ -319,3 +272,10 @@ FileNotFoundError: Keine Excel-Dateien in C:\Users\egencer\Documents\GitHub\Disp
 - `summarize_by_id.summarize_report` ruft nun diese Funktion auf und gibt die Call-Listen zurück.
 - `run_all_gui.summarize_day` und `process_month` protokollieren die Call-Listen optional.
 - Test `test_summarize_by_id.py` um Call-Listen erweitert und neuer Test für `extract_calls_by_id` hinzugefügt.
+
+## 2025-08-07 (strukturierte Protokolle)
+- `_log` akzeptiert optionale strukturierte Daten und hängt sie formatiert an.
+- `summarize_day` und `process_month` protokollieren Call-Listen pro Techniker-ID bei Erfolg.
+- Test für erfolgreiche Monatsverarbeitung ergänzt, der Call-Listen im Protokoll erwartet.
+- Überflüssige `.log`-Dateien entfernt und `.gitignore` erweitert.
+

@@ -5,6 +5,9 @@ to_delete/
 # Ergebnisdateien
 results/*.csv
 
+# Logdateien ignorieren
+logs/*.log
+
 # Reale Reportdaten ignorieren
 data/reports/*
 !data/reports/.gitkeep
