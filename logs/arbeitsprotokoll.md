@@ -273,3 +273,8 @@
 - `load_calls` meldet nun fehlende passende Arbeitsblätter und nennt gesuchte Muster sowie vorhandene Blattnamen.
 - Test `test_load_calls_reports_missing_relevant_sheets` hinzugefügt.
 - `pytest -q` ausgeführt: 44 Tests bestanden.
+
+## 2025-08-07 (Reportdaten entfernt)
+- Alle Excel-Dateien unter `data/reports` aus dem Repository gelöscht.
+- `.gitignore` erweitert, damit keine echten Reports mehr eingecheckt werden.
+- `pytest -q` ausgeführt: 44 Tests bestanden.
