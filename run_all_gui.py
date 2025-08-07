@@ -52,9 +52,14 @@ def summarize_day(day_dir: Path, liste: Path) -> bool:
                 str(liste),
             ],
             check=True,
+            capture_output=True,
+            text=True,
         )
     except subprocess.CalledProcessError as exc:
-        _log(f'Fehler bei dispatch.main process mit "{day_dir}" "{liste}": {exc}')
+        _log(
+            f'Fehler bei dispatch.main process mit "{day_dir}" "{liste}": {exc}\n'
+            f'STDOUT: {exc.stdout}\nSTDERR: {exc.stderr}'
+        )
         _popup_error(f"Fehler bei der Tagesverarbeitung:\n{exc}")
         return False
     else:
@@ -76,9 +81,14 @@ def summarize_day(day_dir: Path, liste: Path) -> bool:
                     str(output),
                 ],
                 check=True,
+                capture_output=True,
+                text=True,
             )
         except subprocess.CalledProcessError as exc:
-            _log(f'Fehler bei Report "{excel}" -> "{output}": {exc}')
+            _log(
+                f'Fehler bei Report "{excel}" -> "{output}": {exc}\n'
+                f'STDOUT: {exc.stdout}\nSTDERR: {exc.stderr}'
+            )
             _popup_error(f"Fehler bei Report {excel}:\n{exc}")
             success = False
         else:
@@ -102,10 +112,13 @@ def process_month(month_dir: Path, liste: Path, output: Path) -> bool:
                 str(output),
             ],
             check=True,
+            capture_output=True,
+            text=True,
         )
     except subprocess.CalledProcessError as exc:
         _log(
-            f'Fehler bei run-all mit "{month_dir}" "{liste}" "{output}": {exc}'
+            f'Fehler bei run-all mit "{month_dir}" "{liste}" "{output}": {exc}\n'
+            f'STDOUT: {exc.stdout}\nSTDERR: {exc.stderr}'
         )
         _popup_error(f"Fehler bei der Monatsverarbeitung:\n{exc}")
         return False
