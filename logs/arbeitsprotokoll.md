@@ -279,3 +279,9 @@
 - `.gitignore` erweitert, damit keine echten Reports mehr eingecheckt werden.
 - `pytest -q` ausgeführt: 44 Tests bestanden.
 2025-08-07 12:39:09 - Fehler bei dispatch.main process mit "data\reports\2025-07\01" "Liste.xlsx": Command '['python', '-m', 'dispatch.main', 'process', 'data\\reports\\2025-07\\01', 'Liste.xlsx']' returned non-zero exit status 1.
+
+## 2025-08-07 (Morgenreport-Muster)
+- Morgenreport-Muster über `DEFAULT_MORNING_PATTERN` und Option `--morning-pattern` konfigurierbar.
+- Fallback nutzt erste `.xlsx`-Datei und listet vorhandene Dateien auf.
+- Tests für alternative Dateinamen und Fallback ergänzt.
+- `pytest -q` ausgeführt: 46 Tests bestanden.

@@ -10,7 +10,7 @@ Automatisiert die Auswertung von täglichen Anrufberichten der Servicetechniker 
 
 ## Kurzanleitung
 
-1. Lege die Tagesberichte in `data/reports/<YYYY-MM>/<TT>/` ab (z. B. `data/reports/2025-07/01`) mit Dateien `*7*.xlsx` und optional `*19*.xlsx`.
+1. Lege die Tagesberichte in `data/reports/<YYYY-MM>/<TT>/` ab (z. B. `data/reports/2025-07/01`) mit Dateien `*7*.xlsx` (Standard, über `--morning-pattern` konfigurierbar) und optional `*19*.xlsx`.
 2. Starte die grafische Oberfläche mit `python run_all_gui.py`.
 3. Wähle einen Tag oder den gesamten Monat aus. Die Ergebnisse werden in `Liste.xlsx` geschrieben und unter `logs/` protokolliert.
 
