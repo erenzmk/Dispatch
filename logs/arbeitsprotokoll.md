@@ -258,3 +258,9 @@
 - `pytest -q` ausgeführt: 41 Tests bestanden.
 2025-08-06 15:28:51 - Fehler bei dispatch.main process mit "data\reports\2025-07\01" "Liste.xlsx": Command '['python', '-m', 'dispatch.main', 'process', 'data\\reports\\2025-07\\01', 'Liste.xlsx']' returned non-zero exit status 1.
 2025-08-06 17:46:23 - Fehler bei run-all mit "data\reports\2025-07" "Liste.xlsx" "C:\Users\egencer\Documents\GitHub\Dispatch\results\01_7 Uhr_summary.csv": Command '['python', '-m', 'dispatch.main', 'run-all', 'data\\reports\\2025-07', 'Liste.xlsx', '--output', 'C:\\Users\\egencer\\Documents\\GitHub\\Dispatch\\results\\01_7 Uhr_summary.csv']' returned non-zero exit status 1.
+
+## 2025-08-06 (Blattnamen)
+- `RELEVANT_SHEET_PATTERNS` um "West Central" und "Detailed" erweitert.
+- `load_calls` verarbeitet bei leerer Filterliste alle Blätter.
+- Testfall für ein Blatt "West Central" ergänzt.
+- `pytest -q` ausgeführt: 43 Tests bestanden.

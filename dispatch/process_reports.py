@@ -51,8 +51,12 @@ OPENPYXL_WARNINGS = [
 ]
 
 # Only worksheets whose title matches one of these patterns are considered
-# relevant for call extraction.
-RELEVANT_SHEET_PATTERNS = [re.compile("report", re.IGNORECASE)]
+# relevant for call extraction. Weitere im Feld verwendete Bezeichnungen wie
+# "West Central" oder "Detailed" werden nun ebenfalls berücksichtigt.
+RELEVANT_SHEET_PATTERNS = [
+    re.compile(pattern, re.IGNORECASE)
+    for pattern in ["report", "west central", "detailed"]
+]
 
 
 def safe_load_workbook(filename: Path | str, *args, **kwargs):
@@ -151,8 +155,12 @@ def load_calls(
         seen_work_orders: set[str] = set()
 
         for sheet in wb.worksheets:
-            # Skip worksheets that do not match the expected naming pattern.
-            if not any(p.search(sheet.title) for p in RELEVANT_SHEET_PATTERNS):
+            # Überspringe Arbeitsblätter, die keine der definierten
+            # Bezeichnungen enthalten. Ist die Liste leer, werden alle
+            # Blätter verarbeitet.
+            if RELEVANT_SHEET_PATTERNS and not any(
+                p.search(sheet.title) for p in RELEVANT_SHEET_PATTERNS
+            ):
                 continue
 
             header_row = None
