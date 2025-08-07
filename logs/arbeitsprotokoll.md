@@ -279,3 +279,122 @@
 - Test für erfolgreiche Monatsverarbeitung ergänzt, der Call-Listen im Protokoll erwartet.
 - Überflüssige `.log`-Dateien entfernt und `.gitignore` erweitert.
 
+2025-08-07 15:14:56 - dispatch.main process mit "data\reports\2025-07\01" "Liste.xlsx"
+2025-08-07 15:14:58 - Report "data\reports\2025-07\01\19 Uhr.xlsx" -> "results\01_19 Uhr_summary.csv"
+2025-08-07 15:15:00 - Report "data\reports\2025-07\01\7 Uhr.xlsx" -> "results\01_7 Uhr_summary.csv"
+2025-08-07 15:15:00 - Call-Listen für Tag "01"
+{}
+2025-08-07 15:15:02 - dispatch.main process mit "data\reports\2025-07\02" "Liste.xlsx"
+2025-08-07 15:15:04 - Report "data\reports\2025-07\02\02.07.25 0705.xlsx" -> "results\02_02.07.25 0705_summary.csv"
+2025-08-07 15:15:05 - Report "data\reports\2025-07\02\02.07.25 1900.xlsx" -> "results\02_02.07.25 1900_summary.csv"
+2025-08-07 15:15:05 - Call-Listen für Tag "02"
+{}
+2025-08-07 15:15:08 - dispatch.main process mit "data\reports\2025-07\03" "Liste.xlsx"
+2025-08-07 15:15:10 - Report "data\reports\2025-07\03\03.07.25 0720.xlsx" -> "results\03_03.07.25 0720_summary.csv"
+2025-08-07 15:15:11 - Report "data\reports\2025-07\03\03.07.25 1900.xlsx" -> "results\03_03.07.25 1900_summary.csv"
+2025-08-07 15:15:11 - Call-Listen für Tag "03"
+{}
+2025-08-07 15:15:13 - dispatch.main process mit "data\reports\2025-07\04" "Liste.xlsx"
+2025-08-07 15:15:15 - Report "data\reports\2025-07\04\04.07.25 0718.xlsx" -> "results\04_04.07.25 0718_summary.csv"
+2025-08-07 15:15:16 - Report "data\reports\2025-07\04\04.07.25 1901.xlsx" -> "results\04_04.07.25 1901_summary.csv"
+2025-08-07 15:15:16 - Call-Listen für Tag "04"
+{}
+2025-08-07 15:15:18 - dispatch.main process mit "data\reports\2025-07\07" "Liste.xlsx"
+2025-08-07 15:15:20 - Report "data\reports\2025-07\07\07.07.25 0727.xlsx" -> "results\07_07.07.25 0727_summary.csv"
+2025-08-07 15:15:21 - Report "data\reports\2025-07\07\07.07.25 1900.xlsx" -> "results\07_07.07.25 1900_summary.csv"
+2025-08-07 15:15:21 - Call-Listen für Tag "07"
+{}
+2025-08-07 15:15:24 - dispatch.main process mit "data\reports\2025-07\08" "Liste.xlsx"
+2025-08-07 15:15:25 - Report "data\reports\2025-07\08\08.07.25 0701.xlsx" -> "results\08_08.07.25 0701_summary.csv"
+2025-08-07 15:15:27 - Report "data\reports\2025-07\08\08.07.25 1901.xlsx" -> "results\08_08.07.25 1901_summary.csv"
+2025-08-07 15:15:27 - Call-Listen für Tag "08"
+{}
+2025-08-07 15:15:28 - dispatch.main process mit "data\reports\2025-07\09" "Liste.xlsx"
+2025-08-07 15:15:30 - Report "data\reports\2025-07\09\09.07.25 0718.xlsx" -> "results\09_09.07.25 0718_summary.csv"
+2025-08-07 15:15:32 - Report "data\reports\2025-07\09\09.07.25 1901.xlsx" -> "results\09_09.07.25 1901_summary.csv"
+2025-08-07 15:15:32 - Call-Listen für Tag "09"
+{}
+2025-08-07 15:15:34 - dispatch.main process mit "data\reports\2025-07\10" "Liste.xlsx"
+2025-08-07 15:15:36 - Report "data\reports\2025-07\10\10.07.25 0709.xlsx" -> "results\10_10.07.25 0709_summary.csv"
+2025-08-07 15:15:37 - Report "data\reports\2025-07\10\10.07.25 1901.xlsx" -> "results\10_10.07.25 1901_summary.csv"
+2025-08-07 15:15:37 - Call-Listen für Tag "10"
+{}
+2025-08-07 15:15:39 - dispatch.main process mit "data\reports\2025-07\11" "Liste.xlsx"
+2025-08-07 15:15:41 - Report "data\reports\2025-07\11\11.07.25 0710.xlsx" -> "results\11_11.07.25 0710_summary.csv"
+2025-08-07 15:15:42 - Report "data\reports\2025-07\11\11.07.25 1900.xlsx" -> "results\11_11.07.25 1900_summary.csv"
+2025-08-07 15:15:42 - Call-Listen für Tag "11"
+{}
+2025-08-07 15:15:44 - dispatch.main process mit "data\reports\2025-07\14" "Liste.xlsx"
+2025-08-07 15:15:46 - Report "data\reports\2025-07\14\14.07.25 0717.xlsx" -> "results\14_14.07.25 0717_summary.csv"
+2025-08-07 15:15:47 - Report "data\reports\2025-07\14\14.07.25 1900.xlsx" -> "results\14_14.07.25 1900_summary.csv"
+2025-08-07 15:15:47 - Call-Listen für Tag "14"
+{}
+2025-08-07 15:15:49 - dispatch.main process mit "data\reports\2025-07\15" "Liste.xlsx"
+2025-08-07 15:15:51 - Report "data\reports\2025-07\15\15.07.25 0700.xlsx" -> "results\15_15.07.25 0700_summary.csv"
+2025-08-07 15:15:53 - Report "data\reports\2025-07\15\15.07.25 1900.xlsx" -> "results\15_15.07.25 1900_summary.csv"
+2025-08-07 15:15:53 - Call-Listen für Tag "15"
+{}
+2025-08-07 15:15:55 - dispatch.main process mit "data\reports\2025-07\16" "Liste.xlsx"
+2025-08-07 15:15:57 - Report "data\reports\2025-07\16\16.07.25 1001.xlsx" -> "results\16_16.07.25 1001_summary.csv"
+2025-08-07 15:15:58 - Report "data\reports\2025-07\16\16.07.25 1900.xlsx" -> "results\16_16.07.25 1900_summary.csv"
+2025-08-07 15:15:58 - Call-Listen für Tag "16"
+{}
+2025-08-07 15:16:01 - dispatch.main process mit "data\reports\2025-07\17" "Liste.xlsx"
+2025-08-07 15:16:03 - Report "data\reports\2025-07\17\17.07.25 0706.xlsx" -> "results\17_17.07.25 0706_summary.csv"
+2025-08-07 15:16:06 - Report "data\reports\2025-07\17\17.07.25 1901.xlsx" -> "results\17_17.07.25 1901_summary.csv"
+2025-08-07 15:16:06 - Call-Listen für Tag "17"
+{}
+2025-08-07 15:16:08 - dispatch.main process mit "data\reports\2025-07\18" "Liste.xlsx"
+2025-08-07 15:16:10 - Report "data\reports\2025-07\18\18.07.25 0716.xlsx" -> "results\18_18.07.25 0716_summary.csv"
+2025-08-07 15:16:12 - Report "data\reports\2025-07\18\18.07.25 1900.xlsx" -> "results\18_18.07.25 1900_summary.csv"
+2025-08-07 15:16:12 - Call-Listen für Tag "18"
+{}
+2025-08-07 15:16:14 - dispatch.main process mit "data\reports\2025-07\21" "Liste.xlsx"
+2025-08-07 15:16:16 - Report "data\reports\2025-07\21\21.07.25 0730.xlsx" -> "results\21_21.07.25 0730_summary.csv"
+2025-08-07 15:16:18 - Report "data\reports\2025-07\21\21.07.25 1901.xlsx" -> "results\21_21.07.25 1901_summary.csv"
+2025-08-07 15:16:19 - Call-Listen für Tag "21"
+{}
+2025-08-07 15:16:21 - dispatch.main process mit "data\reports\2025-07\22" "Liste.xlsx"
+2025-08-07 15:16:23 - Report "data\reports\2025-07\22\22.07.25 0701.xlsx" -> "results\22_22.07.25 0701_summary.csv"
+2025-08-07 15:16:24 - Report "data\reports\2025-07\22\22.07.25 1901.xlsx" -> "results\22_22.07.25 1901_summary.csv"
+2025-08-07 15:16:24 - Call-Listen für Tag "22"
+{}
+2025-08-07 15:16:26 - dispatch.main process mit "data\reports\2025-07\23" "Liste.xlsx"
+2025-08-07 15:16:28 - Report "data\reports\2025-07\23\23.07.25 0724.xlsx" -> "results\23_23.07.25 0724_summary.csv"
+2025-08-07 15:16:31 - Report "data\reports\2025-07\23\23.07.25 1901.xlsx" -> "results\23_23.07.25 1901_summary.csv"
+2025-08-07 15:16:31 - Call-Listen für Tag "23"
+{}
+2025-08-07 15:16:33 - dispatch.main process mit "data\reports\2025-07\24" "Liste.xlsx"
+2025-08-07 15:16:35 - Report "data\reports\2025-07\24\24.07.25 0717.xlsx" -> "results\24_24.07.25 0717_summary.csv"
+2025-08-07 15:16:37 - Report "data\reports\2025-07\24\24.07.25 1900.xlsx" -> "results\24_24.07.25 1900_summary.csv"
+2025-08-07 15:16:37 - Call-Listen für Tag "24"
+{}
+2025-08-07 15:16:40 - Fehler bei dispatch.main process mit "data\reports\2025-07\25" "Liste.xlsx": Command '['python', '-m', 'dispatch.main', 'process', 'data\\reports\\2025-07\\25', 'Liste.xlsx']' returned non-zero exit status 1.
+STDOUT: 
+STDERR: Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "C:\Users\egencer\Documents\GitHub\Dispatch\dispatch\main.py", line 71, in <module>
+    main()
+    ~~~~^^
+  File "C:\Users\egencer\Documents\GitHub\Dispatch\dispatch\main.py", line 53, in main
+    process_reports.main([str(args.day_dir), str(args.liste)])
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\egencer\Documents\GitHub\Dispatch\dispatch\process_reports.py", line 534, in main
+    update_liste(args.liste, month_sheet, target_date, morning_summary)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\egencer\Documents\GitHub\Dispatch\dispatch\process_reports.py", line 373, in update_liste
+    wb.save(liste)
+    ~~~~~~~^^^^^^^
+  File "C:\Users\egencer\AppData\Local\Programs\Python\Python313\Lib\site-packages\openpyxl\workbook\workbook.py", line 386, in save
+    save_workbook(self, filename)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "C:\Users\egencer\AppData\Local\Programs\Python\Python313\Lib\site-packages\openpyxl\writer\excel.py", line 291, in save_workbook
+    archive = ZipFile(filename, 'w', ZIP_DEFLATED, allowZip64=True)
+  File "C:\Users\egencer\AppData\Local\Programs\Python\Python313\Lib\zipfile\__init__.py", line 1367, in __init__
+    self.fp = io.open(file, filemode)
+              ~~~~~~~^^^^^^^^^^^^^^^^
+PermissionError: [Errno 13] Permission denied: 'Liste.xlsx'
+
+2025-08-07 15:17:41 - dispatch.main process mit "data\reports\2025-07\28" "Liste.xlsx"
+2025-08-07 15:17:42 - Report "data\reports\2025-07\28\28.07.25 0726.xlsx" -> "results\28_28.07.25 0726_summary.csv"
