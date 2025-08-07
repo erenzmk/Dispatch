@@ -5,7 +5,7 @@ import os
 import pytest
 from openpyxl import Workbook
 
-from dispatch.process_reports import load_calls
+from dispatch.process_reports import load_calls, RELEVANT_SHEET_PATTERNS
 
 
 def test_load_calls_selects_correct_sheet(tmp_path):
@@ -270,3 +270,19 @@ def test_load_calls_ignores_non_call_numbers(tmp_path):
     assert target_date == dt.date(2025, 7, 1)
     assert summary == {"Alice": {"total": 1, "new": 1, "old": 0}}
     assert unknown == []
+
+
+def test_load_calls_reports_missing_relevant_sheets(tmp_path):
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Summary"
+    path = tmp_path / "report.xlsx"
+    wb.save(path)
+
+    with pytest.raises(ValueError) as exc:
+        load_calls(path)
+
+    msg = str(exc.value)
+    for pattern in RELEVANT_SHEET_PATTERNS:
+        assert pattern.pattern in msg
+    assert ws.title in msg
