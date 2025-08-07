@@ -482,8 +482,11 @@ def main(argv: Iterable[str] | None = None) -> None:
         args.day_dir, args.morning_pattern
     )
     if morning is None:
+        available = sorted(p.name for p in args.day_dir.glob("*.xlsx"))
+        found = ", ".join(available) if available else "(keine)"
         raise FileNotFoundError(
-            f"Keine Excel-Dateien in {args.day_dir} gefunden"
+            f"Keine Datei nach Muster '{args.morning_pattern}' in {args.day_dir}"
+            f" gefunden. Gefundene Dateien: {found}"
         )
     if not matched:
         names = ", ".join(c.name for c in candidates)

@@ -285,3 +285,8 @@
 - Fallback nutzt erste `.xlsx`-Datei und listet vorhandene Dateien auf.
 - Tests für alternative Dateinamen und Fallback ergänzt.
 - `pytest -q` ausgeführt: 46 Tests bestanden.
+
+## 2025-08-07 (Fehlermeldung Morgenreport)
+- Fehlermeldung in `process_reports.py` nennt nun erwartetes Muster und vorhandene `.xlsx`-Dateien.
+- Test `test_main_missing_files.py` prüft die neue Meldung.
+- `pytest -q` ausgeführt: 46 Tests bestanden.
