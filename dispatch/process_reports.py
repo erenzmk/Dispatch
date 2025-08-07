@@ -153,6 +153,8 @@ def load_calls(
         prev_day: dt.date | None = None
         missing_required: list[str] | None = None
         seen_work_orders: set[str] = set()
+        sheet_names = list(wb.sheetnames)
+        found_relevant = False
 
         for sheet in wb.worksheets:
             # Überspringe Arbeitsblätter, die keine der definierten
@@ -162,6 +164,8 @@ def load_calls(
                 p.search(sheet.title) for p in RELEVANT_SHEET_PATTERNS
             ):
                 continue
+
+            found_relevant = True
 
             header_row = None
             header_row_idx = None
@@ -231,6 +235,13 @@ def load_calls(
                     data["new"] += 1
                 else:
                     data["old"] += 1
+
+        if RELEVANT_SHEET_PATTERNS and not found_relevant:
+            patterns = ", ".join(p.pattern for p in RELEVANT_SHEET_PATTERNS)
+            raise ValueError(
+                "Keine passenden Arbeitsblätter gefunden. Gesuchte Muster: "
+                f"{patterns}. Vorhandene Blätter: {', '.join(sheet_names)}"
+            )
 
         if target_date is None:
             if missing_required:
