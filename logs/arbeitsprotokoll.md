@@ -308,3 +308,7 @@ STDERR: Traceback (most recent call last):
     )
 FileNotFoundError: Keine Excel-Dateien in C:\Users\egencer\Documents\GitHub\Dispatch\data\reports\2025-07\01\2025-07\01 gefunden
 
+2025-08-07 14:29:48 - dispatch.main process mit "data\reports\2025-07\01" "Liste.xlsx"
+2025-08-07 14:29:50 - Report "data\reports\2025-07\01\19 Uhr.xlsx" -> "results\01_19 Uhr_summary.csv"
+2025-08-07 14:29:52 - Report "data\reports\2025-07\01\7 Uhr.xlsx" -> "results\01_7 Uhr_summary.csv"
+2025-08-07 14:29:52 - run_all_gui.py ausgeführt mit "data\reports\2025-07\01" "Liste.xlsx"
