@@ -264,3 +264,7 @@
 - `load_calls` verarbeitet bei leerer Filterliste alle Blätter.
 - Testfall für ein Blatt "West Central" ergänzt.
 - `pytest -q` ausgeführt: 43 Tests bestanden.
+2025-08-07 12:19:37 - dispatch.main process mit "data\reports\2025-07\01" "Liste.xlsx"
+2025-08-07 12:19:40 - Report "data\reports\2025-07\01\19 Uhr.xlsx" -> "results\01_19 Uhr_summary.csv"
+2025-08-07 12:19:41 - Report "data\reports\2025-07\01\7 Uhr.xlsx" -> "results\01_7 Uhr_summary.csv"
+2025-08-07 12:19:41 - run_all_gui.py ausgeführt mit "data\reports\2025-07\01" "Liste.xlsx"
