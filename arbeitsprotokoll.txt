@@ -1,0 +1,4 @@
+8. August 2025
+- Verzeichnisse logs/, results/, archive/ sowie überflüssige Daten entfernt.
+- .gitignore um ganze Verzeichnisse und Muster (*.xlsx, *.csv, *.md) erweitert.
+- Platzhalter data/reports/.gitkeep angelegt.

@@ -2,11 +2,15 @@ __pycache__/
 *.pyc
 to_delete/
 
-# Ergebnisdateien
-results/*.csv
+# ganze Verzeichnisse ignorieren
+logs/
+results/
+archive/
 
-# Logdateien ignorieren
-logs/*.log
+# generische Dateimuster
+*.xlsx
+*.csv
+*.md
 
 # Reale Reportdaten ignorieren
 data/reports/*
