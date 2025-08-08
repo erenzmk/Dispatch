@@ -23,3 +23,8 @@
 - pyproject.toml um Autorenfeld und Lizenzreferenz ergänzt.
 - MIT-Lizenzdatei LICENSE erstellt.
 - Tests mit pytest ausgeführt – fehlende Abhängigkeiten verhinderten das Laden der Module.
+8. August 2025 (Fortsetzung 4)
+- README um Abschnitte zu Entwicklungsumgebung, Testausführung und Verzeichnisstruktur ergänzt.
+- Unterschied zwischen Beispiel- und Produktionsdaten dokumentiert.
+- requirements.txt erstellt und Verweis auf pyproject.toml aufgenommen.
+- Tests mit pytest ausgeführt – 49 bestanden.
