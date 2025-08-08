@@ -28,3 +28,8 @@
 - Unterschied zwischen Beispiel- und Produktionsdaten dokumentiert.
 - requirements.txt erstellt und Verweis auf pyproject.toml aufgenommen.
 - Tests mit pytest ausgeführt – 49 bestanden.
+8. August 2025 (Fortsetzung 5)
+- update_liste prüft jetzt das Datumsfeld und beschreibt Zeilen nur bei leerem oder passendem Datum.
+- Techniker werden erst nach erfolgreichem Schreiben aus der Restliste entfernt, damit Warnungen bleiben.
+- Unit-Test ergänzt, der mehrere Zeilen eines Technikers mit unterschiedlichem Datum prüft.
+- Tests mit pytest ausgeführt – 50 bestanden.
