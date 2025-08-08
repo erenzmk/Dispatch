@@ -37,3 +37,9 @@
 - Skript run_current_month.pyw erstellt, verarbeitet den aktuellen Monat automatisch und protokolliert das Ergebnis.
 - Batch-Datei start_dispatch.bat zum Start per Doppelklick hinzugefügt.
 - Tests mit pytest ausgeführt – 50 bestanden.
+
+8. August 2025 (Fortsetzung 7)
+- run_current_month.pyw verarbeitet optional einen übergebenen Monat und prüft das Format `YYYY-MM`.
+- start_dispatch.bat fragt den Monat ab und übergibt ihn an das Skript.
+- README um Parameterbeschreibung und Beispielaufruf ergänzt.
+- Tests mit pytest ausgeführt – 50 bestanden.
