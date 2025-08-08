@@ -355,18 +355,24 @@ def update_liste(
         for row in range(2, ws.max_row + 1):
             name_cell = ws.cell(row=row, column=1)
             tech = str(name_cell.value).strip() if name_cell.value else None
-            if not tech or tech not in morning:
+            if not tech or tech not in morning or tech not in remaining:
                 continue
-            remaining.discard(tech)
-            day_data = morning[tech]
-            # Datum nur setzen, wenn die Zelle leer ist
+
             date_cell = ws.cell(row=row, column=start_col + 1)
+            cell_date = (
+                excel_to_date(date_cell.value) if date_cell.value is not None else None
+            )
+            if cell_date is not None and cell_date != day:
+                continue
+
+            day_data = morning[tech]
             if date_cell.value is None:
                 date_cell.value = day
             ws.cell(row=row, column=start_col + 2).value = PREV_DAY_MAP[day.weekday()]
             ws.cell(row=row, column=start_col + 8).value = day_data["total"]
             ws.cell(row=row, column=start_col + 9).value = day_data["old"]
             ws.cell(row=row, column=start_col + 10).value = day_data["new"]
+            remaining.discard(tech)
 
         if remaining:
             for tech in sorted(remaining):
