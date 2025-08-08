@@ -37,3 +37,5 @@
 - Skript run_current_month.pyw erstellt, verarbeitet den aktuellen Monat automatisch und protokolliert das Ergebnis.
 - Batch-Datei start_dispatch.bat zum Start per Doppelklick hinzugefügt.
 - Tests mit pytest ausgeführt – 50 bestanden.
+2025-08-09 - Monat 2025-08 mit Fehlern verarbeitet.
+2025-08-09 - Monat 2025-08 mit Fehlern verarbeitet.
