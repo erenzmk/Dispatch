@@ -12,15 +12,19 @@ Hinweis: Die GUI basiert auf PySimpleGUI 5.x.
 
 from datetime import datetime
 from pathlib import Path
-import subprocess
 import sys
 import json
+import os
+import tempfile
 from collections import defaultdict
 
-from dispatch import summarize_by_id
+import pandas as pd
+
+from dispatch import summarize_by_id, process_reports, analyze_month
 
 # Verzeichnisse für Logs und Ergebnisse
-LOG_DIR = Path("logs")
+_DEFAULT_LOG_DIR = Path(tempfile.gettempdir()) / "dispatch_logs"
+LOG_DIR = Path(os.environ.get("DISPATCH_LOG_DIR", str(_DEFAULT_LOG_DIR)))
 RESULTS_DIR = Path("results")
 PROTOCOL_FILE = LOG_DIR / "arbeitsprotokoll.md"
 
@@ -30,7 +34,7 @@ def _log(message: str, data: object | None = None) -> None:
 
     Optionale strukturierte Daten werden formatiert angehängt.
     """
-    LOG_DIR.mkdir(exist_ok=True)
+    LOG_DIR.mkdir(parents=True, exist_ok=True)
     with PROTOCOL_FILE.open("a", encoding="utf-8") as fh:
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         fh.write(f"{timestamp} - {message}\n")
@@ -60,66 +64,30 @@ def summarize_day(
 
     RESULTS_DIR.mkdir(exist_ok=True)
     try:
-        subprocess.run(
-            [
-                "python",
-                "-m",
-                "dispatch.main",
-                "process",
-                str(day_dir),
-                str(liste),
-            ],
-            check=True,
-            capture_output=True,
-            text=True,
-        )
-    except subprocess.CalledProcessError as exc:
-        _log(
-            f'Fehler bei dispatch.main process mit "{day_dir}" "{liste}": {exc}\n'
-            f'STDOUT: {exc.stdout}\nSTDERR: {exc.stderr}'
-        )
+        process_reports.main([str(day_dir), str(liste)])
+    except Exception as exc:
+        _log(f'Fehler bei dispatch.process_reports mit "{day_dir}" "{liste}": {exc}')
         _popup_error(f"Fehler bei der Tagesverarbeitung:\n{exc}")
         return False
     else:
-        _log(f'dispatch.main process mit "{day_dir}" "{liste}"')
+        _log(f'dispatch.process_reports mit "{day_dir}" "{liste}"')
 
     success = True
     calls_by_id: defaultdict[str, list[str]] = defaultdict(list)
     for excel in sorted(day_dir.glob("*.xlsx")):
         output = RESULTS_DIR / f"{day_dir.name}_{excel.stem}_summary.csv"
         try:
-            subprocess.run(
-                [
-                    "python",
-                    "-m",
-                    "dispatch.main",
-                    "summarize-id",
-                    str(excel),
-                    str(liste),
-                    "--output",
-                    str(output),
-                ],
-                check=True,
-                capture_output=True,
-                text=True,
-            )
-        except subprocess.CalledProcessError as exc:
-            _log(
-                f'Fehler bei Report "{excel}" -> "{output}": {exc}\n'
-                f'STDOUT: {exc.stdout}\nSTDERR: {exc.stderr}'
-            )
+            summary = summarize_by_id.summarize_report(excel, liste)
+            pd.DataFrame(summary).to_csv(output, index=False)
+        except Exception as exc:
+            _log(f'Fehler bei Report "{excel}" -> "{output}": {exc}')
             _popup_error(f"Fehler bei Report {excel}:\n{exc}")
             success = False
         else:
             _log(f'Report "{excel}" -> "{output}"')
-            try:
-                summary = summarize_by_id.summarize_report(excel, liste)
-            except Exception as exc:
-                _log(f'Fehler beim Auslesen der Calls aus "{excel}": {exc}')
-            else:
-                calls = {row["id"]: row.get("calls", []) for row in summary}
-                for tech_id, call_list in calls.items():
-                    calls_by_id[tech_id].extend(call_list)
+            calls = {row["id"]: row.get("calls", []) for row in summary}
+            for tech_id, call_list in calls.items():
+                calls_by_id[tech_id].extend(call_list)
     final_calls = {tid: cl for tid, cl in calls_by_id.items()}
     if call_log is not None:
         call_log.update(final_calls)
@@ -140,27 +108,13 @@ def process_month(
     darin gesammelt.
     """
 
-    LOG_DIR.mkdir(exist_ok=True)
+    LOG_DIR.mkdir(parents=True, exist_ok=True)
     try:
-        subprocess.run(
-            [
-                "python",
-                "-m",
-                "dispatch.main",
-                "run-all",
-                str(month_dir),
-                str(liste),
-                "--output",
-                str(output),
-            ],
-            check=True,
-            capture_output=True,
-            text=True,
-        )
-    except subprocess.CalledProcessError as exc:
+        process_reports.process_month(month_dir, liste)
+        analyze_month.main([str(month_dir), str(liste), "-o", str(output)])
+    except Exception as exc:
         _log(
-            f'Fehler bei run-all mit "{month_dir}" "{liste}" "{output}": {exc}\n'
-            f'STDOUT: {exc.stdout}\nSTDERR: {exc.stderr}'
+            f'Fehler bei run-all mit "{month_dir}" "{liste}" "{output}": {exc}'
         )
         _popup_error(f"Fehler bei der Monatsverarbeitung:\n{exc}")
         return False

@@ -1,5 +1,4 @@
 from pathlib import Path
-import subprocess
 
 import pytest
 
@@ -24,7 +23,7 @@ def test_cli_process_month(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> N
     assert called["liste"] == liste
 
 
-def test_process_month_logs_subprocess_failure(
+def test_process_month_logs_failure(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
     from run_all_gui import process_month
@@ -36,15 +35,11 @@ def test_process_month_logs_subprocess_failure(
 
     monkeypatch.setattr("run_all_gui._log", fake_log)
 
-    def fake_run(*args, **kwargs):
-        raise subprocess.CalledProcessError(
-            returncode=1,
-            cmd="cmd",
-            output="out",
-            stderr="err",
-        )
+    def fake_process_month(m_dir, liste_path):
+        raise RuntimeError("kaputt")
 
-    monkeypatch.setattr("run_all_gui.subprocess.run", fake_run)
+    monkeypatch.setattr("run_all_gui.process_reports.process_month", fake_process_month)
+    monkeypatch.setattr("run_all_gui.analyze_month.main", lambda args: None)
 
     month_dir = tmp_path / "2025-07"
     month_dir.mkdir()
@@ -55,7 +50,7 @@ def test_process_month_logs_subprocess_failure(
     result = process_month(month_dir, liste, output)
 
     assert result is False
-    assert any("out" in msg and "err" in msg for msg, _ in logs)
+    assert any("kaputt" in msg for msg, _ in logs)
 
 
 def test_process_month_logs_calls(
@@ -70,10 +65,8 @@ def test_process_month_logs_calls(
 
     monkeypatch.setattr("run_all_gui._log", fake_log)
 
-    def fake_run(*args, **kwargs):
-        return subprocess.CompletedProcess(args, 0, "", "")
-
-    monkeypatch.setattr("run_all_gui.subprocess.run", fake_run)
+    monkeypatch.setattr("run_all_gui.process_reports.process_month", lambda m, l: None)
+    monkeypatch.setattr("run_all_gui.analyze_month.main", lambda args: None)
 
     def fake_summarize_day(day_dir, liste_path, calls):
         if calls is not None:

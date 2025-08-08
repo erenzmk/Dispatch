@@ -32,6 +32,8 @@ import logging
 import re
 from pathlib import Path
 from typing import Dict, Iterable, Tuple
+import os
+import tempfile
 import warnings
 from contextlib import closing
 from .name_aliases import canonical_name
@@ -419,7 +421,7 @@ def find_morning_file(day_dir: Path, pattern: str) -> tuple[Path | None, list[Pa
 def process_month(
     month_dir: Path,
     liste: Path,
-    log_file: Path | None = Path("logs/process_month.log"),
+    log_file: Path | None = None,
     morning_pattern: str = DEFAULT_MORNING_PATTERN,
 ) -> None:
     """Process all day report directories within ``month_dir``.
@@ -429,6 +431,13 @@ def process_month(
     ob der Vorgang noch läuft oder bereits abgeschlossen ist.
     """
 
+    if log_file is None:
+        default_dir = Path(
+            os.environ.get(
+                "DISPATCH_LOG_DIR", str(Path(tempfile.gettempdir()) / "dispatch_logs")
+            )
+        )
+        log_file = default_dir / "process_month.log"
     _init_month_logger(log_file)
     logger.info("Starte Verarbeitung für %s", month_dir)
 

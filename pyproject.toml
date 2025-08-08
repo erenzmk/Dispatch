@@ -16,6 +16,10 @@ dependencies = [
 [project.optional-dependencies]
 gui = ["PySimpleGUI>=5,<6"]
 
+[project.scripts]
+dispatch = "dispatch.main:main"
+dispatch-gui = "run_all_gui:run_gui"
+
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["dispatch*"]
