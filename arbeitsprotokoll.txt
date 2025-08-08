@@ -8,3 +8,10 @@
 - dispatch/requirements.txt entfernt und Abhängigkeiten in pyproject.toml im Projektwurzelverzeichnis definiert.
 - PySimpleGUI als optionale GUI-Abhängigkeit über Extras [gui] konfiguriert.
 - Tests mit pytest ausgeführt – 49 bestanden.
+8. August 2025 (Fortsetzung)
+- subprocess.run durch direkte Funktionsaufrufe ersetzt; GUI nutzt jetzt
+  dispatch.process_reports und analyze_month direkt.
+- Log-Verzeichnis über DISPATCH_LOG_DIR konfigurierbar, Standard im
+  temporären Verzeichnis.
+- CLI-Entry-Points dispatch und dispatch-gui in pyproject.toml ergänzt.
+- Tests mit pytest ausgeführt – 49 bestanden.

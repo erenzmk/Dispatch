@@ -1,9 +1,9 @@
 import ast
-import subprocess
 from pathlib import Path
 
 import pandas as pd
 from openpyxl import Workbook, load_workbook
+from dispatch.main import main as cli_main
 
 
 def test_cli_summarize_id(tmp_path: Path) -> None:
@@ -35,19 +35,7 @@ def test_cli_summarize_id(tmp_path: Path) -> None:
     wb.close()
 
     out_csv = tmp_path / "summary.csv"
-    subprocess.run(
-        [
-            "python",
-            "-m",
-            "dispatch.main",
-            "summarize-id",
-            str(report),
-            str(liste),
-            "-o",
-            str(out_csv),
-        ],
-        check=True,
-    )
+    cli_main(["summarize-id", str(report), str(liste), "-o", str(out_csv)])
 
     df = pd.read_csv(out_csv)
     df["id"] = df["id"].astype(str)
