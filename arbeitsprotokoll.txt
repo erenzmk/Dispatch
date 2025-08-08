@@ -33,3 +33,7 @@
 - Techniker werden erst nach erfolgreichem Schreiben aus der Restliste entfernt, damit Warnungen bleiben.
 - Unit-Test ergänzt, der mehrere Zeilen eines Technikers mit unterschiedlichem Datum prüft.
 - Tests mit pytest ausgeführt – 50 bestanden.
+8. August 2025 (Fortsetzung 6)
+- Skript run_current_month.pyw erstellt, verarbeitet den aktuellen Monat automatisch und protokolliert das Ergebnis.
+- Batch-Datei start_dispatch.bat zum Start per Doppelklick hinzugefügt.
+- Tests mit pytest ausgeführt – 50 bestanden.
