@@ -1,5 +1,6 @@
 from datetime import date
 from pathlib import Path
+import sys
 from run_all_gui import process_month
 
 LOG_FILE = Path("arbeitsprotokoll.txt")
@@ -11,8 +12,12 @@ def log(message: str) -> None:
 
 
 def main() -> None:
-    today = date.today()
-    month_str = today.strftime("%Y-%m")
+    month_str = sys.argv[1] if len(sys.argv) > 1 else date.today().strftime("%Y-%m")
+    try:
+        date.fromisoformat(f"{month_str}-01")
+    except ValueError:
+        log(f"Ungültiges Monatsformat: {month_str}")
+        return
     month_dir = Path("data", "reports", month_str)
     liste = Path("data", "Liste.xlsx")
     output = Path("results", f"report_{month_str}.csv")

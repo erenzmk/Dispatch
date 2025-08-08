@@ -15,6 +15,16 @@ Automatisiert die Auswertung von täglichen Anrufberichten der Servicetechniker 
 2. Starte die grafische Oberfläche mit `python run_all_gui.py`.
 3. Wähle einen Tag oder den gesamten Monat aus. Die Ergebnisse werden in `Liste.xlsx` geschrieben und unter `logs/` protokolliert.
 
+## Automatische Monatsverarbeitung
+
+Das Skript `run_current_month.pyw` verarbeitet den aktuellen Monat automatisch. Alternativ kann ein Monat im Format `YYYY-MM` als Parameter übergeben werden:
+
+```bash
+python run_current_month.pyw 2025-07
+```
+
+Unter Windows steht die Batch-Datei `start_dispatch.bat` zur Verfügung. Sie fragt den gewünschten Monat ab und ruft anschließend das Skript mit diesem Parameter auf.
+
 ## Entwicklungsumgebung
 
 - Virtuelle Umgebung: `python -m venv .venv` und Aktivierung mit `source .venv/bin/activate` (Linux/Mac) bzw. `\.venv\\Scripts\\activate` (Windows).
