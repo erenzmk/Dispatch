@@ -1,3 +1,4 @@
+# Python-Cache-Verzeichnisse
 __pycache__/
 *.pyc
 to_delete/
