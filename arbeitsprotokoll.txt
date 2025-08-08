@@ -15,3 +15,7 @@
   temporären Verzeichnis.
 - CLI-Entry-Points dispatch und dispatch-gui in pyproject.toml ergänzt.
 - Tests mit pytest ausgeführt – 49 bestanden.
+8. August 2025 (Fortsetzung 2)
+- Alle Projektdateien auf Byte Order Mark (BOM) geprüft; keine BOM gefunden.
+- arbeitsprotokoll.txt ohne BOM gespeichert.
+- Tests mit pytest ausgeführt – 49 bestanden.
