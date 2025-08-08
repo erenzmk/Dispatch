@@ -8,6 +8,10 @@ version = "0.1.0"
 description = "Werkzeuge für die Disposition"
 readme = "README.md"
 requires-python = ">=3.8"
+authors = [
+    {name = "Team Dispatch", email = "dispatch@example.com"},
+]
+license = {file = "LICENSE"}
 dependencies = [
     "openpyxl>=3.0",
     "pandas>=2.0",
