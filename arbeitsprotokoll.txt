@@ -2,3 +2,6 @@
 - Verzeichnisse logs/, results/, archive/ sowie überflüssige Daten entfernt.
 - .gitignore um ganze Verzeichnisse und Muster (*.xlsx, *.csv, *.md) erweitert.
 - Platzhalter data/reports/.gitkeep angelegt.
+- Überprüfung auf __pycache__-Ordner: keine gefunden; `git rm` meldete keine Treffer.
+- Kommentar für Python-Cache-Verzeichnisse in .gitignore ergänzt.
+- Tests mit pytest ausgeführt – 49 bestanden.
