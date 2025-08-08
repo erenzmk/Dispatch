@@ -5,3 +5,6 @@
 - Überprüfung auf __pycache__-Ordner: keine gefunden; `git rm` meldete keine Treffer.
 - Kommentar für Python-Cache-Verzeichnisse in .gitignore ergänzt.
 - Tests mit pytest ausgeführt – 49 bestanden.
+- dispatch/requirements.txt entfernt und Abhängigkeiten in pyproject.toml im Projektwurzelverzeichnis definiert.
+- PySimpleGUI als optionale GUI-Abhängigkeit über Extras [gui] konfiguriert.
+- Tests mit pytest ausgeführt – 49 bestanden.

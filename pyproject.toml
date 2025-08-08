@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dispatch"
+version = "0.1.0"
+description = "Werkzeuge für die Disposition"
+readme = "README.md"
+requires-python = ">=3.8"
+dependencies = [
+    "openpyxl>=3.0",
+    "pandas>=2.0",
+]
+
+[project.optional-dependencies]
+gui = ["PySimpleGUI>=5,<6"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["dispatch*"]
