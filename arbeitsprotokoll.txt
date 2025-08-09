@@ -52,3 +52,4 @@
 2025-08-10 - versehentlich eingecheckte .pyc-Dateien und __pycache__-Ordner entfernt.
 2025-08-10 - update_liste setzt fehlende oder ungültige Datumszellen auf den Tageswert und verarbeitet Techniker weiter; Tests angepasst; pytest 56 bestanden.
 2025-08-10 - update_liste ergänzt fehlende Techniker durch neue Zeilen und trägt Tageswerte ein; Tests erweitert; pytest 57 bestanden.
+2025-08-10 - update_liste überschreibt abweichende Datumsangaben mit Tageswert und verarbeitet Techniker weiter; Tests angepasst; pytest 57 bestanden.

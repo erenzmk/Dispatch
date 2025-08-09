@@ -143,14 +143,14 @@ def test_update_liste_uses_matching_date(tmp_path: Path):
 
     wb2 = load_workbook(file)
     ws2 = wb2["Juli_25"]
-    # Erste Zeile mit falschem Datum bleibt unverändert
-    assert excel_to_date(ws2.cell(row=2, column=2).value) == dt.date(2025, 7, 2)
-    assert ws2.cell(row=2, column=9).value is None
-    # Zweite Zeile wird für den passenden Tag beschrieben
+    # Erste Zeile mit abweichendem Datum wird überschrieben und beschrieben
+    assert excel_to_date(ws2.cell(row=2, column=2).value) == dt.date(2025, 7, 1)
+    assert ws2.cell(row=2, column=9).value == 5
+    assert ws2.cell(row=2, column=10).value == 3
+    assert ws2.cell(row=2, column=11).value == 2
+    # Zweite Zeile bleibt unberührt
     assert excel_to_date(ws2.cell(row=3, column=2).value) == dt.date(2025, 7, 1)
-    assert ws2.cell(row=3, column=9).value == 5
-    assert ws2.cell(row=3, column=10).value == 3
-    assert ws2.cell(row=3, column=11).value == 2
+    assert ws2.cell(row=3, column=9).value is None
     wb2.close()
 
 

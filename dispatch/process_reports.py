@@ -411,7 +411,14 @@ def update_liste(
                     date_cell.value = day
                     cell_date = day
             if cell_date != day:
-                continue
+                logger.warning(
+                    "Abweichende Datumsangabe in Zeile %s für Techniker %s: %r, setze Datum auf %s.",
+                    row,
+                    tech,
+                    date_cell.value,
+                    day,
+                )
+                date_cell.value = day
 
             day_data = morning[tech]
             ws.cell(row=row, column=start_col + 2).value = PREV_DAY_MAP[day.weekday()]
