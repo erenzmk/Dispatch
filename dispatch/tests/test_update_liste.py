@@ -6,6 +6,7 @@ import pytest
 import logging
 
 from dispatch.process_reports import update_liste, excel_to_date
+from dispatch.name_aliases import refresh_alias_map
 
 
 def test_update_liste(tmp_path: Path):
@@ -47,6 +48,7 @@ def test_update_liste_empty_morning(tmp_path: Path):
 
 
 def test_update_liste_resolves_name_alias(tmp_path: Path, caplog):
+    refresh_alias_map()
     wb = Workbook()
     ws = wb.active
     ws.title = "Juli_25"

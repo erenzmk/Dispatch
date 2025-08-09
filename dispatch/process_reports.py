@@ -36,7 +36,7 @@ import os
 import tempfile
 import warnings
 from contextlib import closing
-from .name_aliases import canonical_name
+from .name_aliases import canonical_name, refresh_alias_map
 
 
 logger = logging.getLogger(__name__)
@@ -69,16 +69,9 @@ RELEVANT_SHEET_PATTERNS = [
 # Standardmuster für den Morgenreport
 DEFAULT_MORNING_PATTERN = "*7*.xlsx"
 
-# Zentrales Mapping bekannter Namensvarianten auf die kanonische Form.
-TECHNICIAN_ALIASES: dict[str, str] = {
-    "oussama": "Osama",
-    "danyal": "Daniyal",
-}
 
-
-def normalize_name(name: str) -> str:
-    """Normalisiere häufige Namensvarianten vor dem Abgleich."""
-    return TECHNICIAN_ALIASES.get(name.strip().lower(), name.strip())
+# Sicherstellen, dass der Alias-Cache aktuell ist.
+refresh_alias_map()
 
 
 def safe_load_workbook(filename: Path | str, *args, **kwargs):
@@ -262,8 +255,7 @@ def load_calls(
                         continue
                     seen_work_orders.add(wo_str)
                 raw_name = str(row[name_idx]).strip()
-                tech_raw = normalize_name(raw_name)
-                tech = canonical_name(tech_raw, valid_names or [])
+                tech = canonical_name(raw_name, valid_names or [])
                 if valid_names and tech not in valid_names:
                     unknown.add(raw_name)
                     continue
@@ -359,15 +351,14 @@ def update_liste(
             cell = ws.cell(row=row, column=1)
             if not cell.value:
                 continue
-            name = normalize_name(str(cell.value).strip())
-            canon = canonical_name(name, names_in_sheet)
+            canon = canonical_name(str(cell.value).strip(), names_in_sheet)
             cell.value = canon
             names_in_sheet.append(canon)
 
         def canonicalize_summary(summary: Dict[str, Dict[str, int]]) -> Dict[str, Dict[str, int]]:
             result: Dict[str, Dict[str, int]] = {}
             for name, stats in summary.items():
-                canon = canonical_name(normalize_name(name), names_in_sheet)
+                canon = canonical_name(name, names_in_sheet)
                 agg = result.setdefault(canon, {"total": 0, "new": 0, "old": 0})
                 agg["total"] += stats["total"]
                 agg["new"] += stats["new"]
@@ -389,7 +380,9 @@ def update_liste(
         for row in range(2, ws.max_row + 1):
             name_cell = ws.cell(row=row, column=1)
             tech = (
-                normalize_name(str(name_cell.value).strip()) if name_cell.value else None
+                canonical_name(str(name_cell.value).strip(), names_in_sheet)
+                if name_cell.value
+                else None
             )
             if not tech or tech not in morning or tech not in remaining:
                 continue
