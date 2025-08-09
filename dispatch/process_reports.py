@@ -437,18 +437,18 @@ def update_liste(
             ws.cell(row=row, column=start_col + 10).value = day_data["new"]
             remaining.discard(tech)
 
-        if remaining:
-            for tech in sorted(remaining):
-                canon = canonical_name(tech, names_in_sheet)
-                row = ws.max_row + 1
-                ws.cell(row=row, column=tech_col, value=canon)
-                ws.cell(row=row, column=start_col + 1, value=day)
-                ws.cell(row=row, column=start_col + 2, value=PREV_DAY_MAP[day.weekday()])
-                day_data = morning[tech]
-                ws.cell(row=row, column=start_col + 8, value=day_data["total"])
-                ws.cell(row=row, column=start_col + 9, value=day_data["old"])
-                ws.cell(row=row, column=start_col + 10, value=day_data["new"])
-                names_in_sheet.append(canon)
+        for tech in sorted(remaining):
+            canon = canonical_name(tech, names_in_sheet)
+            day_data = morning[tech]
+            row_values = [None] * (start_col + 10)
+            row_values[tech_col - 1] = canon
+            row_values[start_col] = day
+            row_values[start_col + 1] = PREV_DAY_MAP[day.weekday()]
+            row_values[start_col + 7] = day_data["total"]
+            row_values[start_col + 8] = day_data["old"]
+            row_values[start_col + 9] = day_data["new"]
+            ws.append(row_values)
+            names_in_sheet.append(canon)
 
         wb.save(liste)
     finally:
