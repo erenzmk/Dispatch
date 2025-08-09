@@ -55,3 +55,4 @@
 2025-08-10 - update_liste überschreibt abweichende Datumsangaben mit Tageswert und verarbeitet Techniker weiter; Tests angepasst; pytest 57 bestanden.
 2025-08-10 - Technikerspalte dynamisch ermittelt und Startspalte relativ zu ihr berechnet; Tests angepasst, neuer Test; pytest 58 bestanden.
 2025-08-10 - update_liste fügt verbleibende Techniker per ws.append als neue Zeilen hinzu und normalisiert Namen via canonical_name; pytest 58 bestanden.
+2025-08-10 - Startspalte richtet sich jetzt an Technikerspalte + 1 aus; Tests angepasst; pytest 58 bestanden.

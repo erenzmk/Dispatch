@@ -15,7 +15,7 @@ def test_update_liste(tmp_path: Path):
     ws.title = "Juli_25"
     ws.cell(row=1, column=1, value="Techniker")
     ws.cell(row=2, column=1, value="Alice")
-    ws.cell(row=2, column=2, value=dt.date(2025, 7, 1))
+    ws.cell(row=2, column=3, value=dt.date(2025, 7, 1))
     ws.cell(row=3, column=1, value="Bob")
     file = tmp_path / "liste.xlsx"
     wb.save(file)
@@ -27,14 +27,14 @@ def test_update_liste(tmp_path: Path):
     wb2 = load_workbook(file)
     ws2 = wb2["Juli_25"]
 
-    assert ws2.cell(row=2, column=8).value is None
-    assert ws2.cell(row=2, column=9).value == 3
-    assert ws2.cell(row=2, column=10).value == 2
-    assert ws2.cell(row=2, column=11).value == 1
-    assert ws2.cell(row=3, column=8).value is None
+    assert ws2.cell(row=2, column=9).value is None
+    assert ws2.cell(row=2, column=10).value == 3
+    assert ws2.cell(row=2, column=11).value == 2
+    assert ws2.cell(row=2, column=12).value == 1
     assert ws2.cell(row=3, column=9).value is None
     assert ws2.cell(row=3, column=10).value is None
     assert ws2.cell(row=3, column=11).value is None
+    assert ws2.cell(row=3, column=12).value is None
 
 
 def test_update_liste_empty_morning(tmp_path: Path):
@@ -56,7 +56,7 @@ def test_update_liste_resolves_name_alias(tmp_path: Path, caplog):
     ws.title = "Juli_25"
     ws.cell(row=1, column=1, value="Techniker")
     ws.cell(row=2, column=1, value="Osama")
-    ws.cell(row=2, column=2, value=dt.date(2025, 7, 1))
+    ws.cell(row=2, column=3, value=dt.date(2025, 7, 1))
     file = tmp_path / "liste.xlsx"
     wb.save(file)
 
@@ -80,9 +80,9 @@ def test_update_liste_resolves_name_alias(tmp_path: Path, caplog):
 
     wb2 = load_workbook(file)
     ws2 = wb2["Juli_25"]
-    assert ws2.cell(row=2, column=9).value == 2
-    assert ws2.cell(row=2, column=10).value == 1
+    assert ws2.cell(row=2, column=10).value == 2
     assert ws2.cell(row=2, column=11).value == 1
+    assert ws2.cell(row=2, column=12).value == 1
     wb2.close()
 
 
@@ -101,10 +101,10 @@ def test_update_liste_adds_missing_technician(tmp_path: Path):
     wb2 = load_workbook(file)
     ws2 = wb2["Juli_25"]
     assert ws2.cell(row=2, column=1).value == "Osama"
-    assert excel_to_date(ws2.cell(row=2, column=2).value) == dt.date(2025, 7, 1)
-    assert ws2.cell(row=2, column=9).value == 2
-    assert ws2.cell(row=2, column=10).value == 1
+    assert excel_to_date(ws2.cell(row=2, column=3).value) == dt.date(2025, 7, 1)
+    assert ws2.cell(row=2, column=10).value == 2
     assert ws2.cell(row=2, column=11).value == 1
+    assert ws2.cell(row=2, column=12).value == 1
     wb2.close()
 
 
@@ -124,8 +124,8 @@ def test_update_liste_uses_technician_header_column(tmp_path: Path):
     wb2 = load_workbook(file)
     ws2 = wb2["Juli_25"]
     assert ws2.cell(row=2, column=3).value == "Alice"
-    assert excel_to_date(ws2.cell(row=2, column=4).value) == dt.date(2025, 7, 1)
-    assert ws2.cell(row=2, column=11).value == 1
+    assert excel_to_date(ws2.cell(row=2, column=5).value) == dt.date(2025, 7, 1)
+    assert ws2.cell(row=2, column=12).value == 1
     wb2.close()
 
 
@@ -135,8 +135,8 @@ def test_update_liste_multiple_runs(tmp_path: Path):
     ws.title = "Juli_25"
     ws.cell(row=1, column=1, value="Techniker")
     ws.cell(row=2, column=1, value="Alice")
-    ws.cell(row=2, column=2, value=dt.date(2025, 7, 1))
-    ws.cell(row=2, column=15, value=dt.date(2025, 7, 2))
+    ws.cell(row=2, column=3, value=dt.date(2025, 7, 1))
+    ws.cell(row=2, column=16, value=dt.date(2025, 7, 2))
     file = tmp_path / "liste.xlsx"
     wb.save(file)
 
@@ -147,8 +147,8 @@ def test_update_liste_multiple_runs(tmp_path: Path):
 
     wb2 = load_workbook(file)
     ws2 = wb2["Juli_25"]
-    assert ws2.cell(row=2, column=9).value == 1
-    assert ws2.cell(row=2, column=22).value == 1
+    assert ws2.cell(row=2, column=10).value == 1
+    assert ws2.cell(row=2, column=23).value == 1
     wb2.close()
 
 
@@ -159,8 +159,8 @@ def test_update_liste_uses_matching_date(tmp_path: Path):
     ws.cell(row=1, column=1, value="Techniker")
     ws.cell(row=2, column=1, value="Alice")
     ws.cell(row=3, column=1, value="Alice")
-    ws.cell(row=2, column=2, value=dt.date(2025, 7, 2))
-    ws.cell(row=3, column=2, value=dt.date(2025, 7, 1))
+    ws.cell(row=2, column=3, value=dt.date(2025, 7, 2))
+    ws.cell(row=3, column=3, value=dt.date(2025, 7, 1))
     file = tmp_path / "liste.xlsx"
     wb.save(file)
 
@@ -171,13 +171,13 @@ def test_update_liste_uses_matching_date(tmp_path: Path):
     wb2 = load_workbook(file)
     ws2 = wb2["Juli_25"]
     # Erste Zeile mit abweichendem Datum wird überschrieben und beschrieben
-    assert excel_to_date(ws2.cell(row=2, column=2).value) == dt.date(2025, 7, 1)
-    assert ws2.cell(row=2, column=9).value == 5
-    assert ws2.cell(row=2, column=10).value == 3
-    assert ws2.cell(row=2, column=11).value == 2
+    assert excel_to_date(ws2.cell(row=2, column=3).value) == dt.date(2025, 7, 1)
+    assert ws2.cell(row=2, column=10).value == 5
+    assert ws2.cell(row=2, column=11).value == 3
+    assert ws2.cell(row=2, column=12).value == 2
     # Zweite Zeile bleibt unberührt
-    assert excel_to_date(ws2.cell(row=3, column=2).value) == dt.date(2025, 7, 1)
-    assert ws2.cell(row=3, column=9).value is None
+    assert excel_to_date(ws2.cell(row=3, column=3).value) == dt.date(2025, 7, 1)
+    assert ws2.cell(row=3, column=10).value is None
     wb2.close()
 
 
@@ -196,10 +196,10 @@ def test_update_liste_creates_missing_sheet(tmp_path: Path):
     assert ws.cell(row=1, column=1).value == "Techniker"
     assert ws.max_row == 2
     assert ws.cell(row=2, column=1).value == "Alice"
-    assert excel_to_date(ws.cell(row=2, column=2).value) == dt.date(2025, 7, 1)
-    assert ws.cell(row=2, column=9).value == 2
-    assert ws.cell(row=2, column=10).value == 1
+    assert excel_to_date(ws.cell(row=2, column=3).value) == dt.date(2025, 7, 1)
+    assert ws.cell(row=2, column=10).value == 2
     assert ws.cell(row=2, column=11).value == 1
+    assert ws.cell(row=2, column=12).value == 1
     wb2.close()
 
 
@@ -221,7 +221,7 @@ def test_update_liste_fills_invalid_date_cell(tmp_path: Path, caplog, date_value
     ws.cell(row=1, column=1, value="Techniker")
     ws.cell(row=2, column=1, value="Alice")
     if date_value is not None:
-        ws.cell(row=2, column=2, value=date_value)
+        ws.cell(row=2, column=3, value=date_value)
     file = tmp_path / "liste.xlsx"
     wb.save(file)
 
@@ -243,10 +243,10 @@ def test_update_liste_fills_invalid_date_cell(tmp_path: Path, caplog, date_value
 
     wb2 = load_workbook(file)
     ws2 = wb2["Juli_25"]
-    assert excel_to_date(ws2.cell(row=2, column=2).value) == dt.date(2025, 7, 1)
-    assert ws2.cell(row=2, column=9).value == 1
+    assert excel_to_date(ws2.cell(row=2, column=3).value) == dt.date(2025, 7, 1)
     assert ws2.cell(row=2, column=10).value == 1
-    assert ws2.cell(row=2, column=11).value == 0
+    assert ws2.cell(row=2, column=11).value == 1
+    assert ws2.cell(row=2, column=12).value == 0
     wb2.close()
 
     assert "setze Datum" in caplog.text
