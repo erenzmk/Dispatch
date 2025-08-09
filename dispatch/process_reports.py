@@ -359,15 +359,10 @@ def update_liste(
                 continue
 
             date_cell = ws.cell(row=row, column=start_col + 1)
-            cell_date = (
-                excel_to_date(date_cell.value) if date_cell.value is not None else None
-            )
-            if cell_date is not None and cell_date != day:
+            if excel_to_date(date_cell.value) != day:
                 continue
 
             day_data = morning[tech]
-            if date_cell.value is None:
-                date_cell.value = day
             ws.cell(row=row, column=start_col + 2).value = PREV_DAY_MAP[day.weekday()]
             ws.cell(row=row, column=start_col + 8).value = day_data["total"]
             ws.cell(row=row, column=start_col + 9).value = day_data["old"]
