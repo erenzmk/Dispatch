@@ -345,10 +345,20 @@ def update_liste(
         else:
             ws = wb[month_sheet]
 
+        # Bestimme die Spalte mit dem Header "Techniker"
+        tech_col = None
+        for col in range(1, ws.max_column + 1):
+            value = ws.cell(row=1, column=col).value
+            if isinstance(value, str) and value.strip().lower() == "techniker":
+                tech_col = col
+                break
+        if tech_col is None:
+            raise ValueError("Spalte 'Techniker' nicht gefunden")
+
         # Canonicalise technician names already present in the sheet
         names_in_sheet: list[str] = []
         for row in range(2, ws.max_row + 1):
-            cell = ws.cell(row=row, column=1)
+            cell = ws.cell(row=row, column=tech_col)
             if not cell.value:
                 continue
             canon = canonical_name(str(cell.value).strip(), names_in_sheet)
@@ -374,11 +384,11 @@ def update_liste(
         # Start entsprechend.
         week_index = (day.day - 1) // 7
         day_index = (day.day - 1) % 7
-        start_col = 1 + week_index * (13 * 7 + 1) + day_index * 13
+        start_col = tech_col + week_index * (13 * 7 + 1) + day_index * 13
         remaining = set(morning)
 
         for row in range(2, ws.max_row + 1):
-            name_cell = ws.cell(row=row, column=1)
+            name_cell = ws.cell(row=row, column=tech_col)
             tech = (
                 canonical_name(str(name_cell.value).strip(), names_in_sheet)
                 if name_cell.value
@@ -424,7 +434,7 @@ def update_liste(
             for tech in sorted(remaining):
                 canon = canonical_name(tech, names_in_sheet)
                 row = ws.max_row + 1
-                ws.cell(row=row, column=1, value=canon)
+                ws.cell(row=row, column=tech_col, value=canon)
                 ws.cell(row=row, column=start_col + 1, value=day)
                 ws.cell(row=row, column=start_col + 2, value=PREV_DAY_MAP[day.weekday()])
                 day_data = morning[tech]
