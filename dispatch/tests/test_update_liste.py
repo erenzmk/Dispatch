@@ -3,6 +3,7 @@ from pathlib import Path
 
 from openpyxl import Workbook, load_workbook
 import pytest
+import logging
 
 from dispatch.process_reports import update_liste, excel_to_date
 
@@ -122,30 +123,36 @@ def test_excel_to_date_invalid():
         excel_to_date("abc")
 
 
-def test_update_liste_missing_date_cell(tmp_path: Path):
+@pytest.mark.parametrize("date_value", [None, "abc"])
+def test_update_liste_skips_invalid_date_cell(tmp_path: Path, caplog, date_value):
     wb = Workbook()
     ws = wb.active
     ws.title = "Juli_25"
     ws.cell(row=2, column=1, value="Alice")
+    if date_value is not None:
+        ws.cell(row=2, column=2, value=date_value)
     file = tmp_path / "liste.xlsx"
     wb.save(file)
 
     morning = {"Alice": {"total": 1, "new": 0, "old": 1}}
 
-    with pytest.raises(ValueError, match="Leere Zelle"):
-        update_liste(file, "Juli_25", dt.date(2025, 7, 1), morning)
+    import dispatch.process_reports as pr
 
+    logger = pr.logger
+    original_handlers = logger.handlers[:]
+    original_propagate = logger.propagate
+    logger.handlers = []
+    logger.propagate = True
+    try:
+        with caplog.at_level(logging.WARNING, logger="dispatch.process_reports"):
+            update_liste(file, "Juli_25", dt.date(2025, 7, 1), morning)
+    finally:
+        logger.handlers = original_handlers
+        logger.propagate = original_propagate
 
-def test_update_liste_invalid_date_cell(tmp_path: Path):
-    wb = Workbook()
-    ws = wb.active
-    ws.title = "Juli_25"
-    ws.cell(row=2, column=1, value="Alice")
-    ws.cell(row=2, column=2, value="abc")
-    file = tmp_path / "liste.xlsx"
-    wb.save(file)
+    wb2 = load_workbook(file)
+    ws2 = wb2["Juli_25"]
+    assert ws2.cell(row=2, column=9).value is None
+    wb2.close()
 
-    morning = {"Alice": {"total": 1, "new": 0, "old": 1}}
-
-    with pytest.raises(ValueError, match="Ungültiger Datumswert"):
-        update_liste(file, "Juli_25", dt.date(2025, 7, 1), morning)
+    assert "Eintrag übersprungen" in caplog.text
