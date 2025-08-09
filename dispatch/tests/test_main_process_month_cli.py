@@ -34,6 +34,7 @@ def test_process_month_logs_failure(
         logs.append((msg, data))
 
     monkeypatch.setattr("run_all_gui._log", fake_log)
+    monkeypatch.setattr("run_all_gui._popup_error", lambda msg: None)
 
     def fake_process_month(m_dir, liste_path):
         raise RuntimeError("kaputt")
@@ -64,6 +65,7 @@ def test_process_month_logs_calls(
         logs.append((msg, data))
 
     monkeypatch.setattr("run_all_gui._log", fake_log)
+    monkeypatch.setattr("run_all_gui._popup_error", lambda msg: None)
 
     monkeypatch.setattr("run_all_gui.process_reports.process_month", lambda m, l: None)
     monkeypatch.setattr("run_all_gui.analyze_month.main", lambda args: None)
