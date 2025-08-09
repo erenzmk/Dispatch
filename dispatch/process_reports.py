@@ -390,21 +390,26 @@ def update_liste(
             date_cell = ws.cell(row=row, column=start_col + 1)
             if date_cell.value is None:
                 logger.warning(
-                    "Keine Datumsangabe in Zeile %s für Techniker %s, Eintrag übersprungen.",
+                    "Keine Datumsangabe in Zeile %s für Techniker %s, setze Datum auf %s.",
                     row,
                     tech,
+                    day,
                 )
-                continue
-            try:
-                cell_date = excel_to_date(date_cell.value)
-            except ValueError:
-                logger.warning(
-                    "Ungültige Datumsangabe in Zeile %s für Techniker %s: %r, Eintrag übersprungen.",
-                    row,
-                    tech,
-                    date_cell.value,
-                )
-                continue
+                date_cell.value = day
+                cell_date = day
+            else:
+                try:
+                    cell_date = excel_to_date(date_cell.value)
+                except ValueError:
+                    logger.warning(
+                        "Ungültige Datumsangabe in Zeile %s für Techniker %s: %r, setze Datum auf %s.",
+                        row,
+                        tech,
+                        date_cell.value,
+                        day,
+                    )
+                    date_cell.value = day
+                    cell_date = day
             if cell_date != day:
                 continue
 
