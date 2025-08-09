@@ -83,6 +83,27 @@ def test_update_liste_resolves_name_alias(tmp_path: Path, caplog):
     wb2.close()
 
 
+def test_update_liste_adds_missing_technician(tmp_path: Path):
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Juli_25"
+    file = tmp_path / "liste.xlsx"
+    wb.save(file)
+
+    morning = {"Oussama": {"total": 2, "new": 1, "old": 1}}
+
+    update_liste(file, "Juli_25", dt.date(2025, 7, 1), morning)
+
+    wb2 = load_workbook(file)
+    ws2 = wb2["Juli_25"]
+    assert ws2.cell(row=2, column=1).value == "Osama"
+    assert excel_to_date(ws2.cell(row=2, column=2).value) == dt.date(2025, 7, 1)
+    assert ws2.cell(row=2, column=9).value == 2
+    assert ws2.cell(row=2, column=10).value == 1
+    assert ws2.cell(row=2, column=11).value == 1
+    wb2.close()
+
+
 def test_update_liste_multiple_runs(tmp_path: Path):
     wb = Workbook()
     ws = wb.active
@@ -146,7 +167,12 @@ def test_update_liste_creates_missing_sheet(tmp_path: Path):
     assert "Juli_25" in wb2.sheetnames
     ws = wb2["Juli_25"]
     assert ws.cell(row=1, column=1).value == "Techniker"
-    assert ws.max_row == 1
+    assert ws.max_row == 2
+    assert ws.cell(row=2, column=1).value == "Alice"
+    assert excel_to_date(ws.cell(row=2, column=2).value) == dt.date(2025, 7, 1)
+    assert ws.cell(row=2, column=9).value == 2
+    assert ws.cell(row=2, column=10).value == 1
+    assert ws.cell(row=2, column=11).value == 1
     wb2.close()
 
 
