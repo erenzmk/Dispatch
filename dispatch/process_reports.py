@@ -341,11 +341,10 @@ def update_liste(
     try:
         if month_sheet not in wb.sheetnames:
             ws = wb.create_sheet(title=month_sheet)
-            ws.cell(row=1, column=1, value="Techniker")
         else:
             ws = wb[month_sheet]
 
-        # Bestimme die Spalte mit dem Header "Techniker"
+        # Sicherstellen, dass eine Spalte "Techniker" existiert
         tech_col = None
         for col in range(1, ws.max_column + 1):
             value = ws.cell(row=1, column=col).value
@@ -353,7 +352,10 @@ def update_liste(
                 tech_col = col
                 break
         if tech_col is None:
-            raise ValueError("Spalte 'Techniker' nicht gefunden")
+            if ws.cell(row=1, column=1).value not in (None, ""):
+                ws.insert_cols(1)
+            ws.cell(row=1, column=1, value="Techniker")
+            tech_col = 1
 
         # Canonicalise technician names already present in the sheet
         names_in_sheet: list[str] = []
