@@ -23,7 +23,8 @@ from typing import Iterable
 # Map alternate spellings or abbreviations to their canonical form.
 # Extend this mapping as needed. Keys are treated case-insensitively.
 ALIASES = {
-    # "jon doe": "John Doe",
+    "oussama": "Osama",
+    "danyal": "Daniyal",
 }
 
 # Cached lower-case mapping of aliases to canonical names.  Tests and callers

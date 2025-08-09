@@ -6,6 +6,7 @@ import pytest
 from openpyxl import Workbook
 
 from dispatch.process_reports import load_calls, RELEVANT_SHEET_PATTERNS
+from dispatch.name_aliases import refresh_alias_map
 
 
 def test_load_calls_selects_correct_sheet(tmp_path):
@@ -55,6 +56,7 @@ def test_load_calls_handles_west_central_sheet(tmp_path):
 
 
 def test_load_calls_resolves_alias(tmp_path):
+    refresh_alias_map()
     wb = Workbook()
     ws = wb.active
     ws.title = "Report"
