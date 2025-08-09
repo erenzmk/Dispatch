@@ -46,6 +46,41 @@ def test_update_liste_empty_morning(tmp_path: Path):
         update_liste(file, "Juli_25", dt.date(2025, 7, 1), {})
 
 
+def test_update_liste_resolves_name_alias(tmp_path: Path, caplog):
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Juli_25"
+    ws.cell(row=2, column=1, value="Osama")
+    ws.cell(row=2, column=2, value=dt.date(2025, 7, 1))
+    file = tmp_path / "liste.xlsx"
+    wb.save(file)
+
+    morning = {"Oussama": {"total": 2, "new": 1, "old": 1}}
+
+    import dispatch.process_reports as pr
+
+    logger = pr.logger
+    original_handlers = logger.handlers[:]
+    original_propagate = logger.propagate
+    logger.handlers = []
+    logger.propagate = True
+    try:
+        with caplog.at_level(logging.WARNING, logger="dispatch.process_reports"):
+            pr.update_liste(file, "Juli_25", dt.date(2025, 7, 1), morning)
+    finally:
+        logger.handlers = original_handlers
+        logger.propagate = original_propagate
+
+    assert "Techniker" not in caplog.text
+
+    wb2 = load_workbook(file)
+    ws2 = wb2["Juli_25"]
+    assert ws2.cell(row=2, column=9).value == 2
+    assert ws2.cell(row=2, column=10).value == 1
+    assert ws2.cell(row=2, column=11).value == 1
+    wb2.close()
+
+
 def test_update_liste_multiple_runs(tmp_path: Path):
     wb = Workbook()
     ws = wb.active

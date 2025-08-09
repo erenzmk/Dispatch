@@ -69,6 +69,17 @@ RELEVANT_SHEET_PATTERNS = [
 # Standardmuster für den Morgenreport
 DEFAULT_MORNING_PATTERN = "*7*.xlsx"
 
+# Zentrales Mapping bekannter Namensvarianten auf die kanonische Form.
+TECHNICIAN_ALIASES: dict[str, str] = {
+    "oussama": "Osama",
+    "danyal": "Daniyal",
+}
+
+
+def normalize_name(name: str) -> str:
+    """Normalisiere häufige Namensvarianten vor dem Abgleich."""
+    return TECHNICIAN_ALIASES.get(name.strip().lower(), name.strip())
+
 
 def safe_load_workbook(filename: Path | str, *args, **kwargs):
     """Load a workbook while suppressing known openpyxl warnings.
@@ -250,10 +261,11 @@ def load_calls(
                     if not wo_str.startswith("17") or wo_str in seen_work_orders:
                         continue
                     seen_work_orders.add(wo_str)
-                tech_raw = str(row[name_idx]).strip()
+                raw_name = str(row[name_idx]).strip()
+                tech_raw = normalize_name(raw_name)
                 tech = canonical_name(tech_raw, valid_names or [])
                 if valid_names and tech not in valid_names:
-                    unknown.add(tech_raw)
+                    unknown.add(raw_name)
                     continue
 
                 open_date = excel_to_date(row[open_idx])
@@ -347,7 +359,7 @@ def update_liste(
             cell = ws.cell(row=row, column=1)
             if not cell.value:
                 continue
-            name = str(cell.value).strip()
+            name = normalize_name(str(cell.value).strip())
             canon = canonical_name(name, names_in_sheet)
             cell.value = canon
             names_in_sheet.append(canon)
@@ -355,7 +367,7 @@ def update_liste(
         def canonicalize_summary(summary: Dict[str, Dict[str, int]]) -> Dict[str, Dict[str, int]]:
             result: Dict[str, Dict[str, int]] = {}
             for name, stats in summary.items():
-                canon = canonical_name(name, names_in_sheet)
+                canon = canonical_name(normalize_name(name), names_in_sheet)
                 agg = result.setdefault(canon, {"total": 0, "new": 0, "old": 0})
                 agg["total"] += stats["total"]
                 agg["new"] += stats["new"]
@@ -376,7 +388,9 @@ def update_liste(
 
         for row in range(2, ws.max_row + 1):
             name_cell = ws.cell(row=row, column=1)
-            tech = str(name_cell.value).strip() if name_cell.value else None
+            tech = (
+                normalize_name(str(name_cell.value).strip()) if name_cell.value else None
+            )
             if not tech or tech not in morning or tech not in remaining:
                 continue
 
