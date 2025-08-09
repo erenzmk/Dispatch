@@ -51,7 +51,7 @@ def test_update_liste_multiple_runs(tmp_path: Path):
     ws.title = "Juli_25"
     ws.cell(row=2, column=1, value="Alice")
     ws.cell(row=2, column=2, value=dt.date(2025, 7, 1))
-    ws.cell(row=2, column=16, value=dt.date(2025, 7, 2))
+    ws.cell(row=2, column=15, value=dt.date(2025, 7, 2))
     file = tmp_path / "liste.xlsx"
     wb.save(file)
 
@@ -63,7 +63,7 @@ def test_update_liste_multiple_runs(tmp_path: Path):
     wb2 = load_workbook(file)
     ws2 = wb2["Juli_25"]
     assert ws2.cell(row=2, column=9).value == 1
-    assert ws2.cell(row=2, column=23).value == 1
+    assert ws2.cell(row=2, column=22).value == 1
     wb2.close()
 
 
