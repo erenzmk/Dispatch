@@ -57,3 +57,4 @@
 2025-08-10 - update_liste fügt verbleibende Techniker per ws.append als neue Zeilen hinzu und normalisiert Namen via canonical_name; pytest 58 bestanden.
 2025-08-10 - Startspalte richtet sich jetzt an Technikerspalte + 1 aus; Tests angepasst; pytest 58 bestanden.
 2025-08-10 - update_liste stellt sicher, dass eine Technikerspalte existiert oder fügt sie bei Bedarf als erste Spalte ein; Test ergänzt; pytest 59 bestanden.
+2025-08-10 - Startspaltenberechnung in update_liste berücksichtigt nun 14 Spalten pro Tag und zusätzliche Leer-Spalten zwischen Wochen; Tests erweitert, Tages- und Wochen-Leer-Spalten simuliert; pytest 60 bestanden.

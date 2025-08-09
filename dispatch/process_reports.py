@@ -9,17 +9,16 @@ business day) versus "old". The evening report lists the still-open calls so the
 script can derive how many were completed during the day.
 
 The aggregated values are written into ``Liste.xlsx`` on the sheet for the
-corresponding month. The workbook contains weekly column blocks consisting of
-13 columns:
+corresponding month. The workbook contains weekly column blocks. Each day
+occupies 13 data columns followed by a blank column:
 
     name, date, weekday, pudo, pickup time, valid, info, pre-closed,
     total calls, old calls, new calls, details, mails
 
-Blocks sind zu Wochen gruppiert, zwischen denen eine Leer-Spalte liegt. Eine
-Woche besteht somit aus sieben 13-Spalten-Blöcken plus einer zusätzlichen
-Leer-Spalte. Für ein Datum ``d`` ergibt sich der Wochenindex ``(d.day-1)//7``
-und der Tagesindex ``(d.day-1)%7``. Die Startspalte lautet folglich
-``1 + week_index*(13*7 + 1) + day_index*13``.
+Seven such day blocks form a week, and an additional blank column separates
+the weeks. For a date ``d`` the week index is ``(d.day-1)//7`` and the day
+index ``(d.day-1)%7``. The starting column is therefore calculated as
+``1 + week_index*((13 + 1) * 7 + 1) + day_index*(13 + 1)``.
 
 The script requires :mod:`openpyxl` for reading and writing Excel files.
 """
@@ -380,13 +379,18 @@ def update_liste(
         morning = canonicalize_summary(morning)
 
         # Startspalte relativ zur Technikerspalte gemäß dem in ``Liste.xlsx``
-        # verwendeten Layout bestimmen. Tageswerte stehen in 13-Spalten-Blöcken,
-        # sieben Blöcke bilden eine Woche, zwischen Wochen liegt eine Leer-Spalte.
-        # Der Wochenindex und der Tagesindex innerhalb der Woche verschieben den
+        # verwendeten Layout bestimmen. Jede Tagesgruppe umfasst 13 Daten-
+        # spalten plus eine Leer-Spalte. Sieben solche Gruppen bilden eine
+        # Woche, zwischen den Wochen liegt eine weitere Leer-Spalte. Der
+        # Wochenindex und der Tagesindex innerhalb der Woche verschieben den
         # Start entsprechend.
         week_index = (day.day - 1) // 7
         day_index = (day.day - 1) % 7
-        start_col = tech_col + 1 + week_index * (13 * 7 + 1) + day_index * 13
+        start_col = (
+            tech_col + 1
+            + week_index * ((13 + 1) * 7 + 1)
+            + day_index * (13 + 1)
+        )
         remaining = set(morning)
 
         for row in range(2, ws.max_row + 1):

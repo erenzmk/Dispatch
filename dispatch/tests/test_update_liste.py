@@ -136,7 +136,7 @@ def test_update_liste_multiple_runs(tmp_path: Path):
     ws.cell(row=1, column=1, value="Techniker")
     ws.cell(row=2, column=1, value="Alice")
     ws.cell(row=2, column=3, value=dt.date(2025, 7, 1))
-    ws.cell(row=2, column=16, value=dt.date(2025, 7, 2))
+    ws.cell(row=2, column=17, value=dt.date(2025, 7, 2))
     file = tmp_path / "liste.xlsx"
     wb.save(file)
 
@@ -147,8 +147,32 @@ def test_update_liste_multiple_runs(tmp_path: Path):
 
     wb2 = load_workbook(file)
     ws2 = wb2["Juli_25"]
+    assert ws2.cell(row=2, column=16).value is None
     assert ws2.cell(row=2, column=10).value == 1
-    assert ws2.cell(row=2, column=23).value == 1
+    assert ws2.cell(row=2, column=24).value == 1
+    wb2.close()
+
+
+def test_update_liste_week_boundary_blank_columns(tmp_path: Path):
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Juli_25"
+    ws.cell(row=1, column=1, value="Techniker")
+    ws.cell(row=2, column=1, value="Alice")
+    file = tmp_path / "liste.xlsx"
+    wb.save(file)
+
+    morning = {"Alice": {"total": 1, "new": 0, "old": 1}}
+
+    update_liste(file, "Juli_25", dt.date(2025, 7, 7), morning)
+    update_liste(file, "Juli_25", dt.date(2025, 7, 8), morning)
+
+    wb2 = load_workbook(file)
+    ws2 = wb2["Juli_25"]
+    assert ws2.cell(row=2, column=94).value == 1
+    assert ws2.cell(row=2, column=100).value is None
+    assert ws2.cell(row=2, column=101).value is None
+    assert ws2.cell(row=2, column=109).value == 1
     wb2.close()
 
 
