@@ -176,6 +176,51 @@ def test_update_liste_week_boundary_blank_columns(tmp_path: Path):
     wb2.close()
 
 
+def test_update_liste_day_blocks_with_blank_columns(tmp_path: Path):
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Juli_25"
+    ws.cell(row=1, column=1, value="Techniker")
+    ws.cell(row=2, column=1, value="Alice")
+    ws.cell(row=3, column=1, value="Bob")
+
+    # Tag 1: Spalten B–N
+    ws.cell(row=2, column=3, value=dt.date(2025, 7, 1))
+    ws.cell(row=2, column=10, value=3)
+    ws.cell(row=3, column=3, value=dt.date(2025, 7, 1))
+    ws.cell(row=3, column=10, value=4)
+
+    # Tag 2: Spalten P–AB, Spalte O bleibt leer
+    ws.cell(row=2, column=17, value=dt.date(2025, 7, 2))
+    ws.cell(row=2, column=24, value=5)
+    ws.cell(row=3, column=17, value=dt.date(2025, 7, 2))
+    ws.cell(row=3, column=24, value=6)
+
+    file = tmp_path / "liste.xlsx"
+    wb.save(file)
+
+    morning = {
+        "Alice": {"total": 7, "new": 3, "old": 4},
+        "Bob": {"total": 2, "new": 1, "old": 1},
+    }
+
+    day = dt.date(2025, 7, 25)
+    update_liste(file, "Juli_25", day, morning)
+
+    wb2 = load_workbook(file)
+    ws2 = wb2["Juli_25"]
+
+    start_col = 2 + ((day.day - 1) // 7) * ((13 + 1) * 7 + 1) + ((day.day - 1) % 7) * (13 + 1)
+
+    assert ws2.cell(row=2, column=start_col + 8).value == 7
+    assert ws2.cell(row=3, column=start_col + 8).value == 2
+    assert excel_to_date(ws2.cell(row=2, column=start_col + 1).value) == day
+    assert excel_to_date(ws2.cell(row=3, column=start_col + 1).value) == day
+    assert ws2.max_row == 3
+    assert ws2.max_column == start_col + 10
+    wb2.close()
+
+
 def test_update_liste_uses_matching_date(tmp_path: Path):
     wb = Workbook()
     ws = wb.active
