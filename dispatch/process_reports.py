@@ -45,6 +45,12 @@ try:  # pragma: no cover - import guard
     from openpyxl import load_workbook
 except Exception:  # pragma: no cover - missing dependency
     load_workbook = None  # type: ignore[assignment]
+    _from_excel = None
+else:  # pragma: no cover - optional helper
+    try:
+        from openpyxl.utils.datetime import from_excel as _from_excel
+    except Exception:  # pragma: no cover - missing helper
+        _from_excel = None
 
 # Known noisy openpyxl warnings to suppress when loading workbooks.
 OPENPYXL_WARNINGS = [
@@ -117,11 +123,28 @@ MONTH_MAP = {
 
 
 def excel_to_date(value):
-    """Convert an Excel serial or datetime to a :class:`datetime.date`."""
+    """Wandle Excel-Seriennummern oder Datumswerte in :class:`datetime.date` um."""
+    if value is None:
+        raise ValueError("Leere Zelle kann nicht in ein Datum umgewandelt werden")
+
     if isinstance(value, dt.datetime):
         return value.date()
+
+    try:
+        number = float(value)
+    except (TypeError, ValueError) as exc:  # pragma: no cover - defensive
+        raise ValueError(f"Ungültiger Datumswert: {value!r}") from exc
+
+    if _from_excel is not None:  # pragma: no cover - depends on optional helper
+        dt_obj = _from_excel(number)
+        if isinstance(dt_obj, dt.datetime):
+            return dt_obj.date()
+        if isinstance(dt_obj, dt.date):
+            return dt_obj
+        raise ValueError(f"Ungültiger Datumswert: {value!r}")
+
     origin = dt.date(1899, 12, 30)
-    return (origin + dt.timedelta(days=float(value)))
+    return origin + dt.timedelta(days=number)
 
 
 def prev_business_day(day: dt.date) -> dt.date:
