@@ -161,7 +161,7 @@ def test_excel_to_date_invalid():
 
 
 @pytest.mark.parametrize("date_value", [None, "abc"])
-def test_update_liste_skips_invalid_date_cell(tmp_path: Path, caplog, date_value):
+def test_update_liste_fills_invalid_date_cell(tmp_path: Path, caplog, date_value):
     wb = Workbook()
     ws = wb.active
     ws.title = "Juli_25"
@@ -189,7 +189,10 @@ def test_update_liste_skips_invalid_date_cell(tmp_path: Path, caplog, date_value
 
     wb2 = load_workbook(file)
     ws2 = wb2["Juli_25"]
-    assert ws2.cell(row=2, column=9).value is None
+    assert excel_to_date(ws2.cell(row=2, column=2).value) == dt.date(2025, 7, 1)
+    assert ws2.cell(row=2, column=9).value == 1
+    assert ws2.cell(row=2, column=10).value == 1
+    assert ws2.cell(row=2, column=11).value == 0
     wb2.close()
 
-    assert "Eintrag übersprungen" in caplog.text
+    assert "setze Datum" in caplog.text
