@@ -9,17 +9,11 @@ business day) versus "old". The evening report lists the still-open calls so the
 script can derive how many were completed during the day.
 
 The aggregated values are written into ``Liste.xlsx`` on the sheet for the
-corresponding month. The workbook contains weekly column blocks consisting of
-13 columns:
-
-    name, date, weekday, pudo, pickup time, valid, info, pre-closed,
-    total calls, old calls, new calls, details, mails
-
-Blocks sind zu Wochen gruppiert, zwischen denen eine Leer-Spalte liegt. Eine
-Woche besteht somit aus sieben 13-Spalten-Blöcken plus einer zusätzlichen
-Leer-Spalte. Für ein Datum ``d`` ergibt sich der Wochenindex ``(d.day-1)//7``
-und der Tagesindex ``(d.day-1)%7``. Die Startspalte lautet folglich
-``1 + week_index*(13*7 + 1) + day_index*13``.
+corresponding month. Das Tabellenblatt ist so aufgebaut, dass Tage in
+Wochenblöcken angeordnet sind. Jeder Tag belegt zwei Spalten und zwischen den
+Wochen befindet sich jeweils eine Leer-Spalte. Für ein Datum ``d`` ergibt sich
+der Wochenindex ``(d.day-1)//7`` und der Tagesindex ``(d.day-1)%7``. Die
+Startspalte lautet folglich ``2 + week_index*(2*7 + 1) + day_index*2``.
 
 The script requires :mod:`openpyxl` for reading and writing Excel files.
 """
@@ -364,14 +358,14 @@ def update_liste(
 
         morning = canonicalize_summary(morning)
 
-        # Starte Spalte gemäß dem in ``Liste.xlsx`` verwendeten Layout
-        # bestimmen. Tageswerte stehen in 13-Spalten-Blöcken, sieben Blöcke
-        # bilden eine Woche, zwischen Wochen liegt eine Leer-Spalte. Der
-        # Wochenindex und der Tagesindex innerhalb der Woche verschieben den
-        # Start entsprechend.
+        # Startspalte gemäß dem in ``Liste.xlsx`` verwendeten Layout
+        # bestimmen. Jeder Tag belegt zwei Spalten, sieben solcher Blöcke
+        # bilden eine Woche, zwischen den Wochen liegt eine Leer-Spalte.
+        # Der Wochenindex und der Tagesindex innerhalb der Woche verschieben
+        # den Start entsprechend.
         week_index = (day.day - 1) // 7
         day_index = (day.day - 1) % 7
-        start_col = 1 + week_index * (13 * 7 + 1) + day_index * 13
+        start_col = 2 + week_index * (2 * 7 + 1) + day_index * 2
         remaining = set(morning)
 
         for row in range(2, ws.max_row + 1):
@@ -380,7 +374,7 @@ def update_liste(
             if not tech or tech not in morning or tech not in remaining:
                 continue
 
-            date_cell = ws.cell(row=row, column=start_col + 1)
+            date_cell = ws.cell(row=row, column=start_col)
             if date_cell.value is None:
                 logger.warning(
                     "Keine Datumsangabe in Zeile %s für Techniker %s, Eintrag übersprungen.",
@@ -402,10 +396,10 @@ def update_liste(
                 continue
 
             day_data = morning[tech]
-            ws.cell(row=row, column=start_col + 2).value = PREV_DAY_MAP[day.weekday()]
-            ws.cell(row=row, column=start_col + 8).value = day_data["total"]
-            ws.cell(row=row, column=start_col + 9).value = day_data["old"]
-            ws.cell(row=row, column=start_col + 10).value = day_data["new"]
+            ws.cell(row=row, column=start_col + 1).value = PREV_DAY_MAP[day.weekday()]
+            ws.cell(row=row, column=start_col + 7).value = day_data["total"]
+            ws.cell(row=row, column=start_col + 8).value = day_data["old"]
+            ws.cell(row=row, column=start_col + 9).value = day_data["new"]
             remaining.discard(tech)
 
         if remaining:

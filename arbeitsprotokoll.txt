@@ -45,3 +45,5 @@
 2025-08-09 - update_liste prüft auf fehlende oder ungültige Datumswerte, überspringt solche Zeilen und protokolliert eine Warnung; Tests erweitert; pytest 54 bestanden.
 2025-08-09 - Monat 2025-07 erfolgreich verarbeitet.
 2025-08-09 - Monat 2025-07 erfolgreich verarbeitet.
+
+2025-08-09 - start_col auf Zwei-Spalten-Layout umgestellt; Spaltenindizes für Datum und Werte angepasst; Tests und manuelle Prüfung mit temporärer Liste.xlsx aktualisiert; pytest 54 bestanden.
