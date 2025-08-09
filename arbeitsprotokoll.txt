@@ -43,3 +43,5 @@
 2025-08-09 - Popupfenster in Tests durch Monkeypatch von run_all_gui._popup_error unterdrückt; pytest 50 bestanden.
 2025-08-09 - excel_to_date prüft nun auf leere oder ungültige Werte; optionale Nutzung von openpyxl.from_excel. Tests für fehlende und fehlerhafte Zellen ergänzt; pytest 54 bestanden.
 2025-08-09 - update_liste prüft auf fehlende oder ungültige Datumswerte, überspringt solche Zeilen und protokolliert eine Warnung; Tests erweitert; pytest 54 bestanden.
+2025-08-09 - Monat 2025-07 erfolgreich verarbeitet.
+2025-08-09 - Monat 2025-07 erfolgreich verarbeitet.
