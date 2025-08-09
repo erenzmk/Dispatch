@@ -48,3 +48,4 @@
 2025-08-09 - zentrale Techniker-Aliasliste und normalize_name eingeführt; Warnungen für bekannte Namen entfallen; Tests erweitert; pytest 56 bestanden.
 
 2025-08-09 - normalize_name entfernt, Aliasvarianten in dispatch/name_aliases.py zentralisiert, process_reports nutzt nur canonical_name; Tests angepasst; pytest 56 bestanden.
+2025-08-10 - Monat 2025-08 mit Fehlern verarbeitet.
