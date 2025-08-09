@@ -110,3 +110,42 @@ def test_update_liste_creates_missing_sheet(tmp_path: Path):
     assert ws.cell(row=1, column=1).value == "Techniker"
     assert ws.max_row == 1
     wb2.close()
+
+
+def test_excel_to_date_none():
+    with pytest.raises(ValueError, match="Leere Zelle"):
+        excel_to_date(None)
+
+
+def test_excel_to_date_invalid():
+    with pytest.raises(ValueError, match="Ungültiger Datumswert"):
+        excel_to_date("abc")
+
+
+def test_update_liste_missing_date_cell(tmp_path: Path):
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Juli_25"
+    ws.cell(row=2, column=1, value="Alice")
+    file = tmp_path / "liste.xlsx"
+    wb.save(file)
+
+    morning = {"Alice": {"total": 1, "new": 0, "old": 1}}
+
+    with pytest.raises(ValueError, match="Leere Zelle"):
+        update_liste(file, "Juli_25", dt.date(2025, 7, 1), morning)
+
+
+def test_update_liste_invalid_date_cell(tmp_path: Path):
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Juli_25"
+    ws.cell(row=2, column=1, value="Alice")
+    ws.cell(row=2, column=2, value="abc")
+    file = tmp_path / "liste.xlsx"
+    wb.save(file)
+
+    morning = {"Alice": {"total": 1, "new": 0, "old": 1}}
+
+    with pytest.raises(ValueError, match="Ungültiger Datumswert"):
+        update_liste(file, "Juli_25", dt.date(2025, 7, 1), morning)
