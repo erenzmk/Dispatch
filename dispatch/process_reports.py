@@ -377,14 +377,14 @@ def update_liste(
 
         morning = canonicalize_summary(morning)
 
-        # Starte Spalte gemäß dem in ``Liste.xlsx`` verwendeten Layout
-        # bestimmen. Tageswerte stehen in 13-Spalten-Blöcken, sieben Blöcke
-        # bilden eine Woche, zwischen Wochen liegt eine Leer-Spalte. Der
-        # Wochenindex und der Tagesindex innerhalb der Woche verschieben den
+        # Startspalte relativ zur Technikerspalte gemäß dem in ``Liste.xlsx``
+        # verwendeten Layout bestimmen. Tageswerte stehen in 13-Spalten-Blöcken,
+        # sieben Blöcke bilden eine Woche, zwischen Wochen liegt eine Leer-Spalte.
+        # Der Wochenindex und der Tagesindex innerhalb der Woche verschieben den
         # Start entsprechend.
         week_index = (day.day - 1) // 7
         day_index = (day.day - 1) % 7
-        start_col = tech_col + week_index * (13 * 7 + 1) + day_index * 13
+        start_col = tech_col + 1 + week_index * (13 * 7 + 1) + day_index * 13
         remaining = set(morning)
 
         for row in range(2, ws.max_row + 1):
