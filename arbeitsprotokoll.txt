@@ -38,4 +38,4 @@
 - Batch-Datei start_dispatch.bat zum Start per Doppelklick hinzugefügt.
 - Tests mit pytest ausgeführt – 50 bestanden.
 2025-08-09 - Monat 2025-08 mit Fehlern verarbeitet.
-2025-08-09 - Monat 2025-08 mit Fehlern verarbeitet.
+2025-08-09 - update_liste schreibt Werte nur bei übereinstimmendem Datum und Name; Tests angepasst; pytest 50 bestanden.
