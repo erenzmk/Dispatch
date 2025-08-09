@@ -13,6 +13,7 @@ def test_update_liste(tmp_path: Path):
     wb = Workbook()
     ws = wb.active
     ws.title = "Juli_25"
+    ws.cell(row=1, column=1, value="Techniker")
     ws.cell(row=2, column=1, value="Alice")
     ws.cell(row=2, column=2, value=dt.date(2025, 7, 1))
     ws.cell(row=3, column=1, value="Bob")
@@ -40,6 +41,7 @@ def test_update_liste_empty_morning(tmp_path: Path):
     wb = Workbook()
     ws = wb.active
     ws.title = "Juli_25"
+    ws.cell(row=1, column=1, value="Techniker")
     file = tmp_path / "liste.xlsx"
     wb.save(file)
 
@@ -52,6 +54,7 @@ def test_update_liste_resolves_name_alias(tmp_path: Path, caplog):
     wb = Workbook()
     ws = wb.active
     ws.title = "Juli_25"
+    ws.cell(row=1, column=1, value="Techniker")
     ws.cell(row=2, column=1, value="Osama")
     ws.cell(row=2, column=2, value=dt.date(2025, 7, 1))
     file = tmp_path / "liste.xlsx"
@@ -87,6 +90,7 @@ def test_update_liste_adds_missing_technician(tmp_path: Path):
     wb = Workbook()
     ws = wb.active
     ws.title = "Juli_25"
+    ws.cell(row=1, column=1, value="Techniker")
     file = tmp_path / "liste.xlsx"
     wb.save(file)
 
@@ -104,10 +108,32 @@ def test_update_liste_adds_missing_technician(tmp_path: Path):
     wb2.close()
 
 
+def test_update_liste_uses_technician_header_column(tmp_path: Path):
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Juli_25"
+    ws.cell(row=1, column=3, value="Techniker")
+    ws.cell(row=2, column=3, value="Alice")
+    file = tmp_path / "liste.xlsx"
+    wb.save(file)
+
+    morning = {"Alice": {"total": 1, "new": 0, "old": 1}}
+
+    update_liste(file, "Juli_25", dt.date(2025, 7, 1), morning)
+
+    wb2 = load_workbook(file)
+    ws2 = wb2["Juli_25"]
+    assert ws2.cell(row=2, column=3).value == "Alice"
+    assert excel_to_date(ws2.cell(row=2, column=4).value) == dt.date(2025, 7, 1)
+    assert ws2.cell(row=2, column=11).value == 1
+    wb2.close()
+
+
 def test_update_liste_multiple_runs(tmp_path: Path):
     wb = Workbook()
     ws = wb.active
     ws.title = "Juli_25"
+    ws.cell(row=1, column=1, value="Techniker")
     ws.cell(row=2, column=1, value="Alice")
     ws.cell(row=2, column=2, value=dt.date(2025, 7, 1))
     ws.cell(row=2, column=15, value=dt.date(2025, 7, 2))
@@ -130,6 +156,7 @@ def test_update_liste_uses_matching_date(tmp_path: Path):
     wb = Workbook()
     ws = wb.active
     ws.title = "Juli_25"
+    ws.cell(row=1, column=1, value="Techniker")
     ws.cell(row=2, column=1, value="Alice")
     ws.cell(row=3, column=1, value="Alice")
     ws.cell(row=2, column=2, value=dt.date(2025, 7, 2))
@@ -191,6 +218,7 @@ def test_update_liste_fills_invalid_date_cell(tmp_path: Path, caplog, date_value
     wb = Workbook()
     ws = wb.active
     ws.title = "Juli_25"
+    ws.cell(row=1, column=1, value="Techniker")
     ws.cell(row=2, column=1, value="Alice")
     if date_value is not None:
         ws.cell(row=2, column=2, value=date_value)
