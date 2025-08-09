@@ -54,6 +54,28 @@ def test_load_calls_handles_west_central_sheet(tmp_path):
     assert unknown == []
 
 
+def test_load_calls_resolves_alias(tmp_path):
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Report"
+    ws["A2"] = dt.datetime(2025, 7, 1)
+    ws["A5"], ws["B5"], ws["C5"] = (
+        "Employee ID",
+        "Employee Name",
+        "Open Date Time",
+    )
+    ws["A6"], ws["B6"], ws["C6"] = 1, "Oussama", dt.datetime(2025, 6, 30)
+
+    path = tmp_path / "report.xlsx"
+    wb.save(path)
+
+    target_date, summary, unknown = load_calls(path, ["Osama"])
+
+    assert target_date == dt.date(2025, 7, 1)
+    assert summary == {"Osama": {"total": 1, "new": 1, "old": 0}}
+    assert unknown == []
+
+
 def test_load_calls_filters_irrelevant_sheets(tmp_path):
     wb = Workbook()
     ws1 = wb.active

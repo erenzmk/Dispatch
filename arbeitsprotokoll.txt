@@ -45,3 +45,4 @@
 2025-08-09 - update_liste prüft auf fehlende oder ungültige Datumswerte, überspringt solche Zeilen und protokolliert eine Warnung; Tests erweitert; pytest 54 bestanden.
 2025-08-09 - Monat 2025-07 erfolgreich verarbeitet.
 2025-08-09 - Monat 2025-07 erfolgreich verarbeitet.
+2025-08-09 - zentrale Techniker-Aliasliste und normalize_name eingeführt; Warnungen für bekannte Namen entfallen; Tests erweitert; pytest 56 bestanden.
