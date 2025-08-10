@@ -221,7 +221,7 @@ def test_update_liste_day_blocks_with_blank_columns(tmp_path: Path):
     wb2.close()
 
 
-def test_update_liste_uses_matching_date(tmp_path: Path):
+def test_update_liste_keeps_existing_date(tmp_path: Path):
     wb = Workbook()
     ws = wb.active
     ws.title = "Juli_25"
@@ -239,14 +239,41 @@ def test_update_liste_uses_matching_date(tmp_path: Path):
 
     wb2 = load_workbook(file)
     ws2 = wb2["Juli_25"]
-    # Erste Zeile mit abweichendem Datum wird überschrieben und beschrieben
-    assert excel_to_date(ws2.cell(row=2, column=3).value) == dt.date(2025, 7, 1)
-    assert ws2.cell(row=2, column=10).value == 5
-    assert ws2.cell(row=2, column=11).value == 3
-    assert ws2.cell(row=2, column=12).value == 2
-    # Zweite Zeile bleibt unberührt
+    # Zeile mit abweichendem Datum bleibt unverändert
+    assert excel_to_date(ws2.cell(row=2, column=3).value) == dt.date(2025, 7, 2)
+    assert ws2.cell(row=2, column=10).value is None
+    # Zeile mit passendem Datum wird beschrieben
     assert excel_to_date(ws2.cell(row=3, column=3).value) == dt.date(2025, 7, 1)
-    assert ws2.cell(row=3, column=10).value is None
+    assert ws2.cell(row=3, column=10).value == 5
+    assert ws2.cell(row=3, column=11).value == 3
+    assert ws2.cell(row=3, column=12).value == 2
+    wb2.close()
+
+
+def test_update_liste_appends_new_row_on_date_mismatch(tmp_path: Path):
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Juli_25"
+    ws.cell(row=1, column=1, value="Techniker")
+    ws.cell(row=2, column=1, value="Alice")
+    ws.cell(row=2, column=3, value=dt.date(2025, 7, 2))
+    file = tmp_path / "liste.xlsx"
+    wb.save(file)
+
+    morning = {"Alice": {"total": 1, "new": 0, "old": 1}}
+
+    update_liste(file, "Juli_25", dt.date(2025, 7, 1), morning)
+
+    wb2 = load_workbook(file)
+    ws2 = wb2["Juli_25"]
+    # Originale Zeile bleibt unverändert
+    assert excel_to_date(ws2.cell(row=2, column=3).value) == dt.date(2025, 7, 2)
+    assert ws2.cell(row=2, column=10).value is None
+    # Neue Zeile mit aktuellem Datum wird angefügt
+    assert excel_to_date(ws2.cell(row=3, column=3).value) == dt.date(2025, 7, 1)
+    assert ws2.cell(row=3, column=10).value == 1
+    assert ws2.cell(row=3, column=11).value == 1
+    assert ws2.cell(row=3, column=12).value == 0
     wb2.close()
 
 
