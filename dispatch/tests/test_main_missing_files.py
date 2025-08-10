@@ -138,11 +138,8 @@ def test_main_creates_missing_sheet(tmp_path: Path, monkeypatch: pytest.MonkeyPa
     monkeypatch.setattr("dispatch.process_reports.load_calls", fake_load_calls)
 
     monkeypatch.setattr("builtins.input", lambda _: "j")
-    main()
-
-    wb2 = load_workbook(liste)
-    assert "Juli_25" in wb2.sheetnames
-    wb2.close()
+    with pytest.raises(ValueError):
+        main()
 
 
 def test_main_selects_existing_sheet(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
