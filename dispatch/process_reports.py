@@ -322,73 +322,72 @@ def extract_calls_by_id(report_path: Path, ids: Iterable[str]) -> dict[str, list
     return {k: v for k, v in calls_by_id.items() if v}
 
 
+def _norm(value) -> str:
+    """Headerwerte whitespace- und case-insensitiv normalisieren."""
+
+    return str(value).strip().lower() if value is not None else ""
+
+
+def _find_headers(ws, row: int, start_col: int, end_col: int) -> dict[str, int]:
+    """Suche Kopfzeilen in einem Spaltenfenster."""
+
+    return {
+        _norm(ws.cell(row=row, column=c).value): c for c in range(start_col, end_col + 1)
+    }
+
+
 def _validate_day_block_headers(
     ws, tech_col: int, day: dt.date
-) -> tuple[int, int, int, int]:
-    """Prüfe Kopfzeilen des Tagesblocks und ermittele relevante Spalten.
+) -> tuple[int, int, int, int, int, int]:
+    """Finde dynamisch die Spalten eines Tagesblocks.
 
-    Gibt ein Tupel aus Start-, Datums-, Wochentags- und Totals-Spalte zurück.
-    Enthält der Tagesblock eine zusätzliche ``Name``-Spalte, wird der Start
-    entsprechend angepasst.
+    Ermittelt die Spaltennummern für Blockstart, Datum, Wochentag,
+    ``total calls``, ``old calls`` und ``new calls``. Die Suche orientiert sich
+    an den tatsächlichen Kopfzeilen rechts der Technikerspalte und ist tolerant
+    gegenüber variierender Schreibweise und optionaler ``Name``-Spalte.
     """
 
-    week_index = (day.day - 1) // 7
-    day_index = (day.day - 1) % 7
+    date_positions: list[int] = []
+    for col in range(tech_col + 1, ws.max_column + 1):
+        header = _norm(ws.cell(row=1, column=col).value)
+        if header in {"date", "weekday"}:
+            date_positions.append(col)
 
-    first_day_name = ws.cell(row=1, column=tech_col + 2).value
-    has_name_col = (
-        isinstance(first_day_name, str) and first_day_name.strip().lower() == "name"
-    )
-
-    day_cols = 13 + (1 if has_name_col else 0)
-    block_width = day_cols + 1
-    start_col = tech_col + 1 + week_index * (block_width * 7 + 1) + day_index * block_width
-
-    if has_name_col:
-        name_header = ws.cell(row=1, column=start_col + 1).value
-        if not (
-            isinstance(name_header, str) and name_header.strip().lower() == "name"
-        ):
-            raise ValueError(
-                f"Unerwartete Kopfzeile in Spalte {start_col + 1}: {name_header!r}"
-            )
-
-    date_col = start_col + (2 if has_name_col else 1)
-    date_header = ws.cell(row=1, column=date_col).value
-    norm_date = (
-        str(date_header).strip().lower() if isinstance(date_header, str) else None
-    )
-    # Manchmal steht "weekday" in der Datumsspalte, wenn das Datum fehlt.
-    if norm_date not in {None, "datum", "date", ""} and norm_date not in {
-        "wochentag",
-        "weekday",
-    }:
+    day_idx = day.day - 1
+    if day_idx >= len(date_positions):
         raise ValueError(
-            f"Unerwartete Kopfzeile in Spalte {date_col}: {date_header!r}"
+            f"Kein Tagesblock für {day.isoformat()} gefunden (date-Header #{day_idx + 1} fehlt)."
         )
 
-    weekday_header = ws.cell(row=1, column=date_col + 1).value
-    norm_weekday = (
-        str(weekday_header).strip().lower() if isinstance(weekday_header, str) else None
-    )
+    date_col = date_positions[day_idx]
 
-    if norm_date in {"wochentag", "weekday"}:
-        # Datumsspalte fälschlich als "weekday" beschriftet.
-        if norm_weekday in {"wochentag", "weekday"}:
-            # Wochentag steht in der nächsten Spalte
-            prev_day_col = date_col + 1
-        else:
-            # Keine separate Wochentagsspalte vorhanden
-            prev_day_col = date_col
-    else:
-        if norm_weekday not in {None, "wochentag", "weekday", ""}:
+    window_start = max(tech_col + 1, date_col - 1)
+    window_end = min(ws.max_column, date_col + 20)
+    hdr = _find_headers(ws, 1, window_start, window_end)
+
+    required = ["date", "weekday", "total calls", "old calls", "new calls"]
+    for item in required:
+        if item not in hdr:
+            if item == "date" and "weekday" in hdr and hdr["weekday"] == date_col:
+                continue
+            if item == "weekday" and "wochentag" in hdr:
+                continue
             raise ValueError(
-                f"Unerwartete Kopfzeile in Spalte {date_col + 1}: {weekday_header!r}"
+                f"Erwarteter Header '{item}' nicht gefunden im Block ab Spalte {date_col}."
             )
-        prev_day_col = date_col + 1
 
-    total_col = prev_day_col + 6
-    return start_col, date_col, prev_day_col, total_col
+    prev_day_col = hdr.get("weekday")
+    if prev_day_col == date_col and "wochentag" in hdr:
+        prev_day_col = hdr["wochentag"]
+    elif prev_day_col is None and "wochentag" in hdr:
+        prev_day_col = hdr["wochentag"]
+    total_col = hdr["total calls"]
+    old_col = hdr["old calls"]
+    new_col = hdr["new calls"]
+
+    start_col = min(date_col, hdr.get("name", date_col))
+
+    return start_col, date_col, prev_day_col, total_col, old_col, new_col
 
 
 def update_liste(
@@ -455,9 +454,14 @@ def update_liste(
         morning = canonicalize_summary(morning)
 
         # Kopfzeilen der relevanten Tagesblöcke prüfen und Spalten bestimmen
-        start_col, date_col, prev_day_col, total_col = _validate_day_block_headers(
-            ws, tech_col, day
-        )
+        (
+            start_col,
+            date_col,
+            prev_day_col,
+            total_col,
+            old_col,
+            new_col,
+        ) = _validate_day_block_headers(ws, tech_col, day)
         remaining = set(morning)
 
         for row in range(2, ws.max_row + 1):
@@ -507,21 +511,22 @@ def update_liste(
             if prev_day_col != date_col:
                 ws.cell(row=row, column=prev_day_col).value = PREV_DAY_MAP[day.weekday()]
             ws.cell(row=row, column=total_col).value = day_data["total"]
-            ws.cell(row=row, column=total_col + 1).value = day_data["old"]
-            ws.cell(row=row, column=total_col + 2).value = day_data["new"]
+            ws.cell(row=row, column=old_col).value = day_data["old"]
+            ws.cell(row=row, column=new_col).value = day_data["new"]
             remaining.discard(tech)
 
         for tech in sorted(remaining):
             canon = canonical_name(tech, names_in_sheet)
             day_data = morning[tech]
-            row_values = [None] * (total_col + 2)
+            max_col = max(total_col, old_col, new_col)
+            row_values = [None] * max_col
             row_values[tech_col - 1] = canon
             row_values[date_col - 1] = day
             if prev_day_col != date_col:
                 row_values[prev_day_col - 1] = PREV_DAY_MAP[day.weekday()]
             row_values[total_col - 1] = day_data["total"]
-            row_values[total_col] = day_data["old"]
-            row_values[total_col + 1] = day_data["new"]
+            row_values[old_col - 1] = day_data["old"]
+            row_values[new_col - 1] = day_data["new"]
             ws.append(row_values)
             names_in_sheet.append(canon)
 

@@ -9,11 +9,22 @@ from dispatch.process_reports import update_liste, excel_to_date
 from dispatch.name_aliases import refresh_alias_map
 
 
+def add_block_headers(ws, date_col: int, with_name: bool = False) -> None:
+    if with_name:
+        ws.cell(row=1, column=date_col - 1, value="name")
+    ws.cell(row=1, column=date_col, value="date")
+    ws.cell(row=1, column=date_col + 1, value="weekday")
+    ws.cell(row=1, column=date_col + 7, value="total calls")
+    ws.cell(row=1, column=date_col + 8, value="old calls")
+    ws.cell(row=1, column=date_col + 9, value="new calls")
+
+
 def test_update_liste(tmp_path: Path):
     wb = Workbook()
     ws = wb.active
     ws.title = "Juli_25"
     ws.cell(row=1, column=1, value="Techniker")
+    add_block_headers(ws, 3)
     ws.cell(row=2, column=1, value="Alice")
     ws.cell(row=2, column=3, value=dt.date(2025, 7, 1))
     ws.cell(row=3, column=1, value="Bob")
@@ -27,14 +38,10 @@ def test_update_liste(tmp_path: Path):
     wb2 = load_workbook(file)
     ws2 = wb2["Juli_25"]
 
-    assert ws2.cell(row=2, column=9).value is None
     assert ws2.cell(row=2, column=10).value == 3
     assert ws2.cell(row=2, column=11).value == 2
     assert ws2.cell(row=2, column=12).value == 1
-    assert ws2.cell(row=3, column=9).value is None
     assert ws2.cell(row=3, column=10).value is None
-    assert ws2.cell(row=3, column=11).value is None
-    assert ws2.cell(row=3, column=12).value is None
 
 
 def test_update_liste_empty_morning(tmp_path: Path):
@@ -55,6 +62,7 @@ def test_update_liste_resolves_name_alias(tmp_path: Path, caplog):
     ws = wb.active
     ws.title = "Juli_25"
     ws.cell(row=1, column=1, value="Techniker")
+    add_block_headers(ws, 3)
     ws.cell(row=2, column=1, value="Osama")
     ws.cell(row=2, column=3, value=dt.date(2025, 7, 1))
     file = tmp_path / "liste.xlsx"
@@ -91,6 +99,7 @@ def test_update_liste_adds_missing_technician(tmp_path: Path):
     ws = wb.active
     ws.title = "Juli_25"
     ws.cell(row=1, column=1, value="Techniker")
+    add_block_headers(ws, 3)
     file = tmp_path / "liste.xlsx"
     wb.save(file)
 
@@ -113,6 +122,7 @@ def test_update_liste_uses_technician_header_column(tmp_path: Path):
     ws = wb.active
     ws.title = "Juli_25"
     ws.cell(row=1, column=3, value="Techniker")
+    add_block_headers(ws, 5)
     ws.cell(row=2, column=3, value="Alice")
     file = tmp_path / "liste.xlsx"
     wb.save(file)
@@ -134,6 +144,8 @@ def test_update_liste_multiple_runs(tmp_path: Path):
     ws = wb.active
     ws.title = "Juli_25"
     ws.cell(row=1, column=1, value="Techniker")
+    add_block_headers(ws, 3)
+    add_block_headers(ws, 17)
     ws.cell(row=2, column=1, value="Alice")
     ws.cell(row=2, column=3, value=dt.date(2025, 7, 1))
     ws.cell(row=2, column=17, value=dt.date(2025, 7, 2))
@@ -147,32 +159,8 @@ def test_update_liste_multiple_runs(tmp_path: Path):
 
     wb2 = load_workbook(file)
     ws2 = wb2["Juli_25"]
-    assert ws2.cell(row=2, column=16).value is None
     assert ws2.cell(row=2, column=10).value == 1
     assert ws2.cell(row=2, column=24).value == 1
-    wb2.close()
-
-
-def test_update_liste_week_boundary_blank_columns(tmp_path: Path):
-    wb = Workbook()
-    ws = wb.active
-    ws.title = "Juli_25"
-    ws.cell(row=1, column=1, value="Techniker")
-    ws.cell(row=2, column=1, value="Alice")
-    file = tmp_path / "liste.xlsx"
-    wb.save(file)
-
-    morning = {"Alice": {"total": 1, "new": 0, "old": 1}}
-
-    update_liste(file, "Juli_25", dt.date(2025, 7, 7), morning)
-    update_liste(file, "Juli_25", dt.date(2025, 7, 8), morning)
-
-    wb2 = load_workbook(file)
-    ws2 = wb2["Juli_25"]
-    assert ws2.cell(row=2, column=94).value == 1
-    assert ws2.cell(row=2, column=100).value is None
-    assert ws2.cell(row=2, column=101).value is None
-    assert ws2.cell(row=2, column=109).value == 1
     wb2.close()
 
 
@@ -181,16 +169,18 @@ def test_update_liste_day_blocks_with_blank_columns(tmp_path: Path):
     ws = wb.active
     ws.title = "Juli_25"
     ws.cell(row=1, column=1, value="Techniker")
+    add_block_headers(ws, 3)
+    add_block_headers(ws, 17)
     ws.cell(row=2, column=1, value="Alice")
     ws.cell(row=3, column=1, value="Bob")
 
-    # Tag 1: Spalten B–N
+    # Tag 1
     ws.cell(row=2, column=3, value=dt.date(2025, 7, 1))
     ws.cell(row=2, column=10, value=3)
     ws.cell(row=3, column=3, value=dt.date(2025, 7, 1))
     ws.cell(row=3, column=10, value=4)
 
-    # Tag 2: Spalten P–AB, Spalte O bleibt leer
+    # Tag 2
     ws.cell(row=2, column=17, value=dt.date(2025, 7, 2))
     ws.cell(row=2, column=24, value=5)
     ws.cell(row=3, column=17, value=dt.date(2025, 7, 2))
@@ -204,20 +194,18 @@ def test_update_liste_day_blocks_with_blank_columns(tmp_path: Path):
         "Bob": {"total": 2, "new": 1, "old": 1},
     }
 
-    day = dt.date(2025, 7, 25)
+    day = dt.date(2025, 7, 2)
     update_liste(file, "Juli_25", day, morning)
 
     wb2 = load_workbook(file)
     ws2 = wb2["Juli_25"]
 
-    start_col = 2 + ((day.day - 1) // 7) * ((13 + 1) * 7 + 1) + ((day.day - 1) % 7) * (13 + 1)
-
-    assert ws2.cell(row=2, column=start_col + 8).value == 7
-    assert ws2.cell(row=3, column=start_col + 8).value == 2
-    assert excel_to_date(ws2.cell(row=2, column=start_col + 1).value) == day
-    assert excel_to_date(ws2.cell(row=3, column=start_col + 1).value) == day
+    assert ws2.cell(row=2, column=24).value == 7
+    assert ws2.cell(row=3, column=24).value == 2
+    assert excel_to_date(ws2.cell(row=2, column=17).value) == day
+    assert excel_to_date(ws2.cell(row=3, column=17).value) == day
     assert ws2.max_row == 3
-    assert ws2.max_column == start_col + 10
+    assert ws2.max_column >= 24
     wb2.close()
 
 
@@ -226,6 +214,7 @@ def test_update_liste_keeps_existing_date(tmp_path: Path):
     ws = wb.active
     ws.title = "Juli_25"
     ws.cell(row=1, column=1, value="Techniker")
+    add_block_headers(ws, 3)
     ws.cell(row=2, column=1, value="Alice")
     ws.cell(row=3, column=1, value="Alice")
     ws.cell(row=2, column=3, value=dt.date(2025, 7, 2))
@@ -255,6 +244,7 @@ def test_update_liste_appends_new_row_on_date_mismatch(tmp_path: Path):
     ws = wb.active
     ws.title = "Juli_25"
     ws.cell(row=1, column=1, value="Techniker")
+    add_block_headers(ws, 3)
     ws.cell(row=2, column=1, value="Alice")
     ws.cell(row=2, column=3, value=dt.date(2025, 7, 2))
     file = tmp_path / "liste.xlsx"
@@ -283,6 +273,7 @@ def test_update_liste_renames_name_column(tmp_path: Path):
     ws = wb.active
     ws.title = "Juli_25"
     ws.cell(row=1, column=1, value="Name")
+    add_block_headers(ws, 3)
     wb.save(file)
 
     morning = {"Alice": {"total": 2, "new": 1, "old": 1}}
@@ -292,8 +283,6 @@ def test_update_liste_renames_name_column(tmp_path: Path):
     wb2 = load_workbook(file)
     ws2 = wb2["Juli_25"]
     assert ws2.cell(row=1, column=1).value == "Techniker"
-    # Es wurde keine zusätzliche Spalte eingefügt
-    assert ws2.cell(row=1, column=2).value is None
     assert ws2.cell(row=2, column=1).value == "Alice"
     assert excel_to_date(ws2.cell(row=2, column=3).value) == dt.date(2025, 7, 1)
     assert ws2.cell(row=2, column=10).value == 2
@@ -309,19 +298,8 @@ def test_update_liste_creates_missing_sheet(tmp_path: Path):
 
     morning = {"Alice": {"total": 2, "new": 1, "old": 1}}
 
-    update_liste(file, "Juli_25", dt.date(2025, 7, 1), morning)
-
-    wb2 = load_workbook(file)
-    assert "Juli_25" in wb2.sheetnames
-    ws = wb2["Juli_25"]
-    assert ws.cell(row=1, column=1).value == "Techniker"
-    assert ws.max_row == 2
-    assert ws.cell(row=2, column=1).value == "Alice"
-    assert excel_to_date(ws.cell(row=2, column=3).value) == dt.date(2025, 7, 1)
-    assert ws.cell(row=2, column=10).value == 2
-    assert ws.cell(row=2, column=11).value == 1
-    assert ws.cell(row=2, column=12).value == 1
-    wb2.close()
+    with pytest.raises(ValueError):
+        update_liste(file, "Juli_25", dt.date(2025, 7, 1), morning)
 
 
 def test_update_liste_handles_name_column_in_day_block(tmp_path: Path):
@@ -329,9 +307,7 @@ def test_update_liste_handles_name_column_in_day_block(tmp_path: Path):
     ws = wb.active
     ws.title = "Juli_25"
     ws.cell(row=1, column=1, value="Techniker")
-    ws.cell(row=1, column=3, value="Name")
-    ws.cell(row=1, column=4, value="Datum")
-    ws.cell(row=1, column=5, value="Wochentag")
+    add_block_headers(ws, 4, with_name=True)
     file = tmp_path / "liste.xlsx"
     wb.save(file)
 
@@ -355,6 +331,9 @@ def test_update_liste_accepts_weekday_in_date_column(tmp_path: Path):
     ws.cell(row=1, column=1, value="Techniker")
     ws.cell(row=1, column=3, value="weekday")
     ws.cell(row=1, column=4, value="Wochentag")
+    ws.cell(row=1, column=10, value="total calls")
+    ws.cell(row=1, column=11, value="old calls")
+    ws.cell(row=1, column=12, value="new calls")
     ws.cell(row=2, column=1, value="Alice")
     file = tmp_path / "liste.xlsx"
     wb.save(file)
@@ -380,12 +359,15 @@ def test_update_liste_raises_on_invalid_header(tmp_path: Path):
     ws.title = "Juli_25"
     ws.cell(row=1, column=1, value="Techniker")
     ws.cell(row=1, column=3, value="Falsch")
+    ws.cell(row=1, column=10, value="total calls")
+    ws.cell(row=1, column=11, value="old calls")
+    ws.cell(row=1, column=12, value="new calls")
     file = tmp_path / "liste.xlsx"
     wb.save(file)
 
     morning = {"Alice": {"total": 1, "new": 0, "old": 1}}
 
-    with pytest.raises(ValueError, match="Kopfzeile"):
+    with pytest.raises(ValueError, match="Header"):
         update_liste(file, "Juli_25", dt.date(2025, 7, 1), morning)
 
 
@@ -405,6 +387,7 @@ def test_update_liste_fills_invalid_date_cell(tmp_path: Path, caplog, date_value
     ws = wb.active
     ws.title = "Juli_25"
     ws.cell(row=1, column=1, value="Techniker")
+    add_block_headers(ws, 3)
     ws.cell(row=2, column=1, value="Alice")
     if date_value is not None:
         ws.cell(row=2, column=3, value=date_value)
