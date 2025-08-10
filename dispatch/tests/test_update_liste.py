@@ -474,3 +474,38 @@ def test_update_liste_prev_day_after_total(tmp_path: Path):
     assert ws2.cell(row=2, column=13).value == PREV_DAY_MAP[day.weekday()]
     assert ws2.max_column >= 13
     wb2.close()
+
+
+def test_warning_summary_aggregates(tmp_path: Path, caplog):
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Juli_25"
+    ws.cell(row=1, column=1, value="Techniker")
+    add_block_headers(ws, 3)
+    ws.cell(row=2, column=1, value="Alice")
+    ws.cell(row=2, column=3, value="abc")
+    ws.cell(row=3, column=1, value="Bob")
+    ws.cell(row=3, column=3, value="xyz")
+    file = tmp_path / "liste.xlsx"
+    wb.save(file)
+
+    morning = {
+        "Alice": {"total": 1, "new": 0, "old": 1},
+        "Bob": {"total": 2, "new": 1, "old": 1},
+    }
+
+    import dispatch.process_reports as pr
+
+    logger = pr.logger
+    original_handlers = logger.handlers[:]
+    original_propagate = logger.propagate
+    logger.handlers = []
+    logger.propagate = True
+    try:
+        with caplog.at_level(logging.INFO):
+            update_liste(file, "Juli_25", dt.date(2025, 7, 1), morning)
+    finally:
+        logger.handlers = original_handlers
+        logger.propagate = original_propagate
+
+    assert "2 ungültige Datumsangaben automatisch korrigiert" in caplog.text
