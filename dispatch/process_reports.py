@@ -355,23 +355,38 @@ def _validate_day_block_headers(
 
     date_col = start_col + (2 if has_name_col else 1)
     date_header = ws.cell(row=1, column=date_col).value
-    if date_header is not None and not (
-        isinstance(date_header, str) and date_header.strip().lower() == "datum"
-    ):
+    norm_date = (
+        str(date_header).strip().lower() if isinstance(date_header, str) else None
+    )
+    # Manchmal steht "weekday" in der Datumsspalte, wenn das Datum fehlt.
+    if norm_date not in {None, "datum", "date", ""} and norm_date not in {
+        "wochentag",
+        "weekday",
+    }:
         raise ValueError(
             f"Unerwartete Kopfzeile in Spalte {date_col}: {date_header!r}"
         )
 
     weekday_header = ws.cell(row=1, column=date_col + 1).value
-    if weekday_header is not None and not (
-        isinstance(weekday_header, str)
-        and weekday_header.strip().lower() in {"wochentag", "weekday"}
-    ):
-        raise ValueError(
-            f"Unerwartete Kopfzeile in Spalte {date_col + 1}: {weekday_header!r}"
-        )
+    norm_weekday = (
+        str(weekday_header).strip().lower() if isinstance(weekday_header, str) else None
+    )
 
-    prev_day_col = date_col + 1
+    if norm_date in {"wochentag", "weekday"}:
+        # Datumsspalte fälschlich als "weekday" beschriftet.
+        if norm_weekday in {"wochentag", "weekday"}:
+            # Wochentag steht in der nächsten Spalte
+            prev_day_col = date_col + 1
+        else:
+            # Keine separate Wochentagsspalte vorhanden
+            prev_day_col = date_col
+    else:
+        if norm_weekday not in {None, "wochentag", "weekday", ""}:
+            raise ValueError(
+                f"Unerwartete Kopfzeile in Spalte {date_col + 1}: {weekday_header!r}"
+            )
+        prev_day_col = date_col + 1
+
     total_col = prev_day_col + 6
     return start_col, date_col, prev_day_col, total_col
 
@@ -489,7 +504,8 @@ def update_liste(
                         continue
 
             day_data = morning[tech]
-            ws.cell(row=row, column=prev_day_col).value = PREV_DAY_MAP[day.weekday()]
+            if prev_day_col != date_col:
+                ws.cell(row=row, column=prev_day_col).value = PREV_DAY_MAP[day.weekday()]
             ws.cell(row=row, column=total_col).value = day_data["total"]
             ws.cell(row=row, column=total_col + 1).value = day_data["old"]
             ws.cell(row=row, column=total_col + 2).value = day_data["new"]
@@ -501,7 +517,8 @@ def update_liste(
             row_values = [None] * (total_col + 2)
             row_values[tech_col - 1] = canon
             row_values[date_col - 1] = day
-            row_values[prev_day_col - 1] = PREV_DAY_MAP[day.weekday()]
+            if prev_day_col != date_col:
+                row_values[prev_day_col - 1] = PREV_DAY_MAP[day.weekday()]
             row_values[total_col - 1] = day_data["total"]
             row_values[total_col] = day_data["old"]
             row_values[total_col + 1] = day_data["new"]

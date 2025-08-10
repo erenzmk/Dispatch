@@ -64,3 +64,4 @@
 
 2025-08-10 - update_liste erkennt optionale Namensspalte in Tagesblöcken, passt Datums- und Startspalten dynamisch an und prüft Kopfzeilen; pytest 62 bestanden.
 2025-08-10 - Hilfsfunktion prüft Kopfzeilen der Tagesblöcke und validiert Layout vor dem Schreiben; Tests ergänzt; pytest 64 bestanden.
+2025-08-10 - _validate_day_block_headers akzeptiert fehlende Datumsspalte mit "weekday"; Test ergänzt; pytest 65 bestanden.
