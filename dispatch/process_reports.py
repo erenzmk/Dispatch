@@ -343,13 +343,20 @@ def update_liste(
         else:
             ws = wb[month_sheet]
 
-        # Sicherstellen, dass eine Spalte "Techniker" existiert
+        # Sicherstellen, dass eine Spalte "Techniker" existiert.
+        # Neben "Techniker" wird auch "Name" als mögliche Überschrift akzeptiert.
         tech_col = None
         for col in range(1, ws.max_column + 1):
             value = ws.cell(row=1, column=col).value
-            if isinstance(value, str) and value.strip().lower() == "techniker":
-                tech_col = col
-                break
+            if isinstance(value, str):
+                header = value.strip().lower()
+                if header == "techniker":
+                    tech_col = col
+                    break
+                if header == "name":
+                    tech_col = col
+                    ws.cell(row=1, column=col, value="Techniker")
+                    break
         if tech_col is None:
             if ws.cell(row=1, column=1).value not in (None, ""):
                 ws.insert_cols(1)
