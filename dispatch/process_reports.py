@@ -337,27 +337,36 @@ def _find_headers(ws, row: int, start_col: int, end_col: int) -> dict[str, int]:
 
 
 def _validate_day_block_headers(
-    ws, tech_col: int, day: dt.date
-) -> tuple[int, int, int, int, int, int]:
+    ws, tech_col: int, day: dt.date, warn_only: bool = False
+) -> tuple[int, int, int, int, int, int, bool]:
     """Finde dynamisch die Spalten eines Tagesblocks.
 
     Ermittelt die Spaltennummern für Blockstart, Datum, Wochentag,
     ``total calls``, ``old calls`` und ``new calls``. Die Suche orientiert sich
     an den tatsächlichen Kopfzeilen rechts der Technikerspalte und ist tolerant
     gegenüber variierender Schreibweise und optionaler ``Name``-Spalte.
+
+    Bei gesetztem ``warn_only`` wird bei fehlendem Tagesblock nur eine Warnung
+    ausgegeben und ein Flag ``False`` zurückgegeben.
     """
 
     date_positions: list[int] = []
     for col in range(tech_col + 1, ws.max_column + 1):
         header = _norm(ws.cell(row=1, column=col).value)
-        if header in {"date", "weekday"}:
+        if header == "date":
+            date_positions.append(col)
+        elif header == "weekday" and (not date_positions or date_positions[-1] != col - 1):
             date_positions.append(col)
 
     day_idx = day.day - 1
     if day_idx >= len(date_positions):
-        raise ValueError(
+        msg = (
             f"Kein Tagesblock für {day.isoformat()} gefunden (date-Header #{day_idx + 1} fehlt)."
         )
+        if warn_only:
+            logger.warning(msg)
+            return 0, 0, 0, 0, 0, 0, False
+        raise ValueError(msg)
 
     date_col = date_positions[day_idx]
 
@@ -387,7 +396,7 @@ def _validate_day_block_headers(
 
     start_col = min(date_col, hdr.get("name", date_col))
 
-    return start_col, date_col, prev_day_col, total_col, old_col, new_col
+    return start_col, date_col, prev_day_col, total_col, old_col, new_col, True
 
 
 def update_liste(
@@ -400,14 +409,15 @@ def update_liste(
 
     Nur die Werte aus dem Morgenreport werden übernommen; Abendberichte
     werden nicht mehr berücksichtigt. Bereits eingetragene Datumswerte
-    in der Liste bleiben unverändert.
+    in der Liste bleiben unverändert. Fehlt der Tagesblock, wird der Tag
+    übersprungen.
     """
     if not morning:
         raise ValueError("Morning report produced no data")
     wb = safe_load_workbook(liste)
     try:
         if month_sheet not in wb.sheetnames:
-            ws = wb.create_sheet(title=month_sheet)
+            raise ValueError(f"Monatsblatt {month_sheet} fehlt in {liste}")
         else:
             ws = wb[month_sheet]
 
@@ -461,7 +471,10 @@ def update_liste(
             total_col,
             old_col,
             new_col,
-        ) = _validate_day_block_headers(ws, tech_col, day)
+            block_found,
+        ) = _validate_day_block_headers(ws, tech_col, day, warn_only=True)
+        if not block_found:
+            return
         remaining = set(morning)
 
         for row in range(2, ws.max_row + 1):

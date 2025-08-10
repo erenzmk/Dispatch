@@ -164,6 +164,26 @@ def test_update_liste_multiple_runs(tmp_path: Path):
     wb2.close()
 
 
+def test_update_liste_skips_missing_day_block(tmp_path: Path):
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Juli_25"
+    ws.cell(row=1, column=1, value="Techniker")
+    add_block_headers(ws, 3)
+    ws.cell(row=2, column=1, value="Alice")
+    file = tmp_path / "liste.xlsx"
+    wb.save(file)
+
+    morning = {"Alice": {"total": 1, "new": 0, "old": 1}}
+
+    update_liste(file, "Juli_25", dt.date(2025, 7, 2), morning)
+
+    wb2 = load_workbook(file)
+    ws2 = wb2["Juli_25"]
+    assert ws2.cell(row=2, column=10).value is None
+    wb2.close()
+
+
 def test_update_liste_day_blocks_with_blank_columns(tmp_path: Path):
     wb = Workbook()
     ws = wb.active
@@ -353,7 +373,7 @@ def test_update_liste_accepts_weekday_in_date_column(tmp_path: Path):
     wb2.close()
 
 
-def test_update_liste_raises_on_invalid_header(tmp_path: Path):
+def test_update_liste_skips_on_invalid_header(tmp_path: Path):
     wb = Workbook()
     ws = wb.active
     ws.title = "Juli_25"
@@ -367,8 +387,12 @@ def test_update_liste_raises_on_invalid_header(tmp_path: Path):
 
     morning = {"Alice": {"total": 1, "new": 0, "old": 1}}
 
-    with pytest.raises(ValueError, match="Header"):
-        update_liste(file, "Juli_25", dt.date(2025, 7, 1), morning)
+    update_liste(file, "Juli_25", dt.date(2025, 7, 1), morning)
+
+    wb2 = load_workbook(file)
+    ws2 = wb2["Juli_25"]
+    assert ws2.max_row == 1
+    wb2.close()
 
 
 def test_excel_to_date_none():

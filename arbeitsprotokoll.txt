@@ -68,3 +68,5 @@
 2025-08-10 - _validate_day_block_headers sucht Tagesblock über date-Überschriften, optionalen 'name' ignoriert; update_liste nutzt erkannte Spalten; Tests angepasst; pytest 64 bestanden.
 
 2025-08-10 - update_liste berücksichtigt prev_day_col und date_col bei max_col, Test für Fall mit prev_day_col rechts von total_col; pytest 65 bestanden.
+
+2025-08-10 - _validate_day_block_headers gibt bei fehlendem Tagesblock nur Warnung und Flag zurück; update_liste überspringt fehlende Blöcke; Test für fehlenden Tagesblock ergänzt; pytest 66 bestanden.
