@@ -322,6 +322,60 @@ def extract_calls_by_id(report_path: Path, ids: Iterable[str]) -> dict[str, list
     return {k: v for k, v in calls_by_id.items() if v}
 
 
+def _validate_day_block_headers(
+    ws, tech_col: int, day: dt.date
+) -> tuple[int, int, int, int]:
+    """Prüfe Kopfzeilen des Tagesblocks und ermittele relevante Spalten.
+
+    Gibt ein Tupel aus Start-, Datums-, Wochentags- und Totals-Spalte zurück.
+    Enthält der Tagesblock eine zusätzliche ``Name``-Spalte, wird der Start
+    entsprechend angepasst.
+    """
+
+    week_index = (day.day - 1) // 7
+    day_index = (day.day - 1) % 7
+
+    first_day_name = ws.cell(row=1, column=tech_col + 2).value
+    has_name_col = (
+        isinstance(first_day_name, str) and first_day_name.strip().lower() == "name"
+    )
+
+    day_cols = 13 + (1 if has_name_col else 0)
+    block_width = day_cols + 1
+    start_col = tech_col + 1 + week_index * (block_width * 7 + 1) + day_index * block_width
+
+    if has_name_col:
+        name_header = ws.cell(row=1, column=start_col + 1).value
+        if not (
+            isinstance(name_header, str) and name_header.strip().lower() == "name"
+        ):
+            raise ValueError(
+                f"Unerwartete Kopfzeile in Spalte {start_col + 1}: {name_header!r}"
+            )
+
+    date_col = start_col + (2 if has_name_col else 1)
+    date_header = ws.cell(row=1, column=date_col).value
+    if date_header is not None and not (
+        isinstance(date_header, str) and date_header.strip().lower() == "datum"
+    ):
+        raise ValueError(
+            f"Unerwartete Kopfzeile in Spalte {date_col}: {date_header!r}"
+        )
+
+    weekday_header = ws.cell(row=1, column=date_col + 1).value
+    if weekday_header is not None and not (
+        isinstance(weekday_header, str)
+        and weekday_header.strip().lower() in {"wochentag", "weekday"}
+    ):
+        raise ValueError(
+            f"Unerwartete Kopfzeile in Spalte {date_col + 1}: {weekday_header!r}"
+        )
+
+    prev_day_col = date_col + 1
+    total_col = prev_day_col + 6
+    return start_col, date_col, prev_day_col, total_col
+
+
 def update_liste(
     liste: Path,
     month_sheet: str,
@@ -385,44 +439,10 @@ def update_liste(
 
         morning = canonicalize_summary(morning)
 
-        # Startspalte relativ zur Technikerspalte gemäß dem in ``Liste.xlsx``
-        # verwendeten Layout bestimmen. Standardmäßig enthält jeder Tagesblock
-        # 13 Datenspalten plus eine Leer-Spalte. Manche Arbeitsmappen besitzen
-        # jedoch zusätzlich eine "Name"-Spalte innerhalb des Tagesblocks. In
-        # diesem Fall ist eine Spalte mehr einzuplanen und die Datums-Spalte
-        # verschiebt sich um eins nach rechts.
-        week_index = (day.day - 1) // 7
-        day_index = (day.day - 1) % 7
-
-        first_day_name = ws.cell(row=1, column=tech_col + 2).value
-        has_name_col = (
-            isinstance(first_day_name, str) and first_day_name.strip().lower() == "name"
+        # Kopfzeilen der relevanten Tagesblöcke prüfen und Spalten bestimmen
+        start_col, date_col, prev_day_col, total_col = _validate_day_block_headers(
+            ws, tech_col, day
         )
-
-        day_cols = 13 + (1 if has_name_col else 0)
-        block_width = day_cols + 1
-        start_col = tech_col + 1 + week_index * (block_width * 7 + 1) + day_index * block_width
-
-        # Erwartete Kopfzeilen prüfen
-        if has_name_col:
-            name_header = ws.cell(row=1, column=start_col + 1).value
-            if not (
-                isinstance(name_header, str) and name_header.strip().lower() == "name"
-            ):
-                raise ValueError(
-                    f"Unerwartete Kopfzeile in Spalte {start_col + 1}: {name_header!r}"
-                )
-        date_col = start_col + (2 if has_name_col else 1)
-        date_header = ws.cell(row=1, column=date_col).value
-        if date_header is not None and not (
-            isinstance(date_header, str) and date_header.strip().lower() == "datum"
-        ):
-            raise ValueError(
-                f"Unerwartete Kopfzeile in Spalte {date_col}: {date_header!r}"
-            )
-
-        prev_day_col = date_col + 1
-        total_col = prev_day_col + 6
         remaining = set(morning)
 
         for row in range(2, ws.max_row + 1):

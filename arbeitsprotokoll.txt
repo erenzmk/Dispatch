@@ -63,3 +63,4 @@
 2025-08-10 - update_liste belässt gültige, aber abweichende Datumswerte unverändert und protokolliert eine Warnung; zusätzliche Tests verhindern Überschreibungen; pytest 62 bestanden.
 
 2025-08-10 - update_liste erkennt optionale Namensspalte in Tagesblöcken, passt Datums- und Startspalten dynamisch an und prüft Kopfzeilen; pytest 62 bestanden.
+2025-08-10 - Hilfsfunktion prüft Kopfzeilen der Tagesblöcke und validiert Layout vor dem Schreiben; Tests ergänzt; pytest 64 bestanden.

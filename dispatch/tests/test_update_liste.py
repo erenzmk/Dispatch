@@ -324,6 +324,45 @@ def test_update_liste_creates_missing_sheet(tmp_path: Path):
     wb2.close()
 
 
+def test_update_liste_handles_name_column_in_day_block(tmp_path: Path):
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Juli_25"
+    ws.cell(row=1, column=1, value="Techniker")
+    ws.cell(row=1, column=3, value="Name")
+    ws.cell(row=1, column=4, value="Datum")
+    ws.cell(row=1, column=5, value="Wochentag")
+    file = tmp_path / "liste.xlsx"
+    wb.save(file)
+
+    morning = {"Alice": {"total": 2, "new": 1, "old": 1}}
+
+    update_liste(file, "Juli_25", dt.date(2025, 7, 1), morning)
+
+    wb2 = load_workbook(file)
+    ws2 = wb2["Juli_25"]
+    assert excel_to_date(ws2.cell(row=2, column=4).value) == dt.date(2025, 7, 1)
+    assert ws2.cell(row=2, column=11).value == 2
+    assert ws2.cell(row=2, column=12).value == 1
+    assert ws2.cell(row=2, column=13).value == 1
+    wb2.close()
+
+
+def test_update_liste_raises_on_invalid_header(tmp_path: Path):
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Juli_25"
+    ws.cell(row=1, column=1, value="Techniker")
+    ws.cell(row=1, column=3, value="Falsch")
+    file = tmp_path / "liste.xlsx"
+    wb.save(file)
+
+    morning = {"Alice": {"total": 1, "new": 0, "old": 1}}
+
+    with pytest.raises(ValueError, match="Kopfzeile"):
+        update_liste(file, "Juli_25", dt.date(2025, 7, 1), morning)
+
+
 def test_excel_to_date_none():
     with pytest.raises(ValueError, match="Leere Zelle"):
         excel_to_date(None)
