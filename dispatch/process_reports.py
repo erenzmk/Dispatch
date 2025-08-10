@@ -35,10 +35,34 @@ import os
 import tempfile
 import warnings
 from contextlib import closing
+from collections import Counter
 from .name_aliases import canonical_name, refresh_alias_map
 
 
 logger = logging.getLogger(__name__)
+
+_warning_counter: Counter[str] = Counter()
+
+SUMMARY_MESSAGES = {
+    "missing_date": "{count} fehlende Datumsangaben automatisch ergänzt",
+    "invalid_date": "{count} ungültige Datumsangaben automatisch korrigiert",
+    "mismatch_date": "{count} abweichende Datumsangaben belassen",
+}
+
+
+def _warn(key: str, msg: str, *args) -> None:
+    logger.warning(msg, *args)
+    _warning_counter[key] += 1
+
+
+def _log_warning_summary() -> None:
+    for key, count in _warning_counter.items():
+        template = SUMMARY_MESSAGES.get(key)
+        if template:
+            logger.info(template.format(count=count))
+        else:
+            logger.info("%s× %s", count, key)
+    _warning_counter.clear()
 
 try:  # pragma: no cover - import guard
     from openpyxl import load_workbook
@@ -417,6 +441,7 @@ def update_liste(
     """
     if not morning:
         raise ValueError("Morning report produced no data")
+    _warning_counter.clear()
     wb = safe_load_workbook(liste)
     try:
         if month_sheet not in wb.sheetnames:
@@ -501,14 +526,16 @@ def update_liste(
             ):
                 if (tech, day) not in warned_dates:
                     if cell_value is None:
-                        logger.warning(
+                        _warn(
+                            "missing_date",
                             "Keine Datumsangabe in Zeile %s für Techniker %s, setze Datum auf %s.",
                             row,
                             tech,
                             day,
                         )
                     else:
-                        logger.warning(
+                        _warn(
+                            "invalid_date",
                             "Ungültige Datumsangabe in Zeile %s für Techniker %s: %r, setze Datum auf %s.",
                             row,
                             tech,
@@ -523,7 +550,8 @@ def update_liste(
                     cell_date = excel_to_date(cell_value)
                 except ValueError:
                     if (tech, day) not in warned_dates:
-                        logger.warning(
+                        _warn(
+                            "invalid_date",
                             "Ungültige Datumsangabe in Zeile %s für Techniker %s: %r, setze Datum auf %s.",
                             row,
                             tech,
@@ -535,7 +563,8 @@ def update_liste(
                     cell_date = day
                 else:
                     if cell_date != day:
-                        logger.warning(
+                        _warn(
+                            "mismatch_date",
                             "Abweichende Datumsangabe in Zeile %s für Techniker %s: %r - vorhandener Wert bleibt bestehen.",
                             row,
                             tech,
@@ -569,6 +598,7 @@ def update_liste(
         wb.save(liste)
     finally:
         wb.close()
+        _log_warning_summary()
 
 
 def _init_month_logger(log_file: Path | None) -> None:
