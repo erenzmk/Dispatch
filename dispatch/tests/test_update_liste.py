@@ -250,7 +250,7 @@ def test_update_liste_uses_matching_date(tmp_path: Path):
     wb2.close()
 
 
-def test_update_liste_inserts_missing_technician_column(tmp_path: Path):
+def test_update_liste_renames_name_column(tmp_path: Path):
     file = tmp_path / "liste.xlsx"
     wb = Workbook()
     ws = wb.active
@@ -265,7 +265,8 @@ def test_update_liste_inserts_missing_technician_column(tmp_path: Path):
     wb2 = load_workbook(file)
     ws2 = wb2["Juli_25"]
     assert ws2.cell(row=1, column=1).value == "Techniker"
-    assert ws2.cell(row=1, column=2).value == "Name"
+    # Es wurde keine zusätzliche Spalte eingefügt
+    assert ws2.cell(row=1, column=2).value is None
     assert ws2.cell(row=2, column=1).value == "Alice"
     assert excel_to_date(ws2.cell(row=2, column=3).value) == dt.date(2025, 7, 1)
     assert ws2.cell(row=2, column=10).value == 2
