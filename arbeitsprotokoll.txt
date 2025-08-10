@@ -60,3 +60,4 @@
 2025-08-10 - Startspaltenberechnung in update_liste berücksichtigt nun 14 Spalten pro Tag und zusätzliche Leer-Spalten zwischen Wochen; Tests erweitert, Tages- und Wochen-Leer-Spalten simuliert; pytest 60 bestanden.
 2025-08-10 - Test für 13-Spalten-Blöcke mit Leer-Spalten zwischen Tagen ergänzt; update_liste für späteren Tag geprüft; pytest 61 bestanden.
 2025-08-10 - update_liste nutzt "Name" als Technikerspalte und benennt sie um; Test prüft fehlende zusätzliche Spalte; pytest 61 bestanden.
+2025-08-10 - update_liste belässt gültige, aber abweichende Datumswerte unverändert und protokolliert eine Warnung; zusätzliche Tests verhindern Überschreibungen; pytest 62 bestanden.
