@@ -70,3 +70,4 @@
 2025-08-10 - update_liste berücksichtigt prev_day_col und date_col bei max_col, Test für Fall mit prev_day_col rechts von total_col; pytest 65 bestanden.
 
 2025-08-10 - _validate_day_block_headers gibt bei fehlendem Tagesblock nur Warnung und Flag zurück; update_liste überspringt fehlende Blöcke; Test für fehlenden Tagesblock ergänzt; pytest 66 bestanden.
+2025-08-10 - update_liste erkennt Formel- oder Wochentagswerte in Datumszellen, setzt Datum einmalig auf Tageswert und warnt pro Techniker nur einmal; Tests für Formeln und Wochentage ergänzt; pytest 68 bestanden.

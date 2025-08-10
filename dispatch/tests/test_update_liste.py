@@ -405,7 +405,10 @@ def test_excel_to_date_invalid():
         excel_to_date("abc")
 
 
-@pytest.mark.parametrize("date_value", [None, "abc"])
+@pytest.mark.parametrize(
+    "date_value",
+    [None, "abc", '=TEXT(B3,"tttt")', "Mittwoch"],
+)
 def test_update_liste_fills_invalid_date_cell(tmp_path: Path, caplog, date_value):
     wb = Workbook()
     ws = wb.active
@@ -442,7 +445,7 @@ def test_update_liste_fills_invalid_date_cell(tmp_path: Path, caplog, date_value
     assert ws2.cell(row=2, column=12).value == 0
     wb2.close()
 
-    assert "setze Datum" in caplog.text
+    assert sum(1 for r in caplog.records if r.levelno == logging.WARNING) == 1
 
 
 def test_update_liste_prev_day_after_total(tmp_path: Path):
