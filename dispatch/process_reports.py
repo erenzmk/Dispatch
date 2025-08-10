@@ -108,6 +108,9 @@ PREV_DAY_MAP = {
     6: "Sonntag",
 }
 
+# Set der deutschen Wochentagsnamen zur Validierung von Datumszellen
+WEEKDAY_NAMES = {name.lower() for name in PREV_DAY_MAP.values()}
+
 # Mapping of month numbers to German month names used in ``Liste.xlsx``
 MONTH_MAP = {
     1: "Januar",
@@ -476,6 +479,7 @@ def update_liste(
         if not block_found:
             return
         remaining = set(morning)
+        warned_dates: set[tuple[str, dt.date]] = set()
 
         for row in range(2, ws.max_row + 1):
             name_cell = ws.cell(row=row, column=tech_col)
@@ -488,26 +492,45 @@ def update_liste(
                 continue
 
             date_cell = ws.cell(row=row, column=date_col)
-            if date_cell.value is None:
-                logger.warning(
-                    "Keine Datumsangabe in Zeile %s für Techniker %s, setze Datum auf %s.",
-                    row,
-                    tech,
-                    day,
-                )
+            cell_value = date_cell.value
+            cell_str = cell_value.strip() if isinstance(cell_value, str) else ""
+            if (
+                cell_value is None
+                or cell_str.startswith("=")
+                or cell_str.lower() in WEEKDAY_NAMES
+            ):
+                if (tech, day) not in warned_dates:
+                    if cell_value is None:
+                        logger.warning(
+                            "Keine Datumsangabe in Zeile %s für Techniker %s, setze Datum auf %s.",
+                            row,
+                            tech,
+                            day,
+                        )
+                    else:
+                        logger.warning(
+                            "Ungültige Datumsangabe in Zeile %s für Techniker %s: %r, setze Datum auf %s.",
+                            row,
+                            tech,
+                            cell_value,
+                            day,
+                        )
+                    warned_dates.add((tech, day))
                 date_cell.value = day
                 cell_date = day
             else:
                 try:
-                    cell_date = excel_to_date(date_cell.value)
+                    cell_date = excel_to_date(cell_value)
                 except ValueError:
-                    logger.warning(
-                        "Ungültige Datumsangabe in Zeile %s für Techniker %s: %r, setze Datum auf %s.",
-                        row,
-                        tech,
-                        date_cell.value,
-                        day,
-                    )
+                    if (tech, day) not in warned_dates:
+                        logger.warning(
+                            "Ungültige Datumsangabe in Zeile %s für Techniker %s: %r, setze Datum auf %s.",
+                            row,
+                            tech,
+                            cell_value,
+                            day,
+                        )
+                        warned_dates.add((tech, day))
                     date_cell.value = day
                     cell_date = day
                 else:
@@ -516,7 +539,7 @@ def update_liste(
                             "Abweichende Datumsangabe in Zeile %s für Techniker %s: %r - vorhandener Wert bleibt bestehen.",
                             row,
                             tech,
-                            date_cell.value,
+                            cell_value,
                         )
                         continue
 
