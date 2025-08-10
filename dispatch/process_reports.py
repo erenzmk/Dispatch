@@ -386,18 +386,43 @@ def update_liste(
         morning = canonicalize_summary(morning)
 
         # Startspalte relativ zur Technikerspalte gemäß dem in ``Liste.xlsx``
-        # verwendeten Layout bestimmen. Jede Tagesgruppe umfasst 13 Daten-
-        # spalten plus eine Leer-Spalte. Sieben solche Gruppen bilden eine
-        # Woche, zwischen den Wochen liegt eine weitere Leer-Spalte. Der
-        # Wochenindex und der Tagesindex innerhalb der Woche verschieben den
-        # Start entsprechend.
+        # verwendeten Layout bestimmen. Standardmäßig enthält jeder Tagesblock
+        # 13 Datenspalten plus eine Leer-Spalte. Manche Arbeitsmappen besitzen
+        # jedoch zusätzlich eine "Name"-Spalte innerhalb des Tagesblocks. In
+        # diesem Fall ist eine Spalte mehr einzuplanen und die Datums-Spalte
+        # verschiebt sich um eins nach rechts.
         week_index = (day.day - 1) // 7
         day_index = (day.day - 1) % 7
-        start_col = (
-            tech_col + 1
-            + week_index * ((13 + 1) * 7 + 1)
-            + day_index * (13 + 1)
+
+        first_day_name = ws.cell(row=1, column=tech_col + 2).value
+        has_name_col = (
+            isinstance(first_day_name, str) and first_day_name.strip().lower() == "name"
         )
+
+        day_cols = 13 + (1 if has_name_col else 0)
+        block_width = day_cols + 1
+        start_col = tech_col + 1 + week_index * (block_width * 7 + 1) + day_index * block_width
+
+        # Erwartete Kopfzeilen prüfen
+        if has_name_col:
+            name_header = ws.cell(row=1, column=start_col + 1).value
+            if not (
+                isinstance(name_header, str) and name_header.strip().lower() == "name"
+            ):
+                raise ValueError(
+                    f"Unerwartete Kopfzeile in Spalte {start_col + 1}: {name_header!r}"
+                )
+        date_col = start_col + (2 if has_name_col else 1)
+        date_header = ws.cell(row=1, column=date_col).value
+        if date_header is not None and not (
+            isinstance(date_header, str) and date_header.strip().lower() == "datum"
+        ):
+            raise ValueError(
+                f"Unerwartete Kopfzeile in Spalte {date_col}: {date_header!r}"
+            )
+
+        prev_day_col = date_col + 1
+        total_col = prev_day_col + 6
         remaining = set(morning)
 
         for row in range(2, ws.max_row + 1):
@@ -410,7 +435,7 @@ def update_liste(
             if not tech or tech not in morning or tech not in remaining:
                 continue
 
-            date_cell = ws.cell(row=row, column=start_col + 1)
+            date_cell = ws.cell(row=row, column=date_col)
             if date_cell.value is None:
                 logger.warning(
                     "Keine Datumsangabe in Zeile %s für Techniker %s, setze Datum auf %s.",
@@ -444,22 +469,22 @@ def update_liste(
                         continue
 
             day_data = morning[tech]
-            ws.cell(row=row, column=start_col + 2).value = PREV_DAY_MAP[day.weekday()]
-            ws.cell(row=row, column=start_col + 8).value = day_data["total"]
-            ws.cell(row=row, column=start_col + 9).value = day_data["old"]
-            ws.cell(row=row, column=start_col + 10).value = day_data["new"]
+            ws.cell(row=row, column=prev_day_col).value = PREV_DAY_MAP[day.weekday()]
+            ws.cell(row=row, column=total_col).value = day_data["total"]
+            ws.cell(row=row, column=total_col + 1).value = day_data["old"]
+            ws.cell(row=row, column=total_col + 2).value = day_data["new"]
             remaining.discard(tech)
 
         for tech in sorted(remaining):
             canon = canonical_name(tech, names_in_sheet)
             day_data = morning[tech]
-            row_values = [None] * (start_col + 10)
+            row_values = [None] * (total_col + 2)
             row_values[tech_col - 1] = canon
-            row_values[start_col] = day
-            row_values[start_col + 1] = PREV_DAY_MAP[day.weekday()]
-            row_values[start_col + 7] = day_data["total"]
-            row_values[start_col + 8] = day_data["old"]
-            row_values[start_col + 9] = day_data["new"]
+            row_values[date_col - 1] = day
+            row_values[prev_day_col - 1] = PREV_DAY_MAP[day.weekday()]
+            row_values[total_col - 1] = day_data["total"]
+            row_values[total_col] = day_data["old"]
+            row_values[total_col + 1] = day_data["new"]
             ws.append(row_values)
             names_in_sheet.append(canon)
 
