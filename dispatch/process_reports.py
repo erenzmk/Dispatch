@@ -518,7 +518,7 @@ def update_liste(
         for tech in sorted(remaining):
             canon = canonical_name(tech, names_in_sheet)
             day_data = morning[tech]
-            max_col = max(total_col, old_col, new_col)
+            max_col = max(total_col, old_col, new_col, prev_day_col, date_col)
             row_values = [None] * max_col
             row_values[tech_col - 1] = canon
             row_values[date_col - 1] = day

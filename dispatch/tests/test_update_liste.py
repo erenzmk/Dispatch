@@ -5,7 +5,7 @@ from openpyxl import Workbook, load_workbook
 import pytest
 import logging
 
-from dispatch.process_reports import update_liste, excel_to_date
+from dispatch.process_reports import update_liste, excel_to_date, PREV_DAY_MAP
 from dispatch.name_aliases import refresh_alias_map
 
 
@@ -419,3 +419,31 @@ def test_update_liste_fills_invalid_date_cell(tmp_path: Path, caplog, date_value
     wb2.close()
 
     assert "setze Datum" in caplog.text
+
+
+def test_update_liste_prev_day_after_total(tmp_path: Path):
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Juli_25"
+    ws.cell(row=1, column=1, value="Techniker")
+    ws.cell(row=1, column=3, value="date")
+    ws.cell(row=1, column=10, value="total calls")
+    ws.cell(row=1, column=11, value="old calls")
+    ws.cell(row=1, column=12, value="new calls")
+    ws.cell(row=1, column=13, value="weekday")
+    file = tmp_path / "liste.xlsx"
+    wb.save(file)
+
+    morning = {"Alice": {"total": 2, "new": 1, "old": 1}}
+    day = dt.date(2025, 7, 1)
+
+    update_liste(file, "Juli_25", day, morning)
+
+    wb2 = load_workbook(file)
+    ws2 = wb2["Juli_25"]
+    assert ws2.cell(row=2, column=10).value == 2
+    assert ws2.cell(row=2, column=11).value == 1
+    assert ws2.cell(row=2, column=12).value == 1
+    assert ws2.cell(row=2, column=13).value == PREV_DAY_MAP[day.weekday()]
+    assert ws2.max_column >= 13
+    wb2.close()
