@@ -81,3 +81,4 @@
 2025-08-12 - _validate_day_block_headers legt fehlende Tagesblöcke automatisch an und ergänzt Kopfzeilen; Tests simulieren Block-Erstellung; pytest 73 bestanden.
 2025-08-13 - Bereits geladene Techniker in Monatslisten werden kanonisiert, Duplikate zusammengeführt und Warnungen bei Kollisionen ausgegeben; Regressionstest für Namenskanonisierung ergänzt; pytest 73 bestanden.
 2025-08-13 - process_reports protokolliert Laufstart und verarbeitete Tage in arbeitsprotokoll.txt; README erwähnt Protokolldatei; pytest 74 bestanden.
+2025-08-14 - interaktive Blattwahl entfernt, CLI-Optionen --sheet und --create-sheet eingeführt; Tests angepasst; pytest 74 bestanden.

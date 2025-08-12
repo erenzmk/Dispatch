@@ -785,6 +785,15 @@ def main(argv: Iterable[str] | None = None) -> None:
         action="store_true",
         help="Abweichende Datumsangaben überschreiben",
     )
+    parser.add_argument(
+        "--sheet",
+        help="Name des Arbeitsblatts in Liste.xlsx",
+    )
+    parser.add_argument(
+        "--create-sheet",
+        action="store_true",
+        help="Fehlendes Blatt automatisch anlegen",
+    )
     args = parser.parse_args(list(argv) if argv is not None else None)
 
     if args.fix_mismatched_dates:
@@ -804,28 +813,23 @@ def main(argv: Iterable[str] | None = None) -> None:
         day = args.date
     else:
         day = dt.date(year_month.year, year_month.month, int(args.day_dir.name))
-    month_sheet = f"{MONTH_MAP[day.month]}_{day.strftime('%y')}"
+    month_sheet = args.sheet or f"{MONTH_MAP[day.month]}_{day.strftime('%y')}"
 
     logger.info("Starte Verarbeitung für %s", day)
 
     # Read existing technician names to aid fuzzy matching
     name_wb = safe_load_workbook(args.liste)
     if month_sheet not in name_wb.sheetnames:
-        print(f"Arbeitsblatt '{month_sheet}' existiert nicht.")
-        print("Verfügbare Blätter:", ", ".join(name_wb.sheetnames))
-        choice = input(
-            "Neues Blatt anlegen? (j/n) oder Namen eines vorhandenen Blatts eingeben: "
-        ).strip()
-        if choice.lower() in {"j", "ja", "y"}:
+        if args.create_sheet:
             ws_names = name_wb.create_sheet(title=month_sheet)
             ws_names.cell(row=1, column=1, value="Techniker")
             name_wb.save(args.liste)
-        elif choice in name_wb.sheetnames:
-            ws_names = name_wb[choice]
-            month_sheet = choice
         else:
+            available = ", ".join(name_wb.sheetnames)
             name_wb.close()
-            raise ValueError("Kein gültiges Blatt gewählt; Abbruch.")
+            raise ValueError(
+                f"Arbeitsblatt '{month_sheet}' existiert nicht. Verfügbare Blätter: {available}"
+            )
     else:
         ws_names = name_wb[month_sheet]
     valid_names = [
