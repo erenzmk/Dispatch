@@ -806,6 +806,8 @@ def main(argv: Iterable[str] | None = None) -> None:
         day = dt.date(year_month.year, year_month.month, int(args.day_dir.name))
     month_sheet = f"{MONTH_MAP[day.month]}_{day.strftime('%y')}"
 
+    logger.info("Starte Verarbeitung für %s", day)
+
     # Read existing technician names to aid fuzzy matching
     name_wb = safe_load_workbook(args.liste)
     if month_sheet not in name_wb.sheetnames:
@@ -856,7 +858,17 @@ def main(argv: Iterable[str] | None = None) -> None:
         morning_summary,
         fix_mismatched_dates=args.fix_mismatched_dates,
     )
+    logger.info("Tag %s verarbeitet", target_date)
 
 
 if __name__ == "__main__":
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s %(levelname)s %(message)s",
+        handlers=[
+            logging.FileHandler("arbeitsprotokoll.txt", mode="a", encoding="utf-8"),
+            logging.StreamHandler(),
+        ],
+    )
+    logger.info("Laufstart")
     main()
