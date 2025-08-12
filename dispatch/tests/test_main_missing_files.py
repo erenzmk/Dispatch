@@ -5,7 +5,7 @@ import pytest
 from openpyxl import Workbook, load_workbook
 import datetime as dt
 
-from dispatch.process_reports import main
+from dispatch.process_reports import main, excel_to_date
 
 
 def create_liste(path: Path) -> None:
@@ -148,7 +148,9 @@ def test_main_creates_missing_sheet(tmp_path: Path, monkeypatch: pytest.MonkeyPa
 
     wb2 = load_workbook(liste)
     assert "Juli_25" in wb2.sheetnames
-    assert wb2["Juli_25"].max_row == 1
+    ws = wb2["Juli_25"]
+    assert ws.max_row == 2
+    assert excel_to_date(ws.cell(row=2, column=3).value) == dt.date(2025, 7, 1)
     wb2.close()
 
 

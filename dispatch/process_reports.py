@@ -373,8 +373,12 @@ def _validate_day_block_headers(
     an den tatsächlichen Kopfzeilen rechts der Technikerspalte und ist tolerant
     gegenüber variierender Schreibweise und optionaler ``Name``-Spalte.
 
-    Bei gesetztem ``warn_only`` wird bei fehlendem Tagesblock nur eine Warnung
-    ausgegeben und ein Flag ``False`` zurückgegeben.
+    Fehlt der ``date``-Header für den angeforderten Tag, wird die Position über
+    die Wochen-Formel ``(d.day-1)//7`` und ``(d.day-1)%7`` ermittelt und der
+    komplette Tagesblock inklusive Kopfzeilen automatisch angelegt.
+
+    Der Parameter ``warn_only`` bleibt aus Kompatibilitätsgründen erhalten,
+    hat jedoch keine Wirkung mehr.
     """
 
     date_positions: list[int] = []
@@ -387,13 +391,37 @@ def _validate_day_block_headers(
 
     day_idx = day.day - 1
     if day_idx >= len(date_positions):
-        msg = (
-            f"Kein Tagesblock für {day.isoformat()} gefunden (date-Header #{day_idx + 1} fehlt)."
+        logger.warning(
+            "Kein Tagesblock für %s gefunden, lege neuen Block an.", day.isoformat()
         )
-        if warn_only:
-            logger.warning(msg)
-            return 0, 0, 0, 0, 0, 0, False
-        raise ValueError(msg)
+        week_index = (day.day - 1) // 7
+        day_index = (day.day - 1) % 7
+        start_offset = 1 + week_index * ((13 + 1) * 7 + 1) + day_index * (13 + 1)
+        start_col = tech_col + start_offset
+        ws.insert_cols(start_col, 13 + 1)
+        headers = [
+            "Name",
+            "Date",
+            "Weekday",
+            "PUDO",
+            "Pickup Time",
+            "Valid",
+            "Info",
+            "Pre-closed",
+            "Total Calls",
+            "Old Calls",
+            "New Calls",
+            "Details",
+            "Mails",
+        ]
+        for idx, text in enumerate(headers):
+            ws.cell(row=1, column=start_col + idx, value=text)
+        date_col = start_col + 1
+        prev_day_col = start_col + 2
+        total_col = start_col + 8
+        old_col = start_col + 9
+        new_col = start_col + 10
+        return start_col, date_col, prev_day_col, total_col, old_col, new_col, True
 
     date_col = date_positions[day_idx]
 
