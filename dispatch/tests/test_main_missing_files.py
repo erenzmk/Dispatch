@@ -49,7 +49,9 @@ def test_main_missing_morning_file_uses_fallback(
         called["used"] = Path(path)
         return dt.date(2025, 7, 1), {}, []
 
-    def fake_update_liste(liste_path, month_sheet, target_date, morning_summary):
+    def fake_update_liste(
+        liste_path, month_sheet, target_date, morning_summary, fix_mismatched_dates=False
+    ):
         pass
 
     monkeypatch.setattr("dispatch.process_reports.load_calls", fake_load_calls)
@@ -76,7 +78,9 @@ def test_main_no_evening_file_ok(tmp_path: Path, monkeypatch: pytest.MonkeyPatch
     def fake_load_calls(path, valid_names=None):
         return dt.date(2025, 7, 1), {}, []
 
-    def fake_update_liste(liste_path, month_sheet, target_date, morning_summary):
+    def fake_update_liste(
+        liste_path, month_sheet, target_date, morning_summary, fix_mismatched_dates=False
+    ):
         pass
 
     monkeypatch.setattr("dispatch.process_reports.load_calls", fake_load_calls)
@@ -111,7 +115,9 @@ def test_main_custom_morning_pattern(tmp_path: Path, monkeypatch: pytest.MonkeyP
     def fake_load_calls(path, valid_names=None):
         return dt.date(2025, 7, 1), {}, []
 
-    def fake_update_liste(liste_path, month_sheet, target_date, morning_summary):
+    def fake_update_liste(
+        liste_path, month_sheet, target_date, morning_summary, fix_mismatched_dates=False
+    ):
         pass
 
     monkeypatch.setattr("dispatch.process_reports.load_calls", fake_load_calls)
@@ -165,7 +171,13 @@ def test_main_selects_existing_sheet(tmp_path: Path, monkeypatch: pytest.MonkeyP
 
     called = {}
 
-    def fake_update_liste(liste_path, month_sheet, target_date, morning_summary):
+    def fake_update_liste(
+        liste_path,
+        month_sheet,
+        target_date,
+        morning_summary,
+        fix_mismatched_dates=False,
+    ):
         called["month_sheet"] = month_sheet
 
     monkeypatch.setattr("dispatch.process_reports.load_calls", fake_load_calls)

@@ -38,7 +38,9 @@ def test_process_month_multiple_days(
 
     calls: list[dt.date] = []
 
-    def fake_update_liste(liste_path, month_sheet, target_date, morning_summary):
+    def fake_update_liste(
+        liste_path, month_sheet, target_date, morning_summary, fix_mismatched_dates=False
+    ):
         calls.append(target_date)
 
     monkeypatch.setattr("dispatch.process_reports.load_calls", fake_load_calls)
@@ -65,7 +67,9 @@ def test_process_month_logging(
     def fake_load_calls(path, valid_names=None):
         return dt.date(2025, 7, 1), {}, []
 
-    def fake_update_liste(liste_path, month_sheet, target_date, morning_summary):
+    def fake_update_liste(
+        liste_path, month_sheet, target_date, morning_summary, fix_mismatched_dates=False
+    ):
         pass
 
     monkeypatch.setattr("dispatch.process_reports.load_calls", fake_load_calls)

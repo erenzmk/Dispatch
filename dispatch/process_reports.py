@@ -431,13 +431,14 @@ def update_liste(
     month_sheet: str,
     day: dt.date,
     morning: Dict[str, Dict[str, int]],
+    fix_mismatched_dates: bool = False,
 ):
     """Write aggregated values into the ``Liste.xlsx`` workbook.
 
     Nur die Werte aus dem Morgenreport werden übernommen; Abendberichte
     werden nicht mehr berücksichtigt. Bereits eingetragene Datumswerte
-    in der Liste bleiben unverändert. Fehlt der Tagesblock, wird der Tag
-    übersprungen.
+    in der Liste bleiben unverändert, es sei denn ``fix_mismatched_dates`` ist
+    gesetzt. Fehlt der Tagesblock, wird der Tag übersprungen.
     """
     if not morning:
         raise ValueError("Morning report produced no data")
@@ -565,12 +566,20 @@ def update_liste(
                     if cell_date != day:
                         _warn(
                             "mismatch_date",
-                            "Abweichende Datumsangabe in Zeile %s für Techniker %s: %r - vorhandener Wert bleibt bestehen.",
+                            (
+                                "Abweichende Datumsangabe in Zeile %s für Techniker %s: %r"
+                                " - vorhandener Wert bleibt bestehen." if not fix_mismatched_dates else
+                                "Abweichende Datumsangabe in Zeile %s für Techniker %s: %r, setze Datum auf %s."
+                            ),
                             row,
                             tech,
                             cell_value,
+                            *(() if not fix_mismatched_dates else (day,)),
                         )
-                        continue
+                        if not fix_mismatched_dates:
+                            continue
+                        date_cell.value = day
+                        cell_date = day
 
             day_data = morning[tech]
             if prev_day_col != date_col:
@@ -705,7 +714,17 @@ def main(argv: Iterable[str] | None = None) -> None:
         default=DEFAULT_MORNING_PATTERN,
         help="Globbing-Muster für den Morgenreport",
     )
+    parser.add_argument(
+        "--fix-mismatched-dates",
+        action="store_true",
+        help="Abweichende Datumsangaben überschreiben",
+    )
     args = parser.parse_args(list(argv) if argv is not None else None)
+
+    if args.fix_mismatched_dates:
+        SUMMARY_MESSAGES[
+            "mismatch_date"
+        ] = "{count} abweichende Datumsangaben automatisch korrigiert"
 
     # Der Monat und das Jahr ergeben sich aus dem übergeordneten Ordner
     # ``YYYY-MM``. Fehlt diese Information, wird das aktuelle Jahr verwendet.
@@ -764,7 +783,13 @@ def main(argv: Iterable[str] | None = None) -> None:
         print(f"Verwende {morning.name} als Fallback.")
 
     target_date, morning_summary, _ = load_calls(morning, valid_names)
-    update_liste(args.liste, month_sheet, target_date, morning_summary)
+    update_liste(
+        args.liste,
+        month_sheet,
+        target_date,
+        morning_summary,
+        fix_mismatched_dates=args.fix_mismatched_dates,
+    )
 
 
 if __name__ == "__main__":
