@@ -75,3 +75,4 @@
 2025-08-10 - Monat 2025-07 erfolgreich verarbeitet.
 2025-08-13 - Monat 2025-07 erfolgreich verarbeitet.
 2025-08-13 - write_calls trägt Call-Daten nach Name und Datum in Monatslisten ein; Test ergänzt. pytest 70 bestanden.
+2025-08-13 - Monat 2025-08 mit Fehlern verarbeitet.
