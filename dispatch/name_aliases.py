@@ -17,8 +17,9 @@ output tidy.
 """
 
 from difflib import get_close_matches
+import logging
 import re
-from typing import Iterable
+from typing import Iterable, List, Dict
 
 # Map alternate spellings or abbreviations to their canonical form.
 # Extend this mapping as needed. Keys are treated case-insensitively.
@@ -31,6 +32,8 @@ ALIASES = {
 # may mutate :data:`ALIASES`, so provide a helper to rebuild this cache when
 # needed.
 _ALIAS_MAP = {k.lower(): v for k, v in ALIASES.items()}
+
+logger = logging.getLogger(__name__)
 
 
 def refresh_alias_map() -> None:
@@ -80,3 +83,31 @@ def canonical_name(name: str, valid_names: Iterable[str], cutoff: float = 0.8) -
             return valid_map[matches[0]]
 
     return candidates[0].strip()
+
+
+def canonicalize_loaded_names(names: List[str]) -> tuple[List[str], Dict[str, List[int]]]:
+    """Kanonisiere *names* und liefere Auftretenspositionen zurück.
+
+    Für jede Position in der Eingabeliste wird der kanonische Name ermittelt.
+    Zusätzlich wird eine Zuordnung von kanonischem Namen zu allen Positionen
+    aufgebaut, an denen dieser Name vorkommt.  Falls mehrere unterschiedliche
+    Zeilen auf denselben Namen fallen, wird eine Warnung protokolliert.
+    """
+
+    canonical: List[str] = []
+    occurrences: Dict[str, List[int]] = {}
+    for idx, name in enumerate(names):
+        canon = canonical_name(name, canonical)
+        canonical.append(canon)
+        occ = occurrences.setdefault(canon, [])
+        occ.append(idx)
+
+    for canon, idxs in occurrences.items():
+        if len(idxs) > 1:
+            logger.warning(
+                "Mehrere Zeilen fallen nach Kanonisierung auf %s zusammen: %s",
+                canon,
+                ", ".join(str(i) for i in idxs),
+            )
+
+    return canonical, occurrences

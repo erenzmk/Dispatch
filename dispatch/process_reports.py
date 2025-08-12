@@ -36,7 +36,11 @@ import tempfile
 import warnings
 from contextlib import closing
 from collections import Counter
-from .name_aliases import canonical_name, refresh_alias_map
+from .name_aliases import (
+    canonical_name,
+    canonicalize_loaded_names,
+    refresh_alias_map,
+)
 
 
 logger = logging.getLogger(__name__)
@@ -499,14 +503,48 @@ def update_liste(
             tech_col = 1
 
         # Canonicalise technician names already present in the sheet
-        names_in_sheet: list[str] = []
+        names_raw: list[str] = []
+        row_indices: list[int] = []
         for row in range(2, ws.max_row + 1):
             cell = ws.cell(row=row, column=tech_col)
             if not cell.value:
                 continue
-            canon = canonical_name(str(cell.value).strip(), names_in_sheet)
-            cell.value = canon
-            names_in_sheet.append(canon)
+            names_raw.append(str(cell.value).strip())
+            row_indices.append(row)
+
+        names_canon, occurrences = canonicalize_loaded_names(names_raw)
+
+        for row, name in zip(row_indices, names_canon):
+            ws.cell(row=row, column=tech_col, value=name)
+
+        rows_to_delete: list[int] = []
+        for canon, idxs in occurrences.items():
+            if len(idxs) <= 1:
+                continue
+            target_row = row_indices[idxs[0]]
+            for dup in idxs[1:]:
+                src_row = row_indices[dup]
+                for col in range(1, ws.max_column + 1):
+                    if col == tech_col:
+                        continue
+                    src = ws.cell(row=src_row, column=col)
+                    dst = ws.cell(row=target_row, column=col)
+                    if src.value in (None, ""):
+                        continue
+                    if dst.value in (None, ""):
+                        dst.value = src.value
+                    elif all(isinstance(v, (int, float)) for v in (dst.value, src.value)):
+                        dst.value = (dst.value or 0) + (src.value or 0)
+                rows_to_delete.append(src_row)
+
+        for row in sorted(rows_to_delete, reverse=True):
+            ws.delete_rows(row)
+
+        names_in_sheet = []
+        for row in range(2, ws.max_row + 1):
+            cell = ws.cell(row=row, column=tech_col)
+            if cell.value:
+                names_in_sheet.append(str(cell.value).strip())
 
         def canonicalize_summary(summary: Dict[str, Dict[str, int]]) -> Dict[str, Dict[str, int]]:
             result: Dict[str, Dict[str, int]] = {}
