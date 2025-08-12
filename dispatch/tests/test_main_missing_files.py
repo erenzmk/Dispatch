@@ -136,14 +136,17 @@ def test_main_creates_missing_sheet(tmp_path: Path, monkeypatch: pytest.MonkeyPa
     wb = Workbook()
     wb.save(day_dir / "morning7.xlsx")
 
-    monkeypatch.setattr(sys, "argv", ["process_reports.py", str(day_dir), str(liste)])
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        ["process_reports.py", str(day_dir), str(liste), "--create-sheet"],
+    )
 
     def fake_load_calls(path, valid_names=None):
         return dt.date(2025, 7, 1), {"Alice": {"total": 1, "new": 1, "old": 0}}, []
 
     monkeypatch.setattr("dispatch.process_reports.load_calls", fake_load_calls)
 
-    monkeypatch.setattr("builtins.input", lambda _: "j")
     main()
 
     wb2 = load_workbook(liste)
@@ -166,7 +169,17 @@ def test_main_selects_existing_sheet(tmp_path: Path, monkeypatch: pytest.MonkeyP
     wb2 = Workbook()
     wb2.save(day_dir / "morning7.xlsx")
 
-    monkeypatch.setattr(sys, "argv", ["process_reports.py", str(day_dir), str(liste)])
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            "process_reports.py",
+            str(day_dir),
+            str(liste),
+            "--sheet",
+            "Juni_25",
+        ],
+    )
 
     def fake_load_calls(path, valid_names=None):
         return dt.date(2025, 7, 1), {}, []
@@ -184,7 +197,6 @@ def test_main_selects_existing_sheet(tmp_path: Path, monkeypatch: pytest.MonkeyP
 
     monkeypatch.setattr("dispatch.process_reports.load_calls", fake_load_calls)
     monkeypatch.setattr("dispatch.process_reports.update_liste", fake_update_liste)
-    monkeypatch.setattr("builtins.input", lambda _: "Juni_25")
     main()
 
     assert called["month_sheet"] == "Juni_25"
