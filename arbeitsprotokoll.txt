@@ -79,3 +79,4 @@
 
 2025-08-13 - process_reports erweitert um optionales Überschreiben abweichender Datumsangaben (--fix-mismatched-dates); Warnung bleibt bestehen; Tests für beide Modi ergänzt; pytest 72 bestanden.
 2025-08-12 - _validate_day_block_headers legt fehlende Tagesblöcke automatisch an und ergänzt Kopfzeilen; Tests simulieren Block-Erstellung; pytest 73 bestanden.
+2025-08-13 - Bereits geladene Techniker in Monatslisten werden kanonisiert, Duplikate zusammengeführt und Warnungen bei Kollisionen ausgegeben; Regressionstest für Namenskanonisierung ergänzt; pytest 73 bestanden.
