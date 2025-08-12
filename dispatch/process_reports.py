@@ -669,6 +669,25 @@ def update_liste(
             row_values[new_col - 1] = day_data["new"]
             ws.append(row_values)
             names_in_sheet.append(canon)
+        # Nach allen Einträgen die Datenzeilen anhand der Technikerspalte sortieren
+        last_row = ws.max_row
+        if last_row > 2:
+            data_rows = list(
+                ws.iter_rows(
+                    min_row=2,
+                    max_row=last_row,
+                    max_col=ws.max_column,
+                    values_only=True,
+                )
+            )
+            data_rows.sort(
+                key=lambda row: str(row[tech_col - 1]).casefold()
+                if row[tech_col - 1] is not None
+                else ""
+            )
+            ws.delete_rows(2, last_row - 1)
+            for row_values in data_rows:
+                ws.append(list(row_values))
 
         wb.save(liste)
     finally:

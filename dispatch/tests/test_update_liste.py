@@ -117,6 +117,36 @@ def test_update_liste_adds_missing_technician(tmp_path: Path):
     wb2.close()
 
 
+def test_update_liste_sorts_rows(tmp_path: Path):
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Juli_25"
+    ws.cell(row=1, column=1, value="Techniker")
+    add_block_headers(ws, 3)
+    # unsortierte Ausgangsdaten
+    ws.cell(row=2, column=1, value="Bob")
+    ws.cell(row=2, column=3, value=dt.date(2025, 7, 1))
+    ws.cell(row=3, column=1, value="Alice")
+    ws.cell(row=3, column=3, value=dt.date(2025, 7, 1))
+    file = tmp_path / "liste.xlsx"
+    wb.save(file)
+
+    morning = {
+        "Bob": {"total": 2, "new": 1, "old": 1},
+        "Alice": {"total": 1, "new": 0, "old": 1},
+    }
+
+    update_liste(file, "Juli_25", dt.date(2025, 7, 1), morning)
+
+    wb2 = load_workbook(file)
+    ws2 = wb2["Juli_25"]
+    assert ws2.cell(row=2, column=1).value == "Alice"
+    assert ws2.cell(row=2, column=10).value == 1
+    assert ws2.cell(row=3, column=1).value == "Bob"
+    assert ws2.cell(row=3, column=10).value == 2
+    wb2.close()
+
+
 def test_update_liste_uses_technician_header_column(tmp_path: Path):
     wb = Workbook()
     ws = wb.active
