@@ -32,7 +32,13 @@ def test_main_uses_year_from_parent(tmp_path: Path, monkeypatch: pytest.MonkeyPa
 
     called = {}
 
-    def fake_update_liste(liste_path, month_sheet, target_date, morning_summary):
+    def fake_update_liste(
+        liste_path,
+        month_sheet,
+        target_date,
+        morning_summary,
+        fix_mismatched_dates=False,
+    ):
         called["month_sheet"] = month_sheet
         called["target_date"] = target_date
 
