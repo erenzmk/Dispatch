@@ -1,14 +1,9 @@
 from pathlib import Path
-from typing import Mapping
 import pandas as pd
 from openpyxl import load_workbook
+from openpyxl.utils import get_column_letter
 
-# Zuordnung Woche -> (Startspalte Datum, Startspalte Call)
-WEEK_START_COLUMNS: Mapping[int, tuple[str, str]] = {
-    1: ("A", "B"),
-    2: ("O", "P"),
-    3: ("AC", "AD"),
-}
+from .name_aliases import canonical_name
 
 
 def write_calls(workbook: Path | str, records: pd.DataFrame, sheet_name: str = "Juli") -> None:
@@ -21,25 +16,33 @@ def write_calls(workbook: Path | str, records: pd.DataFrame, sheet_name: str = "
 
     # Namen des ersten Blocks auslesen und auf Indizes abbilden
     name_map: dict[str, int] = {}
-    for idx, row in enumerate(ws["A2":"A27"], start=0):
-        cell = row[0]
-        if cell.value:
-            name_map[str(cell.value).strip()] = idx
+    valid_names: list[str] = []
+    row_idx = 2
+    while True:
+        cell = ws.cell(row=row_idx, column=1)
+        if not cell.value:
+            break
+        canon = canonical_name(str(cell.value).strip(), valid_names)
+        if canon in name_map:
+            break
+        name_map[canon] = row_idx - 2
+        valid_names.append(canon)
+        row_idx += 1
+    tech_rows = len(valid_names)
 
     for _, rec in records.iterrows():
-        name = str(rec["name"]).strip()
+        name = canonical_name(str(rec["name"]).strip(), valid_names)
         date = pd.to_datetime(rec["date"]).date()
         value = rec["value"]
 
         if name not in name_map:
             continue
-        week = ((date.day - 1) // 7) + 1
-        week_cols = WEEK_START_COLUMNS.get(week)
-        if not week_cols:
-            continue
-        _, call_col = week_cols
+
+        week_index = (date.day - 1) // 7
+        call_col_idx = 2 + week_index * (13 + 1)
+        call_col = get_column_letter(call_col_idx)
         day_offset = date.weekday()
-        row = 2 + name_map[name] + 26 * day_offset
+        row = 2 + name_map[name] + tech_rows * day_offset
         ws[f"{call_col}{row}"] = value
 
     wb.save(workbook)
