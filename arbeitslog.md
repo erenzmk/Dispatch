@@ -11,3 +11,7 @@
 - Optionale GUI-Abhängigkeiten und `dispatch-gui`-Entry-Point entfernt, README entsprechend angepasst und `pip install -e .` ausgeführt.
 - CLI in `run_dispatch.py` eingeführt und Tests auf `run_dispatch`-Importe umgestellt.
 - GUI-spezifische Mock-Aufrufe bereinigt und Testlauf mit `pytest` bestätigt.
+## 2025-08-13 (2)
+- Neues Skript `dispatch/write_liste.py` zum Eintragen der Tagesdaten in `Liste.xlsx` erstellt.
+- Alias-Mappings aus "Technikernamen + PUDO" werden eingelesen, Tagesblöcke erkannt oder bei Bedarf ergänzt.
+- Aggregationslogik für numerische und textuelle Felder umgesetzt.
