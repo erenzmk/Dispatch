@@ -1,10 +1,12 @@
-"""Schreibe Tagesdaten in die Projektdatei ``Liste.xlsx``.
+"""Trage Tagesdaten in ``Liste.xlsx`` ein.
 
-Dieses Skript liest tägliche Reports aus ``data/reports`` ein, fasst die
-Daten pro Techniker zusammen und trägt sie in das Monatsblatt ``Juli_25``
-der Projektdatei ein. Vorhandene Blöcke werden wiederverwendet, neue
-Blöcke bei Bedarf rechts angefügt. Es werden ausschließlich Zellwerte
-geändert, Formatierungen bleiben erhalten.
+Dieses Skript liest die täglichen Rohdaten aus ``data/reports`` ein und
+schreibt die aggregierten Werte in das Monatsblatt ``Juli_25``.  Das Blatt
+ist in Wochenblöcke organisiert; jeder Block besteht aus einem Spaltenpaar
+``(Name, Datum)`` sowie weiteren Feldern rechts davon.  Für jeden Eintrag wird
+die passende Zeile über den Techniker‑Namen und das Datum bestimmt.  Es werden
+keine neuen Blöcke oder Zeilen angelegt und bestehende Inhalte werden nicht
+überschrieben.
 """
 
 from __future__ import annotations
@@ -21,34 +23,31 @@ from openpyxl import load_workbook
 from .name_aliases import canonical_name, ALIASES, refresh_alias_map
 
 INFILE = Path(r"C:\Users\egencer\Documents\GitHub\Dispatch\data\Liste.xlsx")
-BLOCK_FIELDS = [
-    "name",
-    "date",
-    "weekday",
-    "pudo",
-    "pickup time",
-    "valid",
-    "info",
-    "pre-closed",
-    "total Calls",
-    "old calls",
-    "new Calls",
-    "details",
-    "Mails",
-]
-BLOCK_WIDTH = len(BLOCK_FIELDS) + 1  # +1 für Trenner
 
 logger = logging.getLogger("write_liste")
 
 
-def load_mapping(wb_path: Path) -> tuple[Dict[str, str], List[str]]:
-    """Lese Alias-Mapping und Technikerreihenfolge.
+def is_name_cell(v: object) -> bool:
+    """Heuristik, ob ``v`` wie ein Name aussieht."""
 
-    Die Tabelle ``Technikernamen + PUDO`` enthält die Technikerliste. Aus den
-    Spalten ``first`` und ``last`` wird der kanonische Name aufgebaut. Die
-    Spalte ``dk`` liefert bekannte Kurzformen, die auf den kanonischen Namen
-    abgebildet werden.
-    """
+    if v is None:
+        return False
+    s = str(v).strip()
+    return bool(s) and not s.isdigit()
+
+
+def is_date_cell(v: object) -> bool:
+    """Prüfe, ob ``v`` ein Datum repräsentiert."""
+
+    try:
+        pd.to_datetime(v)
+        return True
+    except Exception:
+        return False
+
+
+def load_mapping(wb_path: Path) -> tuple[Dict[str, str], List[str]]:
+    """Lese Alias-Mapping und Technikerliste."""
 
     df = pd.read_excel(wb_path, sheet_name="Technikernamen + PUDO", header=1)
     df = df[["first", "last", "dk"]].dropna(subset=["first"])
@@ -65,57 +64,85 @@ def load_mapping(wb_path: Path) -> tuple[Dict[str, str], List[str]]:
     return mapping, tech_order
 
 
-def detect_blocks(ws) -> List[int]:
-    """Finde Startspalten aller Tagesblöcke anhand der Kopfzeile."""
+def detect_week_blocks(ws, data_start_row: int = 2) -> List[dict]:
+    """Suche alle Wochenblöcke im Arbeitsblatt.
 
-    headers = [str(cell.value).strip().lower() if cell.value else "" for cell in ws[1]]
-    starts: List[int] = []
-    for idx, value in enumerate(headers, start=1):
-        if value == "name":
-            match = True
-            for off, field in enumerate(BLOCK_FIELDS):
-                header = headers[idx - 1 + off] if idx - 1 + off < len(headers) else ""
-                if header != field.lower():
-                    match = False
-                    break
-            if match:
-                starts.append(idx)
-    return starts
-
-
-def find_or_create_day_block(ws, target_date: dt.date) -> tuple[int, bool]:
-    """Finde den Block für ``target_date`` oder lege einen neuen an.
-
-    Rückgabe ist ``(startspalte, neu_angelegt)``.
+    Ein Block besteht aus zwei Kernspalten (Name, Datum) sowie weiteren
+    Feldern rechts davon.  Die Erkennung erfolgt anhand der Datenzeilen.
     """
 
-    starts = detect_blocks(ws)
-    first = starts[0]
-    for start in starts:
-        cell = ws.cell(row=2, column=start + 1).value
-        if isinstance(cell, dt.datetime):
-            cell = cell.date()
-        if cell == target_date:
-            return start, False
-
-    new_start = starts[-1] + BLOCK_WIDTH
-    for off in range(len(BLOCK_FIELDS)):
-        ws.cell(row=1, column=new_start + off).value = ws.cell(row=1, column=first + off).value
-    row_idx = 2
-    while True:
-        src = ws.cell(row=row_idx, column=first)
-        if not src.value:
+    blocks: List[dict] = []
+    max_col = ws.max_column
+    max_row = ws.max_row
+    col = 1
+    while col < max_col:
+        name_col = col
+        date_col = col + 1
+        if date_col > max_col:
             break
-        ws.cell(row=row_idx, column=new_start).value = src.value
-        row_idx += 1
-    return new_start, True
+        hits = 0
+        rows: List[int] = []
+        for r in range(data_start_row, max_row + 1):
+            nv = ws.cell(r, name_col).value
+            dv = ws.cell(r, date_col).value
+            if is_name_cell(nv) and is_date_cell(dv):
+                hits += 1
+                rows.append(r)
+        if hits >= 5:
+            # Woche bestimmen
+            week = None
+            for r in rows:
+                dv = ws.cell(r, date_col).value
+                if is_date_cell(dv):
+                    d = pd.to_datetime(dv).date()
+                    week = d.isocalendar()[1]
+                    break
+            # Feldzuordnung aus der Kopfzeile
+            columns: Dict[str, int] = {}
+            c = name_col
+            while True:
+                header = ws.cell(1, c).value
+                if header is None:
+                    break
+                columns[str(header).strip().lower()] = c
+                c += 1
+            blocks.append(
+                {
+                    "name_col": name_col,
+                    "date_col": date_col,
+                    "rows": rows,
+                    "week": week,
+                    "columns": columns,
+                }
+            )
+            col = c + 1  # nach dem Block (inkl. Trennspalte) fortfahren
+        else:
+            col += 1
+    return blocks
+
+
+def build_row_index(ws, block: dict, tech_order: List[str]) -> Dict[tuple, int]:
+    """Erzeuge Index ``(name, datum) -> Zeile`` für ``block``."""
+
+    idx: Dict[tuple, int] = {}
+    name_col = block["name_col"]
+    date_col = block["date_col"]
+    for r in block["rows"]:
+        nv = ws.cell(r, name_col).value
+        dv = ws.cell(r, date_col).value
+        if not (is_name_cell(nv) and is_date_cell(dv)):
+            continue
+        name = canonical_name(str(nv), tech_order)
+        d = pd.to_datetime(dv).date()
+        idx[(name.lower(), d.isoformat())] = r
+    return idx
 
 
 def aggregate_rows(rows: pd.DataFrame) -> dict[str, object]:
-    """Fasse mehrere Zeilen nach den vorgegebenen Regeln zusammen."""
+    """Fasse mehrere Zeilen nach den Regeln zusammen."""
 
     result: dict[str, object] = {}
-    numeric = ["pre-closed", "total Calls", "old calls", "new Calls", "Mails"]
+    numeric = ["pre-closed", "total calls", "old calls", "new calls", "mails"]
     text = ["info", "details", "pudo"]
 
     for col in numeric:
@@ -136,26 +163,52 @@ def aggregate_rows(rows: pd.DataFrame) -> dict[str, object]:
     return result
 
 
+def write_record(ws, block: dict, row_index: Dict[tuple, int], rec: dict) -> bool:
+    """Schreibe ``rec`` in das Arbeitsblatt.
+
+    ``rec`` muss mindestens ``name`` und ``date`` enthalten.  Rückgabe ist
+    ``True`` bei Erfolg, sonst ``False``.
+    """
+
+    name = rec["name"]
+    date = pd.to_datetime(rec["date"]).date()
+    key = (name.lower(), date.isoformat())
+    row = row_index.get(key)
+    if not row:
+        return False
+
+    cols = block["columns"]
+    ws.cell(row=row, column=cols.get("name"), value=name)
+    ws.cell(row=row, column=cols.get("date"), value=date)
+    if "weekday" in cols:
+        ws.cell(row=row, column=cols["weekday"], value=date.strftime("%A"))
+
+    for field, value in rec.items():
+        if field.lower() in {"name", "date"}:
+            continue
+        col = cols.get(field.lower())
+        if not col:
+            continue
+        if value in (None, ""):
+            continue
+        existing = ws.cell(row=row, column=col).value
+        if existing in (None, ""):
+            ws.cell(row=row, column=col, value=value)
+    return True
+
+
 def write_day(
     ws,
-    mapping: Dict[str, str],
-    tech_order: List[str],
+    blocks: List[dict],
     day_df: pd.DataFrame,
     date: dt.date,
+    tech_order: List[str],
     normalize: bool = True,
 ) -> None:
-    """Schreibe alle Daten des Tages ``date`` in das Arbeitsblatt."""
-
-    alias_map = {**mapping}
-    ALIASES.update(alias_map)
-    refresh_alias_map()
+    """Schreibe alle Daten des Tages ``date`` in ``ws``."""
 
     normalized = 0
     skipped = 0
-
-    def norm_name(name: str) -> str:
-        name = str(name).strip()
-        return alias_map.get(name, canonical_name(name, tech_order))
 
     if "date" not in day_df.columns:
         day_df["date"] = date
@@ -175,40 +228,31 @@ def write_day(
     if "_skip" in day_df.columns:
         day_df = day_df[~day_df["_skip"]]
 
-    day_df["name"] = day_df["name"].map(norm_name)
+    day_df["name"] = day_df["name"].map(lambda n: canonical_name(str(n), tech_order))
     grouped = day_df.groupby(["name", "date"], dropna=True)
     aggregated: Dict[str, dict[str, object]] = {}
     for (name, _), rows in grouped:
         aggregated[name] = aggregate_rows(rows)
 
-    start_col, created = find_or_create_day_block(ws, date)
-    logger.info(
-        "Block für %s %s", date.isoformat(), "angelegt" if created else "gefunden"
-    )
+    week = date.isocalendar()[1]
+    block = next((b for b in blocks if b["week"] == week), None)
+    if not block:
+        logger.warning("Kein Wochenblock für %s gefunden", date.isoformat())
+        return
+
+    row_index = block.setdefault("row_index", build_row_index(ws, block, tech_order))
 
     for tech, values in aggregated.items():
-        if tech not in tech_order:
-            continue
-        row = tech_order.index(tech) + 2
-        # Date and weekday setzen
-        ws.cell(row=row, column=start_col + 1, value=date)
-        ws.cell(row=row, column=start_col + 2, value=date.strftime("%A"))
-        for off, field in enumerate(BLOCK_FIELDS):
-            if field in ("date", "weekday", "name"):
-                continue
-            value = values.get(field)
-            if value in (None, ""):
-                continue
-            if isinstance(value, float) and pd.isna(value):
-                continue
-            col = start_col + BLOCK_FIELDS.index(field)
-            existing = ws.cell(row=row, column=col).value
-            if existing in (None, ""):
-                ws.cell(row=row, column=col, value=value)
-        ws.cell(row=row, column=start_col, value=tech)
+        rec = {"name": tech, "date": date, **values}
+        if not write_record(ws, block, row_index, rec):
+            logger.warning("Keine Zeile für %s am %s", tech, date.isoformat())
 
     logger.info(
-        "Normalisierte Zeilen: %d, übersprungene Zeilen: %d", normalized, skipped
+        "KW %s: %d Zeilen geschrieben, normalisiert %d, übersprungen %d",
+        week,
+        len(aggregated),
+        normalized,
+        skipped,
     )
 
 
@@ -237,16 +281,31 @@ def main() -> None:
     ws = wb["Juli_25"]
 
     mapping, tech_order = load_mapping(Path(args.infile))
+    ALIASES.update({k.lower(): v for k, v in mapping.items()})
+    refresh_alias_map()
+
+    blocks = detect_week_blocks(ws)
+    for block in blocks:
+        block["row_index"] = build_row_index(ws, block, tech_order)
 
     year, month = map(int, args.month.split("-"))
-    days = (dt.date(year, month, 28) + dt.timedelta(days=4)).replace(day=1) - dt.timedelta(days=1)
-    for day in range(1, days.day + 1):
+    last_day = (dt.date(year, month, 28) + dt.timedelta(days=4)).replace(day=1) - dt.timedelta(days=1)
+    for day in range(1, last_day.day + 1):
         date = dt.date(year, month, day)
         day_dir = Path("data") / "reports" / f"{year:04d}-{month:02d}" / f"{day:02d}"
+        if not day_dir.exists():
+            continue
         day_df = collect_day_df(day_dir)
         if day_df.empty:
             continue
-        write_day(ws, mapping, tech_order, day_df, date, normalize=args.normalize_date == "true")
+        write_day(
+            ws,
+            blocks,
+            day_df,
+            date,
+            tech_order,
+            normalize=args.normalize_date == "true",
+        )
 
     out_file = args.infile if args.inplace or not args.out else args.out
     wb.save(out_file)
@@ -254,3 +313,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
