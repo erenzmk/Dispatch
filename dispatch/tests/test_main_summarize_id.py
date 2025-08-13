@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pandas as pd
 from openpyxl import Workbook, load_workbook
-from dispatch.main import main as cli_main
+from run_dispatch import main as cli_main
 
 
 def test_cli_summarize_id(tmp_path: Path) -> None:
