@@ -26,21 +26,20 @@ def test_cli_process_month(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> N
 def test_process_month_logs_failure(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
-    from run_all_gui import process_month
+    from run_dispatch import process_month
 
     logs: list[tuple[str, object | None]] = []
 
     def fake_log(msg: str, data: object | None = None) -> None:
         logs.append((msg, data))
 
-    monkeypatch.setattr("run_all_gui._log", fake_log)
-    monkeypatch.setattr("run_all_gui._popup_error", lambda msg: None)
+    monkeypatch.setattr("run_dispatch._log", fake_log)
 
     def fake_process_month(m_dir, liste_path):
         raise RuntimeError("kaputt")
 
-    monkeypatch.setattr("run_all_gui.process_reports.process_month", fake_process_month)
-    monkeypatch.setattr("run_all_gui.analyze_month.main", lambda args: None)
+    monkeypatch.setattr("run_dispatch.process_reports.process_month", fake_process_month)
+    monkeypatch.setattr("run_dispatch.analyze_month.main", lambda args: None)
 
     month_dir = tmp_path / "2025-07"
     month_dir.mkdir()
@@ -57,25 +56,24 @@ def test_process_month_logs_failure(
 def test_process_month_logs_calls(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
-    from run_all_gui import process_month
+    from run_dispatch import process_month
 
     logs: list[tuple[str, object | None]] = []
 
     def fake_log(msg: str, data: object | None = None) -> None:
         logs.append((msg, data))
 
-    monkeypatch.setattr("run_all_gui._log", fake_log)
-    monkeypatch.setattr("run_all_gui._popup_error", lambda msg: None)
+    monkeypatch.setattr("run_dispatch._log", fake_log)
 
-    monkeypatch.setattr("run_all_gui.process_reports.process_month", lambda m, l: None)
-    monkeypatch.setattr("run_all_gui.analyze_month.main", lambda args: None)
+    monkeypatch.setattr("run_dispatch.process_reports.process_month", lambda m, l: None)
+    monkeypatch.setattr("run_dispatch.analyze_month.main", lambda args: None)
 
     def fake_summarize_day(day_dir, liste_path, calls):
         if calls is not None:
             calls["42"] = ["A1", "B2"]
         return True
 
-    monkeypatch.setattr("run_all_gui.summarize_day", fake_summarize_day)
+    monkeypatch.setattr("run_dispatch.summarize_day", fake_summarize_day)
 
     month_dir = tmp_path / "2025-07"
     day_dir = month_dir / "01"

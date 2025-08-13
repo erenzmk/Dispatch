@@ -15,6 +15,7 @@ archive/
 *.xlsx
 *.csv
 *.md
+!arbeitslog.md
 
 # Reale Reportdaten ignorieren
 data/reports/*
