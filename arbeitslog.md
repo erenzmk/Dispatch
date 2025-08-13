@@ -8,3 +8,4 @@
 ## 2025-08-13
 - `run_current_month.pyw` zu `run_current_month.py` umbenannt und Wrapper `run_current_month.pyw` für `start_dispatch.bat` erstellt.
 - Import in `run_current_month.py` auf `from run_dispatch import process_month` sichergestellt.
+- Optionale GUI-Abhängigkeiten und `dispatch-gui`-Entry-Point entfernt, README entsprechend angepasst und `pip install -e .` ausgeführt.
