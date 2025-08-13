@@ -18,3 +18,8 @@
 ## 2025-08-13 (3)
 - `write_liste.py` vollständig auf Wochenblöcke umgestellt und Blocksuche über Datenzeilen implementiert.
 - Schreiblogik nutzt kanonische Namen und Datum, ohne neue Blöcke oder Zeilen anzulegen.
+## 2025-08-13 (4)
+- Parser `or_liste.py` ergänzt, der Name/Datum-Spaltenpaare der OR Liste einliest und Tagespläne liefert.
+- Test `test_or_liste.py` hinzugefügt und Paket-Export in `__init__.py` erweitert.
+## 2025-08-13 (5)
+- Parser erkennt nun Name/Datum-Blöcke anhand der Kopfzeile und nutzt den Projektpfad `data/Liste.xlsx` als Standard.
