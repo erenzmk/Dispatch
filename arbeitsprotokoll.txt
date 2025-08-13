@@ -83,3 +83,4 @@
 2025-08-13 - process_reports protokolliert Laufstart und verarbeitete Tage in arbeitsprotokoll.txt; README erwähnt Protokolldatei; pytest 74 bestanden.
 2025-08-14 - interaktive Blattwahl entfernt, CLI-Optionen --sheet und --create-sheet eingeführt; Tests angepasst; pytest 74 bestanden.
 2025-08-14 - update_liste sortiert Technikerzeilen alphabetisch und Test für unsortierte Zeilen ergänzt; pytest 75 bestanden.
+2025-08-14 - write_calls berechnet Spalten dynamisch, Technikerzeilen aus erstem Block, Namen kanonisiert; Test um weitere Wochen und Aliasnamen erweitert; pytest 75 bestanden.
