@@ -3,10 +3,11 @@ from pathlib import Path
 import sys
 from run_all_gui import process_month
 
-LOG_FILE = Path("arbeitsprotokoll.txt")
+LOG_FILE = Path("logs") / "arbeitsprotokoll.txt"
 
 
 def log(message: str) -> None:
+    LOG_FILE.parent.mkdir(parents=True, exist_ok=True)
     with LOG_FILE.open("a", encoding="utf-8") as fh:
         fh.write(f"{date.today().isoformat()} - {message}\n")
 

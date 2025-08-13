@@ -3,8 +3,11 @@ __pycache__/
 *.pyc
 to_delete/
 
-# ganze Verzeichnisse ignorieren
+# Protokolldateien
 logs/
+arbeitsprotokoll.txt
+
+# ganze Verzeichnisse ignorieren
 results/
 archive/
 

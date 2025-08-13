@@ -885,11 +885,13 @@ def main(argv: Iterable[str] | None = None) -> None:
 
 
 if __name__ == "__main__":
+    log_path = Path("logs") / "arbeitsprotokoll.txt"
+    log_path.parent.mkdir(parents=True, exist_ok=True)
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s %(levelname)s %(message)s",
         handlers=[
-            logging.FileHandler("arbeitsprotokoll.txt", mode="a", encoding="utf-8"),
+            logging.FileHandler(log_path, mode="a", encoding="utf-8"),
             logging.StreamHandler(),
         ],
     )
