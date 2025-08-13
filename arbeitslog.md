@@ -9,3 +9,5 @@
 - `run_current_month.pyw` zu `run_current_month.py` umbenannt und Wrapper `run_current_month.pyw` für `start_dispatch.bat` erstellt.
 - Import in `run_current_month.py` auf `from run_dispatch import process_month` sichergestellt.
 - Optionale GUI-Abhängigkeiten und `dispatch-gui`-Entry-Point entfernt, README entsprechend angepasst und `pip install -e .` ausgeführt.
+- CLI in `run_dispatch.py` eingeführt und Tests auf `run_dispatch`-Importe umgestellt.
+- GUI-spezifische Mock-Aufrufe bereinigt und Testlauf mit `pytest` bestätigt.

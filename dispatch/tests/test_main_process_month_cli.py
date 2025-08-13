@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 
-from dispatch.main import main as cli_main
+from run_dispatch import main as cli_main
 
 
 def test_cli_process_month(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
@@ -15,7 +15,7 @@ def test_cli_process_month(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> N
         called["month_dir"] = m_dir
         called["liste"] = liste_path
 
-    monkeypatch.setattr("dispatch.process_reports.process_month", fake_process_month)
+    monkeypatch.setattr("run_dispatch.process_reports.process_month", fake_process_month)
 
     cli_main(["process-month", str(month_dir), str(liste)])
 

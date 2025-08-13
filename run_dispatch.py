@@ -8,6 +8,7 @@ Dieses Modul stellt nur noch die Funktionen ``summarize_day`` und
 
 from datetime import datetime
 from pathlib import Path
+import argparse
 import json
 import os
 import tempfile
@@ -117,3 +118,40 @@ def process_month(
         )
         _log(f'Call-Listen für Monat "{month_dir.name}"', month_calls)
     return success
+
+
+def main(argv: list[str] | None = None) -> None:
+    """Einfache Kommandozeilenschnittstelle."""
+    parser = argparse.ArgumentParser(description="Dispatch helper CLI")
+    sub = parser.add_subparsers(dest="command", required=True)
+
+    p_process_month = sub.add_parser(
+        "process-month", help="Verarbeitet alle Tagesberichte eines Monats"
+    )
+    p_process_month.add_argument(
+        "month_dir", type=Path, help="Verzeichnis mit Tagesordnern"
+    )
+    p_process_month.add_argument("liste", type=Path, help="Pfad zur Liste.xlsx")
+
+    p_sum_id = sub.add_parser(
+        "summarize-id", help="Fasst einen Report nach Techniker-ID zusammen"
+    )
+    p_sum_id.add_argument("excel_file", type=Path, help="Pfad zum Excel-Report")
+    p_sum_id.add_argument("liste", type=Path, help="Pfad zur Liste.xlsx")
+    p_sum_id.add_argument("-o", "--output", type=Path, help="Ausgabe-CSV-Datei")
+
+    args = parser.parse_args(argv)
+
+    if args.command == "process-month":
+        process_reports.process_month(args.month_dir, args.liste)
+    elif args.command == "summarize-id":
+        summary = summarize_by_id.summarize_report(args.excel_file, args.liste)
+        df = pd.DataFrame(summary)
+        if args.output:
+            df.to_csv(args.output, index=False)
+        else:
+            print(df.to_string(index=False))
+
+
+if __name__ == "__main__":  # pragma: no cover - CLI-Verwendung
+    main()
