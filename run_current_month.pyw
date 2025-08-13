@@ -1,7 +1,7 @@
 from datetime import date
 from pathlib import Path
 import sys
-from run_all_gui import process_month
+from run_dispatch import process_month
 
 LOG_FILE = Path("logs") / "arbeitsprotokoll.txt"
 
