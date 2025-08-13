@@ -15,3 +15,6 @@
 - Neues Skript `dispatch/write_liste.py` zum Eintragen der Tagesdaten in `Liste.xlsx` erstellt.
 - Alias-Mappings aus "Technikernamen + PUDO" werden eingelesen, Tagesblöcke erkannt oder bei Bedarf ergänzt.
 - Aggregationslogik für numerische und textuelle Felder umgesetzt.
+## 2025-08-13 (3)
+- `write_liste.py` vollständig auf Wochenblöcke umgestellt und Blocksuche über Datenzeilen implementiert.
+- Schreiblogik nutzt kanonische Namen und Datum, ohne neue Blöcke oder Zeilen anzulegen.
